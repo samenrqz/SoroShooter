@@ -139,7 +139,7 @@ Or use VS Code Live Server for live reload during development.
 
 **Your Name**
 University of the East — Caloocan
-GitHub: [@YOUR_USERNAME](https://github.com/YOUR_USERNAME)
+GitHub: [@samenrqz](https://github.com/samenrqz)
 
 ---
 
