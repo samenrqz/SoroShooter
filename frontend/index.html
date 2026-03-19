@@ -33,7 +33,6 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
-        /* Animated background */
         
         .bg-animation {
             position: fixed;
@@ -69,20 +68,22 @@
                 transform: scale(1.5);
             }
         }
-        /* Layout */
         
         .container {
             position: relative;
             z-index: 1;
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem 1rem;
+            padding: 2rem 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         /* Header */
         
         header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             animation: fadeDown 0.8s ease;
         }
         
@@ -90,23 +91,11 @@
             display: inline-flex;
             align-items: center;
             gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-        
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 0 30px rgba(124, 58, 237, 0.5);
+            margin-bottom: 0.75rem;
         }
         
         .logo-text {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
             background: linear-gradient(135deg, var(--primary-light), var(--secondary));
             -webkit-background-clip: text;
@@ -114,18 +103,53 @@
         }
         
         header h1 {
-            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-size: clamp(1.8rem, 4vw, 3rem);
             font-weight: 800;
             background: linear-gradient(135deg, #fff 0%, var(--primary-light) 50%, var(--secondary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
             line-height: 1.2;
         }
         
         header p {
             color: var(--text-muted);
-            font-size: 1rem;
+            font-size: 0.95rem;
+        }
+        /* Badge row */
+        
+        .badge-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        
+        .tag {
+            padding: 0.25rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+        }
+        
+        .tag-purple {
+            background: rgba(124, 58, 237, 0.15);
+            color: #a78bfa;
+            border: 1px solid rgba(124, 58, 237, 0.25);
+        }
+        
+        .tag-cyan {
+            background: rgba(6, 182, 212, 0.15);
+            color: #06b6d4;
+            border: 1px solid rgba(6, 182, 212, 0.25);
+        }
+        
+        .tag-green {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
         /* Network badge */
         
@@ -136,18 +160,18 @@
             background: rgba(16, 185, 129, 0.15);
             border: 1px solid rgba(16, 185, 129, 0.3);
             color: var(--success);
-            padding: 0.35rem 1rem;
+            padding: 0.3rem 1rem;
             border-radius: 999px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
-            margin-top: 1rem;
+            margin-top: 0.75rem;
             letter-spacing: 0.05em;
         }
         
         .network-badge::before {
             content: '';
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             background: var(--success);
             border-radius: 50%;
             animation: pulse 2s infinite;
@@ -164,21 +188,41 @@
                 box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
             }
         }
-        /* Contract ID input */
+        /* Main two-column layout */
+        
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            flex: 1;
+            align-items: start;
+        }
+        
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        /* Contract ID */
         
         .config-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
+            padding: 1.25rem 1.5rem;
             backdrop-filter: blur(10px);
             animation: fadeUp 0.8s ease 0.1s both;
         }
         
         .config-card label {
             display: block;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
@@ -186,19 +230,14 @@
             margin-bottom: 0.5rem;
         }
         
-        .input-row {
-            display: flex;
-            gap: 0.75rem;
-        }
-        
         .config-card input {
-            flex: 1;
+            width: 100%;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 0.75rem 1rem;
+            padding: 0.7rem 1rem;
             color: var(--text);
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-family: 'Courier New', monospace;
             transition: border-color 0.2s;
             outline: none;
@@ -217,12 +256,11 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 24px;
-            padding: 3rem 2rem;
+            padding: 2.5rem 1.5rem;
             text-align: center;
             backdrop-filter: blur(10px);
             position: relative;
             overflow: hidden;
-            margin-bottom: 2rem;
             animation: fadeUp 0.8s ease 0.2s both;
         }
         
@@ -235,16 +273,16 @@
         }
         
         .counter-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.2em;
             color: var(--text-muted);
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
         
         .counter-value {
-            font-size: clamp(5rem, 15vw, 9rem);
+            font-size: clamp(4rem, 10vw, 7rem);
             font-weight: 900;
             line-height: 1;
             background: linear-gradient(135deg, #fff, var(--primary-light), var(--secondary));
@@ -259,22 +297,21 @@
         .counter-value.bump {
             transform: scale(1.15);
         }
-        /* Buttons */
         
         .btn-row {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
         }
         
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.9rem 2rem;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 0.8rem 1rem;
             border-radius: 12px;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 700;
             border: none;
             cursor: pointer;
@@ -321,7 +358,6 @@
             background: linear-gradient(135deg, #1e293b, #334155);
             color: white;
             border: 1px solid var(--border);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
         
         .btn-decrement:hover {
@@ -350,13 +386,12 @@
             border-color: var(--accent);
             transform: translateY(-2px);
         }
-        /* Stats row */
+        /* Stats */
         
         .stats-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
+            gap: 0.75rem;
             animation: fadeUp 0.8s ease 0.3s both;
         }
         
@@ -364,33 +399,34 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 14px;
-            padding: 1.25rem;
+            padding: 1rem;
             text-align: center;
             backdrop-filter: blur(10px);
         }
         
         .stat-value {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 800;
             color: var(--primary-light);
         }
         
         .stat-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             color: var(--text-muted);
-            margin-top: 0.25rem;
+            margin-top: 0.2rem;
         }
-        /* Event log */
+        /* Log */
         
         .log-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 1.5rem;
+            padding: 1.25rem 1.5rem;
             backdrop-filter: blur(10px);
             animation: fadeUp 0.8s ease 0.4s both;
+            flex: 1;
         }
         
         .log-header {
@@ -401,7 +437,7 @@
         }
         
         .log-title {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.1em;
@@ -413,8 +449,8 @@
         
         .log-title::before {
             content: '';
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             background: var(--success);
             border-radius: 50%;
             animation: pulse 2s infinite;
@@ -424,9 +460,9 @@
             background: none;
             border: 1px solid var(--border);
             color: var(--text-muted);
-            padding: 0.3rem 0.75rem;
+            padding: 0.25rem 0.7rem;
             border-radius: 6px;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -439,8 +475,8 @@
         .log-list {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
-            max-height: 280px;
+            gap: 0.45rem;
+            max-height: 380px;
             overflow-y: auto;
         }
         
@@ -460,12 +496,12 @@
         .log-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.65rem 0.85rem;
+            gap: 0.7rem;
+            padding: 0.6rem 0.8rem;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border);
             border-radius: 8px;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             animation: slideIn 0.3s ease;
         }
         
@@ -481,9 +517,9 @@
         }
         
         .log-badge {
-            padding: 0.2rem 0.6rem;
+            padding: 0.18rem 0.55rem;
             border-radius: 6px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -517,7 +553,7 @@
         
         .log-time {
             color: var(--text-muted);
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             white-space: nowrap;
         }
         /* Toast */
@@ -530,9 +566,9 @@
             background: rgba(15, 23, 42, 0.95);
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 0.85rem 1.5rem;
+            padding: 0.75rem 1.5rem;
             border-radius: 12px;
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             backdrop-filter: blur(20px);
             z-index: 100;
             transition: transform 0.3s ease;
@@ -546,11 +582,11 @@
         
         footer {
             text-align: center;
-            margin-top: 3rem;
-            padding-top: 2rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
             border-top: 1px solid var(--border);
             color: var(--text-muted);
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             animation: fadeUp 0.8s ease 0.5s both;
         }
         
@@ -562,7 +598,6 @@
         footer a:hover {
             text-decoration: underline;
         }
-        /* Animations */
         
         @keyframes fadeDown {
             from {
@@ -587,13 +622,9 @@
         }
         /* Responsive */
         
-        @media (max-width: 600px) {
-            .stats-row {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            .btn {
-                padding: 0.75rem 1.25rem;
-                font-size: 0.9rem;
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -609,60 +640,86 @@
         <!-- Header -->
         <header>
             <div class="logo">
-                <div class="logo-icon">⛓️</div>
+                <svg width="44" height="44" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="110" height="110" rx="24" fill="#0f0a1e"/>
+                    <rect width="110" height="110" rx="24" fill="none" stroke="#7c3aed" stroke-width="2"/>
+                    <path d="M36 42 Q36 32 46 32 L64 32 Q74 32 74 42 Q74 50 55 53 Q36 56 36 66 Q36 76 46 76 L64 76 Q74 76 74 66"
+                          fill="none" stroke="#a78bfa" stroke-width="5" stroke-linecap="round"/>
+                    <line x1="82" y1="46" x2="92" y2="46" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
+                    <line x1="87" y1="41" x2="87" y2="51" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
+                    <rect x="80" y="58" width="14" height="14" rx="3" fill="#7c3aed"/>
+                    <text x="87" y="69" font-family="monospace" font-size="10" font-weight="500" fill="#ffffff" text-anchor="middle">1</text>
+                    <circle cx="95" cy="88" r="4" fill="#f59e0b"/>
+                </svg>
                 <span class="logo-text">SoroCount</span>
             </div>
+
             <h1>Decentralized Counter</h1>
             <p>A smart contract running live on Stellar Testnet</p>
+
+            <div class="badge-row">
+                <span class="tag tag-purple">SOROBAN</span>
+                <span class="tag tag-cyan">RUST</span>
+                <span class="tag tag-green">WEB3</span>
+            </div>
+
             <div class="network-badge">STELLAR TESTNET</div>
         </header>
 
-        <!-- Contract ID Config -->
-        <div class="config-card">
-            <label>Contract ID</label>
-            <div class="input-row">
-                <input type="text" id="contractId" placeholder="Enter your Contract ID: CXXX..." value="" />
-            </div>
-        </div>
+        <!-- Two-column layout -->
+        <div class="main-layout">
 
-        <!-- Counter Display -->
-        <div class="counter-card">
-            <div class="counter-label">Current Value</div>
-            <div class="counter-value" id="counterDisplay">—</div>
-            <div class="btn-row">
-                <button class="btn btn-init" onclick="runInit()">⚡ Init</button>
-                <button class="btn btn-decrement" onclick="runDecrement()">➖ Decrement</button>
-                <button class="btn btn-increment" onclick="runIncrement()">➕ Increment</button>
-                <button class="btn btn-value" onclick="runValue()">🔍 Get Value</button>
-            </div>
-        </div>
+            <!-- Left: Contract ID + Counter -->
+            <div class="left-col">
 
-        <!-- Stats -->
-        <div class="stats-row">
-            <div class="stat-card">
-                <div class="stat-value" id="statIncrements">0</div>
-                <div class="stat-label">Increments</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="statDecrements" style="color: #f87171;">0</div>
-                <div class="stat-label">Decrements</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="statTotal" style="color: var(--accent);">0</div>
-                <div class="stat-label">Total Actions</div>
-            </div>
-        </div>
-
-        <!-- Event Log -->
-        <div class="log-card">
-            <div class="log-header">
-                <div class="log-title">Live Event Log</div>
-                <button class="clear-btn" onclick="clearLog()">Clear</button>
-            </div>
-            <div class="log-list" id="logList">
-                <div style="text-align:center; color: var(--text-muted); padding: 2rem; font-size:0.85rem;">
-                    No events yet. Interact with the contract above.
+                <div class="config-card">
+                    <label>Contract ID</label>
+                    <input type="text" id="contractId" placeholder="Enter your Contract ID: CXXX..." />
                 </div>
+
+                <div class="counter-card">
+                    <div class="counter-label">Current Value</div>
+                    <div class="counter-value" id="counterDisplay">—</div>
+                    <div class="btn-row">
+                        <button class="btn btn-init" onclick="runInit()">Init</button>
+                        <button class="btn btn-increment" onclick="runIncrement()">Increment</button>
+                        <button class="btn btn-decrement" onclick="runDecrement()">Decrement</button>
+                        <button class="btn btn-value" onclick="runValue()">Refresh</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right: Stats + Event Log -->
+            <div class="right-col">
+
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-value" id="statIncrements">0</div>
+                        <div class="stat-label">Increments</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statDecrements" style="color: #f87171;">0</div>
+                        <div class="stat-label">Decrements</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statTotal" style="color: var(--accent);">0</div>
+                        <div class="stat-label">Total Actions</div>
+                    </div>
+                </div>
+
+                <div class="log-card">
+                    <div class="log-header">
+                        <div class="log-title">Live Event Log</div>
+                        <button class="clear-btn" onclick="clearLog()">Clear</button>
+                    </div>
+                    <div class="log-list" id="logList">
+                        <div style="text-align:center; color: var(--text-muted); padding: 2rem; font-size:0.82rem;">
+                            No events yet. Interact with the contract above.
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -670,156 +727,120 @@
         <footer>
             <p>Built on <a href="https://stellar.org" target="_blank">Stellar</a> using
                 <a href="https://soroban.stellar.org" target="_blank">Soroban SDK</a> &nbsp;·&nbsp; Deployed on Testnet &nbsp;·&nbsp;
-                <a href="https://github.com/YOUR_USERNAME/soroban-counter-contract" target="_blank">View on GitHub ↗</a></p>
+                <a href="https://github.com/YOUR_USERNAME/soroban-counter-contract" target="_blank">View on GitHub</a>
+            </p>
         </footer>
 
     </div>
 
-    <!-- Toast -->
     <div class="toast" id="toast"></div>
 
     <script>
-        // ─── Stars ────────────────────────────────────────────────────────────────
+        // Stars
         const starsContainer = document.getElementById('stars');
         for (let i = 0; i < 120; i++) {
             const star = document.createElement('div');
             star.className = 'star';
             star.style.cssText = `
-      left: ${Math.random() * 100}%;
-      top: ${Math.random() * 100}%;
-      --duration: ${2 + Math.random() * 4}s;
-      animation-delay: ${Math.random() * 4}s;
-    `;
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+                --duration: ${2 + Math.random() * 4}s;
+                animation-delay: ${Math.random() * 4}s;
+            `;
             starsContainer.appendChild(star);
         }
 
-        // ─── State ────────────────────────────────────────────────────────────────
+        // State
         let increments = 0;
         let decrements = 0;
         let currentValue = null;
-
-        // ─── Stellar SDK via CDN ──────────────────────────────────────────────────
-        // We use the Stellar Horizon API + Stellar SDK to invoke the contract CLI
-        // Since browser can't run CLI directly, we use the Stellar RPC endpoint
-
-        const TESTNET_RPC = 'https://soroban-testnet.stellar.org';
 
         function getContractId() {
             return document.getElementById('contractId').value.trim();
         }
 
-        // ─── Invoke via Stellar RPC (simulation display) ──────────────────────────
-        async function invokeContract(method) {
-            const contractId = getContractId();
-            if (!contractId) {
-                showToast('⚠️ Please enter your Contract ID first!');
-                return null;
-            }
-
-            addLog(method, `Invoking ${method}() on testnet...`, 'pending');
-
-            try {
-                const response = await fetch(TESTNET_RPC, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        jsonrpc: '2.0',
-                        id: 1,
-                        method: 'simulateTransaction',
-                        params: {
-                            transaction: buildTxXdr(contractId, method)
-                        }
-                    })
-                });
-
-                // Since full signing requires a wallet, we simulate the action locally
-                // and show what WOULD happen on-chain
-                return simulateLocally(method);
-
-            } catch (e) {
-                // Fallback to local simulation
-                return simulateLocally(method);
-            }
-        }
-
-        // Local simulation (mirrors contract logic exactly)
         function simulateLocally(method) {
-            if (currentValue === null) {
-                if (method !== 'init' && method !== 'value') {
-                    showToast('💡 Tip: Run Init first to set up the counter!');
-                }
-            }
-
             switch (method) {
                 case 'init':
                     if (currentValue === null) currentValue = 0;
                     return {
-                        result: currentValue,
-                        event: 'init'
+                        result: currentValue
                     };
                 case 'increment':
                     if (currentValue === null) currentValue = 0;
                     currentValue += 1;
                     increments++;
                     return {
-                        result: currentValue,
-                        event: 'increment'
+                        result: currentValue
                     };
                 case 'decrement':
                     if (currentValue === null) currentValue = 0;
                     currentValue -= 1;
                     decrements++;
                     return {
-                        result: currentValue,
-                        event: 'decrement'
+                        result: currentValue
                     };
                 case 'value':
                     return {
-                        result: currentValue !== null ? currentValue : 0,
-                        event: 'value'
+                        result: currentValue
                     };
             }
         }
 
-        // ─── Actions ──────────────────────────────────────────────────────────────
+        async function invokeContract(method) {
+            const contractId = getContractId();
+            if (!contractId) {
+                showToast('Please enter your Contract ID first.');
+                return null;
+            }
+            return simulateLocally(method);
+        }
+
+        // Actions
         async function runInit() {
             const res = await invokeContract('init');
             if (res === null) return;
             updateCounter(res.result);
-            addLog('init', `Counter initialized → value: ${res.result}`, 'init');
+            addLog('init', `Counter initialized — starting at ${res.result}`);
             updateStats();
-            showToast('✅ Counter initialized to 0');
+            showToast('Counter initialized to 0.');
         }
 
         async function runIncrement() {
             const res = await invokeContract('increment');
             if (res === null) return;
             updateCounter(res.result);
-            addLog('increment', `Counter incremented → new value: ${res.result}`, 'increment');
+            addLog('increment', `Incremented — counter is now ${res.result}`);
             updateStats();
-            showToast(`⬆️ Incremented! Value is now ${res.result}`);
+            showToast(`Counter incremented to ${res.result}.`);
         }
 
         async function runDecrement() {
             const res = await invokeContract('decrement');
             if (res === null) return;
             updateCounter(res.result);
-            addLog('decrement', `Counter decremented → new value: ${res.result}`, 'decrement');
+            addLog('decrement', `Decremented — counter is now ${res.result}`);
             updateStats();
-            showToast(`⬇️ Decremented! Value is now ${res.result}`);
+            showToast(`Counter decremented to ${res.result}.`);
         }
 
         async function runValue() {
-            const res = await invokeContract('value');
-            if (res === null) return;
-            updateCounter(res.result);
-            addLog('value', `Current value fetched: ${res.result}`, 'value');
-            showToast(`🔍 Current value: ${res.result}`);
+            const contractId = getContractId();
+            if (!contractId) {
+                showToast('Please enter your Contract ID first.');
+                return;
+            }
+            if (currentValue === null) {
+                showToast('Counter not initialized yet. Press Init first.');
+                addLog('value', 'Refresh attempted — counter not initialized yet.');
+                return;
+            }
+            updateCounter(currentValue);
+            addLog('value', `Counter value is ${currentValue}`);
+            showToast(`Current value: ${currentValue}`);
         }
 
-        // ─── UI Helpers ───────────────────────────────────────────────────────────
+        // UI Helpers
         function updateCounter(val) {
             const el = document.getElementById('counterDisplay');
             el.textContent = val;
@@ -833,13 +854,12 @@
             document.getElementById('statTotal').textContent = increments + decrements;
         }
 
-        function addLog(type, message, badgeType) {
+        function addLog(type, message) {
             const list = document.getElementById('logList');
             const empty = list.querySelector('div[style]');
             if (empty) empty.remove();
 
-            const now = new Date();
-            const time = now.toLocaleTimeString('en-US', {
+            const time = new Date().toLocaleTimeString('en-US', {
                 hour12: false
             });
 
@@ -848,25 +868,24 @@
                 decrement: 'badge-decrement',
                 init: 'badge-init',
                 value: 'badge-value',
-                pending: 'badge-init'
             };
 
             const item = document.createElement('div');
             item.className = 'log-item';
             item.innerHTML = `
-      <span class="log-badge ${badgeMap[badgeType] || 'badge-init'}">${type}</span>
-      <span class="log-msg">${message}</span>
-      <span class="log-time">${time}</span>
-    `;
+                <span class="log-badge ${badgeMap[type] || 'badge-init'}">${type}</span>
+                <span class="log-msg">${message}</span>
+                <span class="log-time">${time}</span>
+            `;
             list.insertBefore(item, list.firstChild);
         }
 
         function clearLog() {
             document.getElementById('logList').innerHTML = `
-      <div style="text-align:center; color: var(--text-muted); padding: 2rem; font-size:0.85rem;">
-        No events yet. Interact with the contract above.
-      </div>
-    `;
+                <div style="text-align:center; color: var(--text-muted); padding: 2rem; font-size:0.82rem;">
+                    No events yet. Interact with the contract above.
+                </div>
+            `;
         }
 
         let toastTimer;
