@@ -16,7 +16,7 @@ complete with on-chain event emission and an animated web frontend.
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
 - [Smart Contract](#smart-contract)
-- [Contract Details](#contract-details)
+- [Deployed Contract](#deployed-contract)
 - [Frontend](#frontend)
 - [Built With](#built-with)
 - [Author](#author)
@@ -57,7 +57,7 @@ soroban-counter-contract/
 ### Setup
 ```bash
 # 1. Clone the repo
-git clone https://github.com/YOUR_USERNAME/soroban-counter-contract.git
+git clone https://github.com/samenrqz/soroban-counter-contract.git
 cd soroban-counter-contract
 
 # 2. Add WASM target
@@ -73,7 +73,7 @@ cargo build --release --target wasm32-unknown-unknown
 stellar keys fund alice --network testnet
 stellar contract deploy \
   --wasm target/wasm32-unknown-unknown/release/soroban_counter_contract.wasm \
-  --source alice \
+  --source-account alice \
   --network testnet
 ```
 
@@ -96,15 +96,16 @@ Each function emits an on-chain event that can be tracked via the Stellar explor
 
 ---
 
-## Contract Details
+## Deployed Contract
 
-| Property | Value |
+| Field | Value |
 |---|---|
 | Network | Stellar Testnet |
-| Contract ID | `YOUR_CONTRACT_ID_HERE` |
+| Contract ID | `CDCBFWXOVH5BGSCWQN6OFIEVYCP3DYQZY7LDOXB25OLSCHCXWMMFXHMC` |
 | Language | Rust |
 | SDK Version | Soroban SDK v21 |
-| Explorer | [View on Stellar Expert](https://stellar.expert/explorer/testnet/contract/YOUR_CONTRACT_ID_HERE) |
+| Explorer | [View on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CDCBFWXOVH5BGSCWQN6OFIEVYCP3DYQZY7LDOXB25OLSCHCXWMMFXHMC) |
+| Stellar Lab | [View on Stellar Lab](https://lab.stellar.org/r/testnet/contract/CDCBFWXOVH5BGSCWQN6OFIEVYCP3DYQZY7LDOXB25OLSCHCXWMMFXHMC) |
 
 ---
 
@@ -137,7 +138,7 @@ Or use VS Code Live Server for live reload during development.
 
 ## Author
 
-**Your Name**
+**Sam Enriquez**
 University of the East — Caloocan
 GitHub: [@samenrqz](https://github.com/samenrqz)
 
