@@ -7,38 +7,25 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-sdk/11.3.0/stellar-sdk.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;800&display=swap');
-
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-
 :root{
-  --void:#000208;
-  --neon-cyan:#00fff7;
-  --neon-green:#39ff14;
-  --neon-orange:#ff6b00;
-  --neon-pink:#ff0080;
-  --neon-yellow:#ffe600;
-  --stellar-blue:#4f9cff;
-  --stellar-purple:#8b5cf6;
-  --text:#e0f4ff;
-  --muted:#4a7a9b;
-  --font-hud:'Orbitron',monospace;
-  --font-mono:'Share Tech Mono',monospace;
+  --void:#000208;--neon-cyan:#00fff7;--neon-green:#39ff14;
+  --neon-orange:#ff6b00;--neon-pink:#ff0080;--neon-yellow:#ffe600;
+  --stellar-blue:#4f9cff;--stellar-purple:#8b5cf6;
+  --text:#e0f4ff;--muted:#4a7a9b;
+  --font-hud:'Orbitron',monospace;--font-mono:'Share Tech Mono',monospace;
   --font-body:'Exo 2',sans-serif;
 }
-
 html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-family:var(--font-body);color:var(--text);}
 #bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
 .scanlines{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);}
 
-/* ══ LOGIN ══ */
+/* LOGIN */
 #login-screen{position:fixed;inset:0;z-index:100;display:grid;grid-template-columns:1fr 1fr;transition:opacity 0.5s ease;}
-
 .ls-left{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;padding:2rem 1.5rem;background:radial-gradient(ellipse at 30% 50%,rgba(0,255,247,0.06) 0%,transparent 70%),radial-gradient(ellipse at center,#020d1f 0%,#000208 100%);border-right:1px solid rgba(0,255,247,0.08);position:relative;overflow:hidden;}
 .ls-left::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 80%,rgba(124,58,237,0.08) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(0,255,247,0.05) 0%,transparent 50%);pointer-events:none;}
-
 .ls-title{font-family:var(--font-hud);font-size:3.2rem;font-weight:900;letter-spacing:0.12em;text-align:center;line-height:1.1;background:linear-gradient(135deg,var(--neon-cyan) 0%,var(--stellar-blue) 50%,var(--stellar-purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:titlePulse 3s ease-in-out infinite;position:relative;z-index:1;}
 @keyframes titlePulse{0%,100%{filter:drop-shadow(0 0 16px rgba(0,255,247,0.35));}50%{filter:drop-shadow(0 0 32px rgba(0,255,247,0.65));}}
-
 .ls-sub{font-family:var(--font-mono);font-size:0.85rem;color:var(--neon-cyan);letter-spacing:0.25em;text-transform:uppercase;opacity:0.7;text-align:center;position:relative;z-index:1;}
 .ls-feats{display:flex;gap:0.45rem;flex-wrap:wrap;justify-content:center;position:relative;z-index:1;}
 .ls-feat{padding:0.3rem 0.82rem;border-radius:999px;font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;}
@@ -46,7 +33,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
 .fg{background:rgba(57,255,20,0.08);color:var(--neon-green);border:1px solid rgba(57,255,20,0.2);}
 .fo{background:rgba(255,107,0,0.08);color:var(--neon-orange);border:1px solid rgba(255,107,0,0.2);}
 .fp{background:rgba(139,92,246,0.08);color:var(--stellar-purple);border:1px solid rgba(139,92,246,0.2);}
-
 .ls-rewards{width:100%;max-width:290px;background:rgba(0,255,247,0.03);border:1px solid rgba(0,255,247,0.08);border-radius:10px;padding:0.8rem;position:relative;z-index:1;}
 .ls-rewards-title{font-family:var(--font-hud);font-size:0.6rem;color:var(--neon-cyan);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.5rem;text-align:center;}
 .rw-row{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:0.68rem;padding:0.17rem 0;color:var(--muted);border-bottom:1px solid rgba(0,255,247,0.04);}
@@ -54,11 +40,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
 .rw-val{color:var(--neon-green);font-weight:700;}
 .rw-val.nft{color:var(--stellar-purple);}
 .rw-val.life{color:var(--neon-orange);}
-
-.ls-net{display:flex;align-items:center;gap:0.45rem;font-family:var(--font-mono);font-size:0.68rem;color:var(--neon-green);letter-spacing:0.12em;position:relative;z-index:1;}
-.ls-net::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--neon-green);box-shadow:0 0 8px var(--neon-green);animation:netPulse 2s infinite;}
+.ls-server-status{display:flex;align-items:center;gap:0.4rem;font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.1em;position:relative;z-index:1;}
+.ss-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);animation:netPulse 2s infinite;}
+.ss-dot.online{background:var(--neon-green);box-shadow:0 0 8px var(--neon-green);}
+.ss-dot.offline{background:var(--neon-pink);}
+.ss-txt{color:var(--muted);}
+.ss-txt.online{color:var(--neon-green);}
+.ss-txt.offline{color:var(--neon-pink);}
 @keyframes netPulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
-
 .ls-right{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;background:radial-gradient(ellipse at 70% 50%,rgba(139,92,246,0.05) 0%,transparent 70%),#000208;}
 .ls-card{width:100%;max-width:420px;background:rgba(4,15,40,0.92);border:1px solid rgba(0,255,247,0.16);border-radius:18px;padding:1.75rem;display:flex;flex-direction:column;gap:1rem;box-shadow:0 0 40px rgba(0,255,247,0.06),inset 0 1px 0 rgba(255,255,255,0.04);}
 .ls-card-title{font-family:var(--font-hud);font-size:0.82rem;color:var(--neon-cyan);letter-spacing:0.2em;text-transform:uppercase;text-align:center;padding-bottom:0.7rem;border-bottom:1px solid rgba(0,255,247,0.1);}
@@ -68,7 +57,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
 .ls-inp:focus{border-color:var(--neon-cyan);box-shadow:0 0 0 3px rgba(0,255,247,0.09);}
 .ls-inp::placeholder{color:var(--muted);font-size:0.75rem;}
 .ls-inp.valid{border-color:rgba(57,255,20,0.45);}
-
 .ls-status{display:flex;align-items:center;gap:0.52rem;font-family:var(--font-mono);font-size:0.7rem;padding:0.5rem 0.75rem;border-radius:7px;border:1px solid rgba(255,255,255,0.05);background:rgba(255,255,255,0.02);min-height:36px;}
 .ls-status .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .ls-status.idle{color:var(--muted);}
@@ -77,22 +65,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
 .ls-status.ok .dot{background:var(--neon-green);box-shadow:0 0 7px var(--neon-green);}
 .ls-status.err{background:rgba(255,0,128,0.05);border-color:rgba(255,0,128,0.22);color:var(--neon-pink);}
 .ls-status.err .dot{background:var(--neon-pink);}
-
 .ls-btn{width:100%;padding:0.9rem;border:none;border-radius:10px;cursor:pointer;font-family:var(--font-hud);font-size:0.9rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;transition:all 0.2s;}
 .ls-btn-launch{background:linear-gradient(135deg,#0a3a5c,#0d5a8a);color:var(--neon-cyan);border:1px solid rgba(0,255,247,0.38);font-size:0.95rem;padding:1.02rem;animation:launchPulse 2s ease-in-out infinite;}
 @keyframes launchPulse{0%,100%{box-shadow:0 0 20px rgba(0,255,247,0.18);}50%{box-shadow:0 0 40px rgba(0,255,247,0.45);}}
 .ls-btn-launch:hover{transform:translateY(-2px);color:#fff;box-shadow:0 0 50px rgba(0,255,247,0.55);}
 .ls-btn-launch:disabled{opacity:0.4;cursor:not-allowed;transform:none;animation:none;}
-
 .ls-howto{background:rgba(0,255,247,0.02);border:1px solid rgba(0,255,247,0.07);border-radius:8px;padding:0.72rem 0.88rem;}
 .ls-howto-title{font-family:var(--font-hud);font-size:0.6rem;color:var(--neon-cyan);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:0.45rem;}
 .ls-howto-row{display:flex;align-items:center;gap:0.48rem;font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);padding:0.13rem 0;}
 .ls-step{width:16px;height:16px;border-radius:50%;flex-shrink:0;background:rgba(0,255,247,0.08);border:1px solid rgba(0,255,247,0.22);display:flex;align-items:center;justify-content:center;font-size:0.54rem;color:var(--neon-cyan);}
 
-/* ══ GAME ══ */
+/* GAME */
 #game-wrapper{position:fixed;inset:0;z-index:10;display:none;flex-direction:column;opacity:0;transition:opacity 0.5s ease;}
 #game-wrapper.visible{display:flex;opacity:1;}
-
 .hud{height:60px;flex-shrink:0;background:linear-gradient(180deg,rgba(0,5,15,0.99),rgba(0,5,15,0.88));border-bottom:1px solid rgba(0,255,247,0.12);display:flex;align-items:center;padding:0 1.2rem;gap:0.7rem;backdrop-filter:blur(8px);}
 .hud-brand{font-family:var(--font-hud);font-size:1.08rem;font-weight:900;color:var(--neon-cyan);letter-spacing:0.15em;text-shadow:0 0 14px rgba(0,255,247,0.65);flex-shrink:0;}
 .hud-stats{flex:1;display:flex;align-items:center;gap:0.45rem;justify-content:center;}
@@ -113,10 +98,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
 .hud-btn-pause:hover{background:rgba(255,230,0,0.18);color:#fff;}
 .hud-btn-exit{background:rgba(255,0,128,0.08);border-color:rgba(255,0,128,0.32);color:var(--neon-pink);}
 .hud-btn-exit:hover{background:rgba(255,0,128,0.18);color:#fff;}
-
 .game-area{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
 #gameCanvas{display:block;image-rendering:pixelated;cursor:none;}
-
 .side-panel{position:absolute;right:0;top:0;bottom:0;width:194px;background:linear-gradient(180deg,rgba(0,4,12,0.97),rgba(0,2,8,0.99));border-left:1px solid rgba(0,255,247,0.07);display:flex;flex-direction:column;overflow:hidden;}
 .panel-sec{padding:0.68rem 0.78rem;border-bottom:1px solid rgba(0,255,247,0.05);flex-shrink:0;}
 .panel-title{font-family:var(--font-mono);font-size:0.6rem;color:var(--neon-cyan);text-transform:uppercase;letter-spacing:0.2em;margin-bottom:0.42rem;opacity:0.65;}
@@ -133,10 +116,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
 .rfeed-item{padding:0.4rem 0.78rem;border-bottom:1px solid rgba(0,255,247,0.03);animation:feedIn 0.3s ease;font-size:0.63rem;}
 @keyframes feedIn{from{opacity:0;transform:translateX(6px);}to{opacity:1;transform:none;}}
 .rfeed-type{font-family:var(--font-mono);font-size:0.53rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.06rem;}
-.rf-wave{color:var(--neon-cyan);}.rf-mile{color:var(--neon-yellow);}.rf-nft{color:var(--stellar-purple);}.rf-tok{color:var(--neon-orange);}.rf-chain{color:var(--neon-green);}
+.rf-wave{color:var(--neon-cyan);}.rf-mile{color:var(--neon-yellow);}.rf-nft{color:var(--stellar-purple);}.rf-tok{color:var(--neon-orange);}.rf-chain{color:var(--neon-green);}.rf-err{color:var(--neon-pink);}
 .rfeed-amt{font-family:var(--font-hud);font-size:0.72rem;color:var(--neon-green);}
 .rfeed-msg{color:var(--muted);font-size:0.62rem;line-height:1.4;margin-top:0.05rem;}
 
+/* OVERLAYS */
 .overlay{position:absolute;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(0,2,8,0.9);backdrop-filter:blur(5px);}
 .overlay.active{display:flex;}
 .ov-box{display:flex;flex-direction:column;align-items:center;gap:1.08rem;max-width:415px;width:90%;padding:1.95rem;background:rgba(4,12,30,0.98);border:1px solid rgba(0,255,247,0.16);border-radius:20px;box-shadow:0 0 65px rgba(0,255,247,0.08);}
@@ -159,12 +143,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
 .nft-sub{font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);margin-top:0.06rem;}
 .ov-btns{display:flex;gap:0.48rem;flex-wrap:wrap;justify-content:center;}
 .ov-btn{padding:0.7rem 1.48rem;border:none;border-radius:9px;cursor:pointer;font-family:var(--font-hud);font-size:0.8rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;transition:all 0.2s;}
+.ov-btn:disabled{opacity:0.45;cursor:not-allowed;transform:none !important;}
 .ov-btn-cyan{background:rgba(0,255,247,0.1);color:var(--neon-cyan);border:1px solid rgba(0,255,247,0.32);}
-.ov-btn-cyan:hover{box-shadow:0 0 26px rgba(0,255,247,0.4);transform:translateY(-2px);}
+.ov-btn-cyan:hover:not(:disabled){box-shadow:0 0 26px rgba(0,255,247,0.4);transform:translateY(-2px);}
 .ov-btn-orange{background:rgba(255,107,0,0.1);color:var(--neon-orange);border:1px solid rgba(255,107,0,0.32);}
-.ov-btn-orange:hover{box-shadow:0 0 26px rgba(255,107,0,0.4);transform:translateY(-2px);}
+.ov-btn-orange:hover:not(:disabled){box-shadow:0 0 26px rgba(255,107,0,0.4);transform:translateY(-2px);}
 .ov-btn-pink{background:rgba(255,0,128,0.1);color:var(--neon-pink);border:1px solid rgba(255,0,128,0.32);}
-.ov-btn-pink:hover{box-shadow:0 0 26px rgba(255,0,128,0.4);transform:translateY(-2px);}
+.ov-btn-pink:hover:not(:disabled){box-shadow:0 0 26px rgba(255,0,128,0.4);transform:translateY(-2px);}
 
 /* Countdown ring */
 .cd-ring{position:relative;width:76px;height:76px;flex-shrink:0;}
@@ -172,6 +157,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
 .cd-bg{fill:none;stroke:rgba(255,0,128,0.14);stroke-width:5;}
 .cd-fg{fill:none;stroke:var(--neon-pink);stroke-width:5;stroke-linecap:round;stroke-dasharray:207;stroke-dashoffset:0;transition:stroke-dashoffset 0.95s linear;}
 .cd-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-hud);font-size:1.45rem;font-weight:900;color:var(--neon-pink);}
+
+/* Tx status */
+.tx-box{width:100%;padding:0.65rem 0.9rem;border-radius:9px;font-family:var(--font-mono);font-size:0.7rem;text-align:center;display:none;line-height:1.5;}
+.tx-box.pending{background:rgba(0,255,247,0.05);border:1px solid rgba(0,255,247,0.22);color:var(--neon-cyan);}
+.tx-box.success{background:rgba(57,255,20,0.07);border:1px solid rgba(57,255,20,0.28);color:var(--neon-green);}
+.tx-box.error{background:rgba(255,0,128,0.07);border:1px solid rgba(255,0,128,0.28);color:var(--neon-pink);}
 
 .score-popup{position:absolute;pointer-events:none;font-family:var(--font-hud);font-size:0.76rem;animation:scoreFloat 0.88s ease forwards;z-index:60;}
 @keyframes scoreFloat{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-42px) scale(0.8);}}
@@ -193,10 +184,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
 .lb-wave{font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);}
 .lb-earn{font-family:var(--font-hud);font-size:0.7rem;color:var(--neon-green);}
 
-.token-notif{position:fixed;top:1rem;right:1rem;z-index:300;background:#050d20;border:1px solid rgba(57,255,20,0.44);border-radius:12px;padding:0.92rem 1.05rem;min-width:265px;max-width:310px;transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 8px 32px rgba(0,0,0,0.72);}
+.token-notif{position:fixed;top:1rem;right:1rem;z-index:300;background:#050d20;border:1px solid rgba(57,255,20,0.44);border-radius:12px;padding:0.92rem 1.05rem;min-width:265px;max-width:320px;transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 8px 32px rgba(0,0,0,0.72);}
 .token-notif.show{transform:translateX(0);}
 .tn-top{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.46rem;}
-.tn-icon{width:31px;height:31px;border-radius:7px;background:rgba(57,255,20,0.12);display:flex;align-items:center;justify-content:center;font-size:0.98rem;flex-shrink:0;}
+.tn-icon{width:32px;height:32px;border-radius:7px;background:rgba(57,255,20,0.12);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
 .tn-title{font-family:var(--font-hud);font-size:0.74rem;color:var(--neon-green);}
 .tn-sub{font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);margin-top:0.06rem;}
 .tn-amt{font-family:var(--font-hud);font-size:1.4rem;font-weight:900;color:var(--neon-green);margin:0.3rem 0;}
@@ -210,7 +201,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
 
 .toast{position:fixed;bottom:1.25rem;left:50%;transform:translateX(-50%) translateY(70px);background:rgba(4,15,40,0.98);border:1px solid rgba(0,255,247,0.2);color:var(--text);padding:0.65rem 1.25rem;border-radius:8px;font-family:var(--font-mono);font-size:0.77rem;z-index:400;transition:transform 0.3s ease;box-shadow:0 4px 24px rgba(0,0,0,0.6);max-width:460px;text-align:center;}
 .toast.show{transform:translateX(-50%) translateY(0);}
-
 .mob-ctrl{position:absolute;bottom:0.85rem;left:0;right:194px;display:none;align-items:flex-end;justify-content:space-between;padding:0 0.85rem;z-index:30;pointer-events:none;}
 @media(pointer:coarse){.mob-ctrl{display:flex;}}
 .mob-btn{pointer-events:all;width:56px;height:56px;border-radius:50%;background:rgba(0,255,247,0.07);border:2px solid rgba(0,255,247,0.2);color:var(--neon-cyan);font-size:1.18rem;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;cursor:pointer;user-select:none;}
@@ -218,19 +208,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
 .mob-fire{background:rgba(255,107,0,0.1);border-color:rgba(255,107,0,0.3);color:var(--neon-orange);}
 .mob-fire:active{background:rgba(255,107,0,0.3);}
 .mob-dir{display:flex;gap:0.44rem;}
-
 @media(max-width:768px){#login-screen{grid-template-columns:1fr;}.ls-left{display:none;}}
 </style>
 </head>
 <body>
-
 <canvas id="bg-canvas"></canvas>
 <div class="scanlines"></div>
 
-<!-- ══ LOGIN ══ -->
+<!-- LOGIN -->
 <div id="login-screen">
-
-  <!-- LEFT -->
   <div class="ls-left">
     <div class="ls-title">SORO<br/>SHOOTER</div>
     <div class="ls-sub">Play-to-Earn · Stellar Testnet</div>
@@ -252,14 +238,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
       <div class="rw-row"><span>Wave 10</span><span class="rw-val nft">Rare NFT ✨</span></div>
       <div class="rw-row"><span>Buy Life</span><span class="rw-val life">500→1500→2500 XLM</span></div>
     </div>
-    <div class="ls-net">STELLAR TESTNET — REAL XLM REWARDS</div>
+    <div class="ls-server-status" id="serverStatus">
+      <div class="ss-dot" id="ssDot"></div>
+      <span class="ss-txt" id="ssTxt">Checking server…</span>
+    </div>
   </div>
 
-  <!-- RIGHT -->
   <div class="ls-right">
     <div class="ls-card">
       <div class="ls-card-title">Connect Your Stellar Wallet</div>
-
       <div class="ls-field">
         <div class="ls-lbl">Wallet Address</div>
         <input class="ls-inp" id="walletInput"
@@ -267,27 +254,23 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
           autocomplete="off" spellcheck="false"
           oninput="onWalletInput(this.value)"/>
       </div>
-
       <div class="ls-status idle" id="walletStatus">
         <span class="dot"></span>
         <span id="walletStatusText">Paste your G... address above to continue</span>
       </div>
-
       <div class="ls-field">
         <div class="ls-lbl">Contract ID</div>
         <input class="ls-inp" id="contractInput"
           placeholder="Get from README — github.com/samenrqz/SoroShooter"
           autocomplete="off" spellcheck="false"/>
       </div>
-
       <div class="ls-howto">
         <div class="ls-howto-title">How to Play &amp; Earn</div>
         <div class="ls-howto-row"><div class="ls-step">1</div>Paste your Stellar testnet wallet address</div>
         <div class="ls-howto-row"><div class="ls-step">2</div>Get Contract ID from GitHub README</div>
         <div class="ls-howto-row"><div class="ls-step">3</div>Launch → SPACE → Shoot &amp; earn 1,000 XLM!</div>
-        <div class="ls-howto-row"><div class="ls-step">4</div>Protect the base — don't let enemies through!</div>
+        <div class="ls-howto-row"><div class="ls-step">4</div>Die? 10s to buy a life — deducted from your wallet!</div>
       </div>
-
       <button class="ls-btn ls-btn-launch" id="launchBtn" onclick="launchGame()">
         ⚡ Launch SoroShooter
       </button>
@@ -295,22 +278,21 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
   </div>
 </div>
 
-<!-- ══ GAME ══ -->
+<!-- GAME -->
 <div id="game-wrapper">
-
   <div class="hud">
     <div class="hud-brand">SOROSHOOTER</div>
     <div class="hud-stats">
-      <div class="hstat"><span class="hstat-val" id="hs-score" style="color:var(--neon-cyan)">0</span><span class="hstat-lbl">Score</span></div>
-      <div class="hstat"><span class="hstat-val" id="hs-wave"  style="color:var(--neon-orange)">1</span><span class="hstat-lbl">Wave</span></div>
+      <div class="hstat"><span class="hstat-val" id="hs-score"  style="color:var(--neon-cyan)">0</span><span class="hstat-lbl">Score</span></div>
+      <div class="hstat"><span class="hstat-val" id="hs-wave"   style="color:var(--neon-orange)">1</span><span class="hstat-lbl">Wave</span></div>
       <div class="hstat"><span class="hstat-val" id="hs-earned" style="color:var(--neon-green)">0</span><span class="hstat-lbl">XLM Earned</span></div>
-      <div class="hstat"><span class="hstat-val" id="hs-kills" style="color:var(--stellar-purple)">0</span><span class="hstat-lbl">Kills</span></div>
-      <div class="hstat"><span class="hstat-val" id="hs-lives" style="color:var(--neon-pink)">5</span><span class="hstat-lbl">Lives</span></div>
+      <div class="hstat"><span class="hstat-val" id="hs-kills"  style="color:var(--stellar-purple)">0</span><span class="hstat-lbl">Kills</span></div>
+      <div class="hstat"><span class="hstat-val" id="hs-lives"  style="color:var(--neon-pink)">5</span><span class="hstat-lbl">Lives</span></div>
     </div>
     <div class="hud-right">
       <div class="lives-display" id="livesDisplay"></div>
       <div class="hud-info hud-wallet"  id="hudWallet">—</div>
-      <div class="hud-info hud-balance" id="hudBalance" onclick="refreshBalance()" title="Refresh balance">— XLM</div>
+      <div class="hud-info hud-balance" id="hudBalance" onclick="refreshBalance()" title="Click to refresh">— XLM</div>
       <button class="hud-btn hud-btn-pause" id="pauseBtn" onclick="togglePause()">⏸ PAUSE</button>
       <button class="hud-btn hud-btn-exit"  onclick="backToLogin()">↩ EXIT</button>
       <button class="hud-btn"               onclick="showLeaderboard()">★ BOARD</button>
@@ -320,7 +302,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
   <div class="game-area" id="gameArea">
     <canvas id="gameCanvas"></canvas>
 
-    <!-- SIDE PANEL -->
     <div class="side-panel">
       <div class="panel-sec">
         <div class="panel-title">Wave Info</div>
@@ -356,7 +337,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
           <div class="ov-rew-lbl">REAL XLM SENT TO YOUR WALLET</div>
           <div class="ov-rew-amt" id="wco-amt">+1,000 XLM</div>
         </div>
-        <div class="ov-chain" id="wco-chain">⏳ Sending XLM to your wallet…</div>
+        <div class="ov-chain" id="wco-chain">⏳ Sending XLM via server…</div>
         <div class="ov-nft" id="wco-nft" style="display:none">
           <div class="nft-icon">🏆</div>
           <div><div class="nft-title">NFT BADGE MINTED</div><div class="nft-sub" id="wco-nft-name">Wave Survivor</div></div>
@@ -384,7 +365,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
       </div>
     </div>
 
-    <!-- BUY LIFE — COUNTDOWN -->
+    <!-- BUY LIFE COUNTDOWN -->
     <div class="overlay" id="buyLifeOv">
       <div class="ov-box">
         <div class="ov-title ov-pink">YOU DIED!</div>
@@ -409,24 +390,27 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
 
         <div style="width:100%;padding:0.82rem 1rem;background:rgba(0,255,247,0.05);border:1px solid rgba(0,255,247,0.16);border-radius:10px;text-align:center;">
           <div style="font-family:var(--font-mono);font-size:0.64rem;color:var(--muted);letter-spacing:0.15em;margin-bottom:0.3rem;">COST TO CONTINUE</div>
-          <div style="font-family:var(--font-hud);font-size:1.55rem;font-weight:900;color:var(--neon-cyan);" id="buyLifeCostDisplay">500 XLM</div>
-          <div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);margin-top:0.2rem;">Deducted from your Stellar wallet</div>
+          <div style="font-family:var(--font-hud);font-size:1.55rem;font-weight:900;color:var(--neon-cyan);" id="blCostDisplay">500 XLM</div>
+          <div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--neon-yellow);margin-top:0.2rem;">
+            ✅ Deducted directly from your wallet via server
+          </div>
         </div>
 
         <div style="font-family:var(--font-mono);font-size:0.63rem;color:var(--muted);text-align:center;">
           Wave: <span id="bl-wave" style="color:var(--neon-orange)">1</span>
           &nbsp;|&nbsp;
           Score: <span id="bl-score" style="color:var(--neon-cyan)">0</span>
+          &nbsp;|&nbsp;
+          Balance: <span id="bl-balance" style="color:var(--neon-green)">—</span> XLM
         </div>
 
-        <div id="buyLifeStatus" style="display:none;width:100%;padding:0.48rem 0.74rem;background:rgba(57,255,20,0.06);border:1px solid rgba(57,255,20,0.22);border-radius:8px;font-family:var(--font-mono);font-size:0.67rem;color:var(--neon-green);text-align:center;">
-          ✓ Life purchased — restarting wave!
-        </div>
+        <!-- Transaction status box -->
+        <div class="tx-box" id="txBox"></div>
 
         <div class="ov-btns">
-          <button class="ov-btn ov-btn-cyan" id="buyLifeBtn" onclick="buyLife()">⚡ BUY LIFE</button>
-          <button class="ov-btn ov-btn-orange" onclick="restartGame()">↺ RESTART</button>
-          <button class="ov-btn ov-btn-pink"   onclick="backToLogin()">↩ EXIT</button>
+          <button class="ov-btn ov-btn-cyan"   id="buyLifeBtn" onclick="buyLife()">⚡ BUY LIFE</button>
+          <button class="ov-btn ov-btn-orange"  id="blRestartBtn" onclick="restartGame()">↺ RESTART</button>
+          <button class="ov-btn ov-btn-pink"    onclick="backToLogin()">↩ EXIT</button>
         </div>
       </div>
     </div>
@@ -448,7 +432,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
 
     <div class="mob-ctrl">
       <div class="mob-dir">
-        <div class="mob-btn" ontouchstart="mk('ArrowLeft',true)" ontouchend="mk('ArrowLeft',false)">◀</div>
+        <div class="mob-btn" ontouchstart="mk('ArrowLeft',true)"  ontouchend="mk('ArrowLeft',false)">◀</div>
         <div class="mob-btn" ontouchstart="mk('ArrowRight',true)" ontouchend="mk('ArrowRight',false)">▶</div>
       </div>
       <div class="mob-btn mob-fire" ontouchstart="startOrFire()" ontouchend="mk(' ',false)">🔥</div>
@@ -468,14 +452,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
 
 <div class="token-notif" id="tokenNotif">
   <div class="tn-top">
-    <div class="tn-icon">🪙</div>
+    <div class="tn-icon" id="tn-icon">🪙</div>
     <div>
       <div class="tn-title" id="tn-title">XLM Sent!</div>
       <div class="tn-sub"   id="tn-sub">Real XLM transferred on Stellar</div>
     </div>
   </div>
   <div class="tn-amt" id="tn-amt">+1,000 XLM</div>
-  <div class="tn-row">To: <span class="tn-addr" id="tn-to">—</span></div>
+  <div class="tn-row">To/From: <span class="tn-addr" id="tn-to">—</span></div>
   <div class="tn-row">Status: <span class="tn-ok" id="tn-status">✓ Confirmed on Stellar Testnet</span></div>
   <div class="tn-row">Tx: <span class="tn-hash" id="tn-hash">—</span></div>
   <div class="tn-bar"><div class="tn-fill" id="tn-fill"></div></div>
@@ -484,17 +468,64 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);font-fam
 <div class="toast" id="toast"></div>
 
 <script>
-/* ══ TREASURY CONFIG ══ */
-const TREASURY_PUBLIC = 'GCYDZO56GUVVMAT6PR3GHKA4XNWCXMCIEJFEZWURDUC5DNWQI5FPNC6F';
-const TREASURY_SECRET = 'SAB4ZVSZZET26WNRKBX4C7CRXNYEHYNJ4YDOFXHMF42L2EY3F5PPQGQY';
+/* ══════════════════════════════════════════
+   BACKEND API URL
+   Change this when deploying to production
+   ══════════════════════════════════════════ */
+const API_URL = 'http://localhost:3001';
+
+/* ══ STELLAR CONFIG ══ */
 const TESTNET_HORIZON = 'https://horizon-testnet.stellar.org';
 const NETWORK_PHRASE  = 'Test SDF Network ; September 2015';
+
+/* ══ STATE ══ */
+let playerWallet  = '';
+let contractId    = '';
+let lifeBuyCost   = 500;
+let lifeBuyCount  = 0;
+let cdHandle      = null;
+const CYAN        = '#00fff7';
+const shortAddr   = a => a ? a.slice(0,6)+'…'+a.slice(-4) : '???';
+
+/* ══ SERVER HEALTH CHECK ══ */
+async function checkServer() {
+  const dot = document.getElementById('ssDot');
+  const txt = document.getElementById('ssTxt');
+  try {
+    const res = await fetch(`${API_URL}/health`, { signal: AbortSignal.timeout(4000) });
+    if (res.ok) {
+      dot.className = 'ss-dot online';
+      txt.className = 'ss-txt online';
+      txt.textContent = '🟢 Backend server online';
+    } else { throw new Error(); }
+  } catch {
+    dot.className = 'ss-dot offline';
+    txt.className = 'ss-txt offline';
+    txt.textContent = '🔴 Server offline — start with: node server.js';
+  }
+}
+checkServer();
+setInterval(checkServer, 15000);
+
+/* ══ API HELPERS ══ */
+async function apiPost(path, body) {
+  const res = await fetch(`${API_URL}${path}`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(body),
+  });
+  return res.json();
+}
+
+async function apiGet(path) {
+  const res = await fetch(`${API_URL}${path}`);
+  return res.json();
+}
 
 /* ══ STARFIELD ══ */
 (function(){
   const c=document.getElementById('bg-canvas');
-  const x=c.getContext('2d');
-  let W,H,st=[];
+  const x=c.getContext('2d');let W,H,st=[];
   function rs(){W=c.width=innerWidth;H=c.height=innerHeight;init();}
   function init(){st=[];for(let i=0;i<200;i++)st.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.1,sp:0.08+Math.random()*0.28,op:0.1+Math.random()*0.55});}
   function draw(){
@@ -513,8 +544,7 @@ const NETWORK_PHRASE  = 'Test SDF Network ; September 2015';
   const c=document.getElementById('ship-preview-canvas');
   const x=c.getContext('2d');let t=0;
   function draw(){
-    x.clearRect(0,0,100,100);
-    const fl=0.7+0.3*Math.sin(t*0.15);
+    x.clearRect(0,0,100,100);const fl=0.7+0.3*Math.sin(t*0.15);
     const eg=x.createRadialGradient(50,81,2,50,81,18);
     eg.addColorStop(0,'rgba(255,107,0,'+(0.8*fl)+')');eg.addColorStop(1,'transparent');
     x.fillStyle=eg;x.fillRect(30,61,40,39);
@@ -538,40 +568,11 @@ const NETWORK_PHRASE  = 'Test SDF Network ; September 2015';
   draw();
 })();
 
-/* ══ STATE ══ */
-let playerWallet  = '';
-let contractId    = '';
-let lifeBuyCost   = 500;
-let lifeBuyCount  = 0;
-let cdTimerHandle = null;
-const CYAN        = '#00fff7';
-const shortAddr   = a => a?a.slice(0,6)+'…'+a.slice(-4):'???';
-
-/* ══ DIFFICULTY ══ */
-function getDiff(w){
-  if(w<=4) return{label:'Easy',  color:'#39ff14',sm:1.0};
-  if(w<=9) return{label:'Medium',color:'#ffe600',sm:1.58};
-  return          {label:'Hard', color:'#ff0080',sm:2.45};
-}
-
-/* ══ WAVE CONFIG ══ */
-function waveCfg(w){
-  const d=getDiff(w);
-  return{
-    count: Math.min(6+w*3,44),
-    spd:   (0.65+w*0.15)*d.sm*0.58,
-    hp:    (w<=4?1:w<=9?1+~~(w/4):2+~~(w/4)),
-    shootCh: Math.min(0.0004*w*d.sm,0.012),
-    xlm: 1000,
-    diff: d,
-  };
-}
-
-/* ══ WALLET STATUS ══ */
+/* ══ WALLET ══ */
 function setWalletStatus(type,msg){
   const el=document.getElementById('walletStatus');
-  const tx=document.getElementById('walletStatusText');
-  el.className='ls-status '+type;tx.textContent=msg;
+  el.className='ls-status '+type;
+  document.getElementById('walletStatusText').textContent=msg;
 }
 
 function onWalletInput(val){
@@ -589,57 +590,63 @@ function onWalletInput(val){
 
 async function fetchBalancePreview(addr){
   try{
-    const res=await fetch(`${TESTNET_HORIZON}/accounts/${addr}`);
-    if(!res.ok){setWalletStatus('err','⚠️ Address not on testnet — fund at friendbot.stellar.org');return;}
-    const data=await res.json();
-    const xlm=data.balances?.find(b=>b.asset_type==='native');
-    if(xlm){const bal=parseFloat(xlm.balance).toFixed(2);setWalletStatus('ok','✓ '+shortAddr(addr)+'  —  '+bal+' XLM  ✅ Ready!');}
-  }catch(e){setWalletStatus('ok','✓ Address accepted — ready to play!');}
-}
-
-/* ══ STELLAR SEND XLM ══ */
-async function sendXLM(toAddress,amountXLM){
-  try{
-    const server=new StellarSdk.Horizon.Server(TESTNET_HORIZON);
-    const keypair=StellarSdk.Keypair.fromSecret(TREASURY_SECRET);
-    const account=await server.loadAccount(TREASURY_PUBLIC);
-    const tx=new StellarSdk.TransactionBuilder(account,{
-      fee:await server.fetchBaseFee(),networkPassphrase:NETWORK_PHRASE,
-    })
-    .addOperation(StellarSdk.Operation.payment({
-      destination:toAddress,asset:StellarSdk.Asset.native(),amount:amountXLM.toString(),
-    }))
-    .addMemo(StellarSdk.Memo.text('SoroShooter Reward'))
-    .setTimeout(30).build();
-    tx.sign(keypair);
-    const result=await server.submitTransaction(tx);
-    return{hash:result.hash,success:true};
-  }catch(e){console.error('XLM send error:',e);return{hash:null,success:false};}
+    const data = await apiGet('/api/balance/'+addr);
+    if(data.success){
+      setWalletStatus('ok','✓ '+shortAddr(addr)+'  —  '+data.balance.toFixed(2)+' XLM  ✅ Ready!');
+    } else {
+      setWalletStatus('err','⚠️ Address not on testnet — fund at friendbot.stellar.org');
+    }
+  }catch{
+    setWalletStatus('ok','✓ Address accepted — server offline, balance loads in game');
+  }
 }
 
 /* ══ BALANCE ══ */
 async function fetchBalance(addr){
   try{
-    const res=await fetch(`${TESTNET_HORIZON}/accounts/${addr}`);
-    if(!res.ok)return 0;
-    const data=await res.json();
-    const xlm=data.balances?.find(b=>b.asset_type==='native');
-    if(xlm){const bal=parseFloat(xlm.balance).toFixed(2);document.getElementById('hudBalance').textContent=bal+' XLM';return parseFloat(xlm.balance);}
+    const data = await apiGet('/api/balance/'+addr);
+    if(data.success){
+      const bal = data.balance.toFixed(2);
+      document.getElementById('hudBalance').textContent = bal+' XLM';
+      return data.balance;
+    }
   }catch(e){}
   return 0;
 }
 
 async function refreshBalance(){
-  if(!playerWallet)return;
+  if(!playerWallet) return;
   document.getElementById('hudBalance').textContent='⟳ XLM';
-  const bal=await fetchBalance(playerWallet);
+  const bal = await fetchBalance(playerWallet);
   showToast('Balance: '+bal.toFixed(2)+' XLM');
+}
+
+/* ══ TX BOX HELPERS ══ */
+function setTxBox(type,msg){
+  const b=document.getElementById('txBox');
+  b.className='tx-box '+type;b.textContent=msg;b.style.display='block';
+}
+function hideTxBox(){document.getElementById('txBox').style.display='none';}
+
+/* ══ DIFFICULTY ══ */
+function getDiff(w){
+  if(w<=4) return{label:'Easy',  color:'#39ff14',sm:1.0};
+  if(w<=9) return{label:'Medium',color:'#ffe600',sm:1.58};
+  return          {label:'Hard', color:'#ff0080',sm:2.45};
+}
+function waveCfg(w){
+  const d=getDiff(w);
+  return{
+    count:Math.min(6+w*3,44),spd:(0.65+w*0.15)*d.sm*0.58,
+    hp:(w<=4?1:w<=9?1+~~(w/4):2+~~(w/4)),
+    shootCh:Math.min(0.0004*w*d.sm,0.012),xlm:1000,diff:d,
+  };
 }
 
 /* ══ LAUNCH ══ */
 function launchGame(){
-  const cid=document.getElementById('contractInput').value.trim();
-  const addr=document.getElementById('walletInput').value.trim();
+  const cid  = document.getElementById('contractInput').value.trim();
+  const addr = document.getElementById('walletInput').value.trim();
   if(!addr||!addr.startsWith('G')||addr.length<56){
     showToast('⚠️ Please enter your Stellar wallet address.');
     setWalletStatus('err','❌ Enter a valid G... address to continue');return;
@@ -654,11 +661,10 @@ function launchGame(){
   setTimeout(()=>{
     ls.style.display='none';
     const gw=document.getElementById('game-wrapper');
-    gw.style.display='flex';
-    setTimeout(()=>gw.classList.add('visible'),50);
+    gw.style.display='flex';setTimeout(()=>gw.classList.add('visible'),50);
     initGame();fetchBalance(addr);
-    addFeed('tok','+2 Lives','Welcome '+shortAddr(addr)+'! You start with 5 lives (2 bonus ⭐)');
-    showTokenNotif('Welcome Bonus!','2 extra lives granted — 5 total!','+2 Lives ⭐',addr,null);
+    addFeed('tok','+2 Lives','Welcome '+shortAddr(addr)+'! 5 lives (2 bonus ⭐)');
+    showTokenNotif('Welcome Bonus!','2 extra lives granted — 5 total!','+2 Lives ⭐',addr,null,'🎮');
     showToast('🎉 Welcome! You start with 5 lives!');
   },400);
 }
@@ -667,8 +673,7 @@ function launchGame(){
 function backToLogin(){
   G.running=false;cancelAnimationFrame(G.raf);clearCdTimer();
   ['waveClearOv','gameOverOv','pauseOv','buyLifeOv'].forEach(id=>
-    document.getElementById(id).classList.remove('active')
-  );
+    document.getElementById(id).classList.remove('active'));
   const gw=document.getElementById('game-wrapper');gw.classList.remove('visible');
   setTimeout(()=>{
     gw.style.display='none';
@@ -689,8 +694,7 @@ function resizeCanvas(){
   const area=document.getElementById('gameArea');
   const aw=area.clientWidth-194,ah=area.clientHeight;
   const sc=Math.min(aw/GAME_W,ah/GAME_H);
-  canvas.style.width=~~(GAME_W*sc)+'px';
-  canvas.style.height=~~(GAME_H*sc)+'px';
+  canvas.style.width=~~(GAME_W*sc)+'px';canvas.style.height=~~(GAME_H*sc)+'px';
   canvas.width=GAME_W;canvas.height=GAME_H;
 }
 
@@ -698,74 +702,35 @@ function resizeCanvas(){
 const BASE={y:GAME_H-14,h:14,hitTimer:0,explParts:[]};
 
 function drawBase(){
-  const hit=BASE.hitTimer>0;
-  const blink=hit&&Math.floor(BASE.hitTimer/75)%2===0;
-  ctx.fillStyle=blink?'rgba(255,0,128,0.22)':'rgba(0,255,247,0.05)';
-  ctx.fillRect(0,BASE.y,GAME_W,BASE.h);
-  ctx.strokeStyle=blink?'#ff0080':'rgba(0,255,247,0.42)';
-  ctx.lineWidth=2;
+  const hit=BASE.hitTimer>0,blink=hit&&Math.floor(BASE.hitTimer/75)%2===0;
+  ctx.fillStyle=blink?'rgba(255,0,128,0.22)':'rgba(0,255,247,0.05)';ctx.fillRect(0,BASE.y,GAME_W,BASE.h);
+  ctx.strokeStyle=blink?'#ff0080':'rgba(0,255,247,0.42)';ctx.lineWidth=2;
   ctx.shadowColor=blink?'#ff0080':'rgba(0,255,247,0.55)';ctx.shadowBlur=blink?14:6;
-  ctx.beginPath();ctx.moveTo(0,BASE.y);ctx.lineTo(GAME_W,BASE.y);ctx.stroke();
-  ctx.shadowBlur=0;
-  // Segment blocks
-  for(let i=0;i<5;i++){
-    const bx=38+i*(GAME_W-76)/4;
-    ctx.fillStyle=blink?'rgba(255,0,128,0.55)':'rgba(0,255,247,0.28)';
-    ctx.fillRect(bx-13,BASE.y+2,26,9);
-  }
-  // Label
+  ctx.beginPath();ctx.moveTo(0,BASE.y);ctx.lineTo(GAME_W,BASE.y);ctx.stroke();ctx.shadowBlur=0;
+  for(let i=0;i<5;i++){const bx=38+i*(GAME_W-76)/4;ctx.fillStyle=blink?'rgba(255,0,128,0.55)':'rgba(0,255,247,0.28)';ctx.fillRect(bx-13,BASE.y+2,26,9);}
   ctx.fillStyle=blink?'rgba(255,0,128,0.75)':'rgba(0,255,247,0.32)';
-  ctx.font='bold 8px Share Tech Mono,monospace';
-  ctx.textAlign='center';
-  ctx.fillText('◄─────────── BASE ───────────►',GAME_W/2,BASE.y+10);
-  ctx.textAlign='left';
+  ctx.font='bold 8px Share Tech Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('◄─────────── BASE ───────────►',GAME_W/2,BASE.y+10);ctx.textAlign='left';
 }
 
 function baseHit(){
-  BASE.hitTimer=850;
-  G.lives--;updateLives();
+  BASE.hitTimer=850;G.lives--;updateLives();
   spawnParts(GAME_W/2,BASE.y,'#ff0080',22);shakeAmt=10;
-  if(G.lives<=0){
-    showBuyLifeScreen();
-  } else {
-    showToast('💥 Base hit! '+G.lives+' lives remaining!');
-    addFeed('tok','','Base breached — '+G.lives+' lives left!');
-  }
+  if(G.lives<=0){showBuyLifeScreen();}
+  else{showToast('💥 Base hit! '+G.lives+' lives remaining!');addFeed('tok','','Base breached — '+G.lives+' lives left!');}
 }
 
-function triggerBaseExplosion(){
-  for(let i=0;i<55;i++){
-    const a=Math.random()*Math.PI*2,sp=2+Math.random()*6;
-    BASE.explParts.push({
-      x:Math.random()*GAME_W,y:BASE.y,
-      vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-3,
-      life:500+Math.random()*600,
-      color:['#ff0080','#ff6b00','#ffe600','#00fff7'][~~(Math.random()*4)],r:2+Math.random()*4
-    });
-  }
-  setTimeout(()=>{
-    if(!G.running)return;
-    G.running=false;cancelAnimationFrame(G.raf);
-    G.leaderboard.push({addr:playerWallet,score:G.score,wave:G.wave,earned:G.totalEarned});
-    G.leaderboard.sort((a,b)=>b.score-a.score);
-    buildGameOverStats();
-    document.getElementById('gameOverOv').classList.add('active');
-    setTimeout(()=>refreshBalance(),2000);
-  },1300);
-}
-
+/* ── GAME STATE ── */
 const G={
   running:false,paused:false,ready:false,
   score:0,wave:1,kills:0,totalEarned:0,
   lives:5,maxLives:5,
   ship:{x:300,y:GAME_H-50,w:34,h:42,spd:5,inv:0},
   bullets:[],enemies:[],particles:[],
-  keys:{},shootCD:0,
-  waveActive:false,waveKilled:0,
+  keys:{},shootCD:0,waveActive:false,waveKilled:0,
   milestones:{1000:false,5000:false,15000:false},
   nftWaves:{5:false,10:false},
-  leaderboard:[],
-  raf:null,lastT:0,readyBlink:0,
+  leaderboard:[],raf:null,lastT:0,readyBlink:0,
 };
 
 function initGame(){
@@ -773,10 +738,9 @@ function initGame(){
   BASE.hitTimer=0;BASE.explParts=[];
   Object.assign(G,{
     running:true,paused:false,ready:false,
-    score:0,wave:1,kills:0,totalEarned:0,
-    lives:5,maxLives:5,
-    bullets:[],enemies:[],particles:[],
-    keys:{},shootCD:0,waveActive:false,waveKilled:0,
+    score:0,wave:1,kills:0,totalEarned:0,lives:5,maxLives:5,
+    bullets:[],enemies:[],particles:[],keys:{},shootCD:0,
+    waveActive:false,waveKilled:0,
     milestones:{1000:false,5000:false,15000:false},
     nftWaves:{5:false,10:false},readyBlink:0,
   });
@@ -790,18 +754,15 @@ function initGame(){
 function spawnWave(w){
   const cfg=waveCfg(w);
   G.waveActive=true;G.waveKilled=0;G.enemies=[];
-  const cols=Math.ceil(Math.sqrt(cfg.count));
-  const rows=Math.ceil(cfg.count/cols);
+  const cols=Math.ceil(Math.sqrt(cfg.count)),rows=Math.ceil(cfg.count/cols);
   let n=0;
   for(let r=0;r<rows&&n<cfg.count;r++){
     for(let c=0;c<cols&&n<cfg.count;c++){
       G.enemies.push({
         x:60+c*(GAME_W-120)/Math.max(cols-1,1),y:22+r*44,
         vx:(Math.random()-.5)*cfg.spd*.5,vy:cfg.spd*.38,
-        hp:cfg.hp,maxHp:cfg.hp,
-        type:1+(n%4),w:28,h:20,
-        sTimer:Math.random()*200,sCh:cfg.shootCh,
-        angle:0,alive:true,
+        hp:cfg.hp,maxHp:cfg.hp,type:1+(n%4),w:28,h:20,
+        sTimer:Math.random()*200,sCh:cfg.shootCh,angle:0,alive:true,
       });n++;
     }
   }
@@ -814,45 +775,34 @@ function spawnWave(w){
 }
 
 function loop(ts){
-  if(!G.running)return;
-  G.raf=requestAnimationFrame(loop);
-  if(G.paused)return;
+  if(!G.running)return;G.raf=requestAnimationFrame(loop);if(G.paused)return;
   const dt=Math.min(ts-G.lastT,50);G.lastT=ts;
   if(!G.ready){drawReadyScreen(dt);return;}
   update(dt);render();
 }
 
 function drawReadyScreen(dt){
-  G.readyBlink+=dt;
-  const cfg=waveCfg(G.wave);
-  ctx.save();
-  ctx.fillStyle='rgba(0,2,8,0.9)';ctx.fillRect(0,0,GAME_W,GAME_H);
-  G.enemies.forEach(e=>{if(e.alive)drawEnemy(e);});
-  drawShip();drawBase();
-
+  G.readyBlink+=dt;const cfg=waveCfg(G.wave);
+  ctx.save();ctx.fillStyle='rgba(0,2,8,0.9)';ctx.fillRect(0,0,GAME_W,GAME_H);
+  G.enemies.forEach(e=>{if(e.alive)drawEnemy(e);});drawShip();drawBase();
   ctx.font='bold 34px Orbitron,monospace';ctx.textAlign='center';
   ctx.fillStyle='#00fff7';ctx.shadowColor='#00fff7';ctx.shadowBlur=18;
   ctx.fillText('WAVE '+G.wave,GAME_W/2,GAME_H/2-75);
-
   ctx.font='bold 14px Orbitron,monospace';
   ctx.fillStyle=cfg.diff.color;ctx.shadowColor=cfg.diff.color;ctx.shadowBlur=10;
   ctx.fillText('[ '+cfg.diff.label.toUpperCase()+' ]',GAME_W/2,GAME_H/2-48);
-
   ctx.font='bold 12px Share Tech Mono,monospace';
   ctx.fillStyle='#39ff14';ctx.shadowColor='#39ff14';ctx.shadowBlur=7;
   ctx.fillText('Clear all enemies → +1,000 XLM',GAME_W/2,GAME_H/2-24);
-  ctx.fillStyle='rgba(255,0,128,0.7)';ctx.shadowColor='#ff0080';ctx.shadowBlur=5;
+  ctx.fillStyle='rgba(255,0,128,0.8)';ctx.shadowColor='#ff0080';ctx.shadowBlur=5;
   ctx.fillText('⚠ Protect the BASE below!',GAME_W/2,GAME_H/2-7);
-
   if(Math.floor(G.readyBlink/500)%2===0){
     ctx.font='bold 17px Orbitron,monospace';
     ctx.fillStyle='#ffe600';ctx.shadowColor='#ffe600';ctx.shadowBlur=13;
     ctx.fillText('PRESS SPACE BAR TO START',GAME_W/2,GAME_H/2+22);
   }
-
   ctx.shadowBlur=0;ctx.font='12px Share Tech Mono,monospace';
-  ctx.fillStyle='#4a7a9b';
-  ctx.fillText('← → to move   SPACE to fire',GAME_W/2,GAME_H/2+48);
+  ctx.fillStyle='#4a7a9b';ctx.fillText('← → to move   SPACE to fire',GAME_W/2,GAME_H/2+48);
   ctx.textAlign='left';ctx.restore();
 }
 
@@ -865,29 +815,18 @@ function update(dt){
   const s=G.ship,sp=s.spd*(dt/16);
   if(G.keys['ArrowLeft']||G.keys['a'])  s.x=Math.max(s.w/2,s.x-sp);
   if(G.keys['ArrowRight']||G.keys['d']) s.x=Math.min(GAME_W-s.w/2,s.x+sp);
-  if(s.inv>0)s.inv-=dt;
-  if(G.shootCD>0)G.shootCD-=dt;
+  if(s.inv>0)s.inv-=dt;if(G.shootCD>0)G.shootCD-=dt;
   if((G.keys[' ']||G.keys['ArrowUp'])&&G.shootCD<=0){fire();G.shootCD=145;}
-
   if(BASE.hitTimer>0)BASE.hitTimer-=dt;
-
   G.bullets=G.bullets.filter(b=>{
     b.y+=b.vy*(dt/16);b.x+=b.vx*(dt/16);
     return b.y>-10&&b.y<GAME_H+10&&b.x>0&&b.x<GAME_W;
   });
-
   G.enemies.forEach(e=>{
     if(!e.alive)return;
     e.x+=e.vx*(dt/16);e.y+=e.vy*(dt/16);e.angle+=0.02;
     if(e.x<18||e.x>GAME_W-18)e.vx*=-1;
-
-    // Enemy reaches base
-    if(e.y>=BASE.y){
-      e.alive=false;G.waveKilled++;
-      spawnParts(e.x,BASE.y,'#ff0080',16);
-      baseHit();return;
-    }
-
+    if(e.y>=BASE.y){e.alive=false;G.waveKilled++;spawnParts(e.x,BASE.y,'#ff0080',16);baseHit();return;}
     e.sTimer-=dt;
     if(e.sTimer<=0){
       e.sTimer=600+Math.random()*1000;
@@ -895,25 +834,20 @@ function update(dt){
         G.bullets.push({x:e.x,y:e.y+10,vx:(Math.random()-.5)*1.5,vy:3.5,enemy:true,color:'#ff0080',r:3});
     }
   });
-
   G.bullets.forEach(b=>{
     if(b.enemy)return;
     G.enemies.forEach(e=>{
       if(!e.alive)return;
       if(Math.abs(b.x-e.x)<e.w/2+4&&Math.abs(b.y-e.y)<e.h/2+4){
-        b.y=-999;e.hp--;
-        spawnParts(e.x,e.y,eColor(e.type),5);
+        b.y=-999;e.hp--;spawnParts(e.x,e.y,eColor(e.type),5);
         if(e.hp<=0){
           e.alive=false;G.waveKilled++;G.kills++;
           const pts=10*G.wave;G.score+=pts;
-          spawnParts(e.x,e.y,eColor(e.type),12);
-          scorePopup(e.x,e.y,'+'+pts);
-          checkMilestones();
+          spawnParts(e.x,e.y,eColor(e.type),12);scorePopup(e.x,e.y,'+'+pts);checkMilestones();
         }
       }
     });
   });
-
   if(s.inv<=0){
     G.bullets.forEach(b=>{
       if(!b.enemy)return;
@@ -922,25 +856,13 @@ function update(dt){
     G.enemies.forEach(e=>{
       if(!e.alive)return;
       if(Math.abs(e.x-s.x)<(e.w+s.w)/2-6&&Math.abs(e.y-s.y)<(e.h+s.h)/2-6){
-        e.alive=false;e.hp=0;G.waveKilled++;G.kills++;
-        spawnParts(e.x,e.y,eColor(e.type),10);hitShip();
+        e.alive=false;e.hp=0;G.waveKilled++;G.kills++;spawnParts(e.x,e.y,eColor(e.type),10);hitShip();
       }
     });
   }
-
-  G.particles=G.particles.filter(p=>{
-    p.x+=p.vx*(dt/16);p.y+=p.vy*(dt/16);p.life-=dt;p.vy+=0.08;return p.life>0;
-  });
-
-  BASE.explParts=BASE.explParts.filter(p=>{
-    p.x+=p.vx*(dt/16);p.y+=p.vy*(dt/16);p.life-=dt;p.vy+=0.12;return p.life>0;
-  });
-
-  // Wave cleared
-  if(G.waveActive&&G.enemies.length>0&&G.enemies.every(e=>!e.alive)){
-    G.waveActive=false;setTimeout(()=>waveClear(),300);
-  }
-
+  G.particles=G.particles.filter(p=>{p.x+=p.vx*(dt/16);p.y+=p.vy*(dt/16);p.life-=dt;p.vy+=0.08;return p.life>0;});
+  BASE.explParts=BASE.explParts.filter(p=>{p.x+=p.vx*(dt/16);p.y+=p.vy*(dt/16);p.life-=dt;p.vy+=0.12;return p.life>0;});
+  if(G.waveActive&&G.enemies.length>0&&G.enemies.every(e=>!e.alive)){G.waveActive=false;setTimeout(()=>waveClear(),300);}
   document.getElementById('hs-score').textContent=G.score.toLocaleString();
   document.getElementById('hs-kills').textContent=G.kills;
   document.getElementById('hs-earned').textContent=G.totalEarned.toLocaleString();
@@ -960,8 +882,7 @@ function fire(){
 let shakeAmt=0;
 
 function hitShip(){
-  G.lives--;spawnParts(G.ship.x,G.ship.y,'#ff0080',18);
-  shakeAmt=8;updateLives();
+  G.lives--;spawnParts(G.ship.x,G.ship.y,'#ff0080',18);shakeAmt=8;updateLives();
   if(G.lives<=0){showBuyLifeScreen();}
   else{
     G.ship.inv=2500;G.ship.x=GAME_W/2;G.ship.y=GAME_H-50;
@@ -970,24 +891,29 @@ function hitShip(){
   }
 }
 
-/* ══ BUY LIFE + COUNTDOWN ══ */
+/* ══ BUY LIFE SCREEN ══ */
 function showBuyLifeScreen(){
-  G.paused=true;
-  G.ready=true;
+  G.paused=true;G.ready=true;hideTxBox();
   document.getElementById('bl-wave').textContent=G.wave;
   document.getElementById('bl-score').textContent=G.score.toLocaleString();
-  document.getElementById('buyLifeCostDisplay').textContent=lifeBuyCost.toLocaleString()+' XLM';
-  document.getElementById('buyLifeStatus').style.display='none';
+  document.getElementById('bl-balance').textContent='…';
+  document.getElementById('blCostDisplay').textContent=lifeBuyCost.toLocaleString()+' XLM';
   document.getElementById('buyLifeBtn').disabled=false;
   document.getElementById('buyLifeBtn').textContent='⚡ BUY LIFE — '+lifeBuyCost.toLocaleString()+' XLM';
+  document.getElementById('blRestartBtn').disabled=false;
   document.getElementById('buyLifeOv').classList.add('active');
+  // Show current balance
+  fetchBalance(playerWallet).then(b=>{
+    document.getElementById('bl-balance').textContent=b.toFixed(2);
+  });
   startCdTimer(10);
 }
 
+/* ══ COUNTDOWN ══ */
 function startCdTimer(secs){
   clearCdTimer();
   let rem=secs;
-  const circ=2*Math.PI*33; // circumference for r=33
+  const circ=2*Math.PI*33;
   const circle=document.getElementById('cdCircle');
   const numEl=document.getElementById('cdNum');
   const secsEl=document.getElementById('cdSecs');
@@ -1001,8 +927,12 @@ function startCdTimer(secs){
       clearCdTimer();
       document.getElementById('buyLifeOv').classList.remove('active');
       G.paused=false;
-      spawnParts(G.ship.x,G.ship.y,'#ff0080',30);
-      shakeAmt=15;
+      // Explosion animation then game over
+      for(let i=0;i<40;i++){
+        const a=Math.random()*Math.PI*2,sp=2+Math.random()*5;
+        BASE.explParts.push({x:Math.random()*GAME_W,y:BASE.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-3,life:500+Math.random()*500,color:['#ff0080','#ff6b00','#ffe600'][~~(Math.random()*3)],r:2+Math.random()*4});
+      }
+      spawnParts(G.ship.x,G.ship.y,'#ff0080',35);shakeAmt=18;
       setTimeout(()=>{
         G.running=false;cancelAnimationFrame(G.raf);
         G.leaderboard.push({addr:playerWallet,score:G.score,wave:G.wave,earned:G.totalEarned});
@@ -1010,166 +940,176 @@ function startCdTimer(secs){
         buildGameOverStats();
         document.getElementById('gameOverOv').classList.add('active');
         setTimeout(()=>refreshBalance(),2000);
-      },800);
+      },900);
       return;
     }
-    rem--;
-    cdTimerHandle=setTimeout(tick,1000);
+    rem--;cdHandle=setTimeout(tick,1000);
   }
   tick();
 }
 
-function clearCdTimer(){
-  if(cdTimerHandle){clearTimeout(cdTimerHandle);cdTimerHandle=null;}
-}
+function clearCdTimer(){if(cdHandle){clearTimeout(cdHandle);cdHandle=null;}}
 
-/* ══ BUY LIFE TRANSACTION ══ */
+/* ══════════════════════════════════════════════════
+   BUY LIFE — REAL DEDUCTION VIA BACKEND SERVER
+
+   Flow:
+   1. Server builds unsigned tx (player → treasury)
+   2. Player signs with their secret key (testnet demo)
+      OR Freighter signs (if available on HTTPS)
+   3. Signed tx submitted back to server
+   4. Server verifies + submits to Stellar
+   5. Server confirms → life granted
+   ══════════════════════════════════════════════════ */
 async function buyLife(){
-  const btn    = document.getElementById('buyLifeBtn');
-  const status = document.getElementById('buyLifeStatus');
-  clearCdTimer();
-  btn.disabled    = true;
-  btn.textContent = '⏳ Preparing transaction…';
-  status.style.display = 'none';
-
+  const btn  = document.getElementById('buyLifeBtn');
   const cost = lifeBuyCost;
+  clearCdTimer();
+  btn.disabled=true;
+  btn.textContent='⏳ Building transaction…';
+  document.getElementById('blRestartBtn').disabled=true;
+  setTxBox('pending','⏳ Contacting server to build transaction…');
 
-  try{
-    const server = new StellarSdk.Horizon.Server(TESTNET_HORIZON);
+  try {
+    // ── STEP 1: Ask server to build the unsigned transaction ──
+    const buildRes = await apiPost('/api/life/build-tx', {
+      playerAddress: playerWallet,
+      lifeBuyCount:  lifeBuyCount,
+    });
+
+    if(!buildRes.success){
+      throw new Error(buildRes.error || 'Server could not build transaction');
+    }
+
+    setTxBox('pending','⏳ Signing transaction…');
+    btn.textContent='⏳ Signing…';
+
+    // ── STEP 2: Sign the transaction ──
+    let signedXDR = null;
     const freighterApi = window.freighterApi || window.freighter;
 
     if(freighterApi){
-      // REAL deduction — player signs with Freighter
-      btn.textContent = '⏳ Approve in Freighter popup…';
-      const playerAccount = await server.loadAccount(playerWallet);
-      const tx = new StellarSdk.TransactionBuilder(playerAccount,{
-        fee: await server.fetchBaseFee(),
-        networkPassphrase: NETWORK_PHRASE,
-      })
-      .addOperation(StellarSdk.Operation.payment({
-        destination: TREASURY_PUBLIC,
-        asset:       StellarSdk.Asset.native(),
-        amount:      cost.toString(),
-      }))
-      .addMemo(StellarSdk.Memo.text('SoroShooter Buy Life'))
-      .setTimeout(30).build();
-
-      const signResult = await freighterApi.signTransaction(tx.toXDR(),{
-        networkPassphrase: NETWORK_PHRASE,
-      });
-      const signedXDR = signResult.signedTxXdr || signResult;
-      const signedTx  = StellarSdk.TransactionBuilder.fromXDR(signedXDR, NETWORK_PHRASE);
-      const result    = await server.submitTransaction(signedTx);
-
-      lifeBuyCount++;lifeBuyCost=500+(lifeBuyCount*1000);
-      completeLifePurchase(cost, result.hash, true);
-
+      // Try Freighter signing (works on HTTPS)
+      btn.textContent='⏳ Approve in Freighter…';
+      setTxBox('pending','⏳ Please approve the popup in Freighter wallet…');
+      try{
+        const signResult = await freighterApi.signTransaction(buildRes.unsignedXDR,{
+          networkPassphrase: NETWORK_PHRASE,
+        });
+        signedXDR = signResult.signedTxXdr || signResult;
+      }catch(signErr){
+        throw new Error('Freighter rejected: '+(signErr.message||'User cancelled'));
+      }
     } else {
-      // Demo mode — treasury sends small confirmation tx
-      btn.textContent = '⏳ Processing demo payment…';
-      const keypair = StellarSdk.Keypair.fromSecret(TREASURY_SECRET);
-      const account = await server.loadAccount(TREASURY_PUBLIC);
-      const tx = new StellarSdk.TransactionBuilder(account,{
-        fee: await server.fetchBaseFee(),
-        networkPassphrase: NETWORK_PHRASE,
-      })
-      .addOperation(StellarSdk.Operation.payment({
-        destination: playerWallet,
-        asset:       StellarSdk.Asset.native(),
-        amount:      '0.01',
-      }))
-      .addMemo(StellarSdk.Memo.text('Life:'+cost+'XLM'))
-      .setTimeout(30).build();
-      tx.sign(keypair);
-      const result = await server.submitTransaction(tx);
+      /* ── TESTNET DEMO: server signs on behalf of player ──
+         In production, NEVER expose secret key.
+         Here the server signs using the TREASURY as proxy
+         to demonstrate the full flow works. */
+      setTxBox('pending','⏳ Demo mode: server signing transaction…');
+      btn.textContent='⏳ Server signing…';
 
-      lifeBuyCount++;lifeBuyCost=500+(lifeBuyCount*1000);
-      completeLifePurchase(cost, result.hash, false);
+      // For testnet demo we'll have the server handle the full
+      // deduction using the treasury keypair as a stand-in.
+      // The server will send cost XLM FROM treasury, logging it as
+      // a deduction simulation. Real production would require
+      // the player to sign with their own key.
+      const demoRes = await apiPost('/api/life/demo-deduct', {
+        playerAddress: playerWallet,
+        lifeBuyCount:  lifeBuyCount,
+        cost:          cost,
+      });
+
+      if(demoRes.success){
+        lifeBuyCount++;lifeBuyCost=500+(lifeBuyCount*1000);
+        await grantLife(cost, demoRes.hash, false);
+        return;
+      } else {
+        throw new Error(demoRes.error||'Demo deduction failed');
+      }
     }
 
-  }catch(e){
-    console.error('Buy life error:',e);
+    // ── STEP 3: Submit signed tx to server for verification ──
+    setTxBox('pending','⏳ Submitting to Stellar Testnet via server…');
+    btn.textContent='⏳ Submitting…';
+
+    const submitRes = await apiPost('/api/life/submit-tx', {
+      signedXDR:     signedXDR,
+      playerAddress: playerWallet,
+      lifeBuyCount:  lifeBuyCount,
+    });
+
+    if(!submitRes.success){
+      throw new Error(submitRes.error||'Transaction submission failed');
+    }
+
+    // ── SUCCESS: real deduction confirmed ──
     lifeBuyCount++;lifeBuyCost=500+(lifeBuyCount*1000);
-    completeLifePurchase(cost, null, false);
+    setTxBox('success','✅ '+cost.toLocaleString()+' XLM deducted from your wallet!');
+    await grantLife(cost, submitRes.hash, true);
+
+  }catch(e){
+    console.error('buyLife error:', e);
+    const msg = e.message||'Unknown error';
+    let display = '❌ Transaction failed — '+msg.slice(0,80);
+    if(msg.includes('insufficient')) display='❌ Insufficient balance! You need '+cost.toLocaleString()+' XLM.';
+    if(msg.includes('cancel')||msg.includes('reject')) display='❌ Transaction cancelled in Freighter.';
+    if(msg.includes('offline')||msg.includes('fetch')) display='❌ Server offline. Start with: node server.js';
+    setTxBox('error', display);
+    addFeed('err','','❌ '+display);
+    btn.disabled=false;btn.textContent='⚡ RETRY — '+lifeBuyCost.toLocaleString()+' XLM';
+    document.getElementById('blRestartBtn').disabled=false;
+    startCdTimer(10);
   }
 }
 
-function completeLifePurchase(cost, hash, realDeduction){
-  const status = document.getElementById('buyLifeStatus');
-  G.lives = 1;
-  G.ship  = {x:GAME_W/2, y:GAME_H-50, w:34, h:42, spd:5, inv:1800};
+async function grantLife(cost, hash, realDeduction){
+  G.lives=1;
+  G.ship={x:GAME_W/2,y:GAME_H-50,w:34,h:42,spd:5,inv:1800};
   updateLives();
-  status.style.display = 'block';
 
-  if(realDeduction && hash){
-    status.style.color   = 'var(--neon-green)';
-    status.textContent   = '✓ '+cost.toLocaleString()+' XLM deducted from your wallet! Tx: '+hash.slice(0,14)+'…';
-  } else if(hash){
-    status.style.color   = 'var(--neon-cyan)';
-    status.textContent   = '✓ Life granted (demo mode) Tx: '+hash.slice(0,14)+'…';
-  } else {
-    status.style.color   = 'var(--neon-cyan)';
-    status.textContent   = '✓ Life granted — restarting wave!';
-  }
+  const icon = realDeduction ? '💸' : '🎮';
+  const title = realDeduction ? cost.toLocaleString()+' XLM Deducted!' : 'Life Granted (Demo)';
+  const sub   = realDeduction ? '✅ Real deduction from your wallet' : 'Start server for real deductions';
 
-  document.getElementById('buyLifeBtn').textContent = '✓ Life Granted!';
-
-  addFeed('chain', '+1 Life',
+  addFeed('chain','+1 Life',
     realDeduction
-      ? cost.toLocaleString()+' XLM deducted from wallet'+(hash?' Tx: '+hash.slice(0,12)+'…':'')
-      : 'Life granted in demo mode — open on GitHub Pages for real deduction'
+      ? '✅ '+cost.toLocaleString()+' XLM deducted! Tx: '+(hash?hash.slice(0,14)+'…':'')
+      : '🎮 Demo life granted. Tx: '+(hash?hash.slice(0,14)+'…':'')
   );
+  showTokenNotif(title, sub, '+1 Life ⭐', playerWallet, hash, icon);
 
-  showTokenNotif(
-    realDeduction ? cost.toLocaleString()+' XLM Deducted 💸' : 'Life Purchased! 🟢',
-    realDeduction ? 'Real XLM deducted from your wallet!' : 'Connect Freighter for real deductions',
-    '+1 Life ⭐',
-    playerWallet,
-    hash
-  );
+  await new Promise(r=>setTimeout(r,2200));
 
-  setTimeout(()=>{
-    document.getElementById('buyLifeOv').classList.remove('active');
-    G.paused = false;
-    G.lastT  = performance.now();
-    restartCurrentWave();
-    showToast(
-      realDeduction
-        ? '💸 '+cost.toLocaleString()+' XLM deducted — Wave '+G.wave+' restarted!'
-        : '💫 Life granted! Wave '+G.wave+' restarted!'
-    );
-    refreshBalance();
-  }, 2000);
-}
+  document.getElementById('buyLifeOv').classList.remove('active');
+  hideTxBox();
+  G.paused=false;G.lastT=performance.now();
 
-function restartCurrentWave(){
+  // Restart current wave
   G.bullets=[];G.particles=[];
-  spawnWave(G.wave);G.ready=false;G.readyBlink=0;
+  G.ship={x:GAME_W/2,y:GAME_H-50,w:34,h:42,spd:5,inv:1800};
   BASE.hitTimer=0;
+  spawnWave(G.wave);G.ready=false;G.readyBlink=0;
+
+  showToast(realDeduction
+    ? '💸 '+cost.toLocaleString()+' XLM deducted — Wave '+G.wave+' restarted!'
+    : '💫 Life granted! Wave '+G.wave+' restarted!'
+  );
+  refreshBalance();
 }
 
 function spawnParts(x,y,col,n){
-  for(let i=0;i<n;i++){
-    const a=Math.random()*Math.PI*2,sp=1+Math.random()*3;
-    G.particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:300+Math.random()*400,color:col,r:1+Math.random()*2});
-  }
+  for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,sp=1+Math.random()*3;G.particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:300+Math.random()*400,color:col,r:1+Math.random()*2});}
 }
 
 function updateLives(){
   const d=document.getElementById('livesDisplay');d.innerHTML='';
-  for(let i=0;i<G.maxLives;i++){
-    const s=document.createElement('span');
-    s.className='life-icon'+(i>=G.lives?' lost':'');
-    s.textContent=i>=3?'⭐':'🚀';d.appendChild(s);
-  }
-  const lc=document.getElementById('hs-lives');
-  if(lc)lc.textContent=G.lives;
+  for(let i=0;i<G.maxLives;i++){const s=document.createElement('span');s.className='life-icon'+(i>=G.lives?' lost':'');s.textContent=i>=3?'⭐':'🚀';d.appendChild(s);}
+  const lc=document.getElementById('hs-lives');if(lc)lc.textContent=G.lives;
 }
 
 /* ══ RENDER ══ */
 function render(){
-  const sx=shakeAmt?(Math.random()-.5)*shakeAmt:0;
-  const sy=shakeAmt?(Math.random()-.5)*shakeAmt:0;
+  const sx=shakeAmt?(Math.random()-.5)*shakeAmt:0,sy=shakeAmt?(Math.random()-.5)*shakeAmt:0;
   if(shakeAmt>0)shakeAmt*=0.75;
   ctx.save();ctx.translate(sx,sy);
   ctx.fillStyle='rgba(0,2,8,0.14)';ctx.fillRect(-10,-10,GAME_W+20,GAME_H+20);
@@ -1180,14 +1120,8 @@ function render(){
   G.particles.forEach(p=>{ctx.globalAlpha=p.life/600;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();});
   ctx.globalAlpha=1;
   G.enemies.forEach(e=>{if(e.alive)drawEnemy(e);});
-  G.bullets.forEach(b=>{
-    ctx.shadowColor=b.color;ctx.shadowBlur=b.enemy?8:10;ctx.fillStyle=b.color;
-    if(b.enemy){ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();}
-    else{ctx.fillRect(b.x-b.r/2,b.y-8,b.r,14);}
-  });
-  ctx.shadowBlur=0;
-  drawBase();drawShip();
-  ctx.restore();
+  G.bullets.forEach(b=>{ctx.shadowColor=b.color;ctx.shadowBlur=b.enemy?8:10;ctx.fillStyle=b.color;if(b.enemy){ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();}else{ctx.fillRect(b.x-b.r/2,b.y-8,b.r,14);}});
+  ctx.shadowBlur=0;drawBase();drawShip();ctx.restore();
 }
 
 function drawEnemy(e){
@@ -1204,15 +1138,12 @@ function drawEnemy(e){
 }
 
 function drawShip(){
-  const{x,y,w,h,inv}=G.ship;
-  if(inv>0&&~~(inv/80)%2===0)return;
-  ctx.save();ctx.translate(x,y);
-  const t=performance.now()*0.01,fl=0.7+0.3*Math.sin(t);
+  const{x,y,w,h,inv}=G.ship;if(inv>0&&~~(inv/80)%2===0)return;
+  ctx.save();ctx.translate(x,y);const t=performance.now()*0.01,fl=0.7+0.3*Math.sin(t);
   ctx.globalAlpha=fl;
   ctx.fillStyle='#ff6b00';ctx.beginPath();ctx.moveTo(-6,h/2-5);ctx.lineTo(6,h/2-5);ctx.lineTo(4,h/2+13+Math.sin(t)*3);ctx.lineTo(0,h/2+10);ctx.lineTo(-4,h/2+13+Math.sin(t*1.2)*3);ctx.closePath();ctx.fill();
   ctx.fillStyle='#ffe600';ctx.beginPath();ctx.moveTo(-3,h/2-5);ctx.lineTo(3,h/2-5);ctx.lineTo(2,h/2+8);ctx.lineTo(0,h/2+6);ctx.lineTo(-2,h/2+8);ctx.closePath();ctx.fill();
-  ctx.globalAlpha=1;
-  ctx.shadowColor='rgba(0,255,247,0.45)';ctx.shadowBlur=16;
+  ctx.globalAlpha=1;ctx.shadowColor='rgba(0,255,247,0.45)';ctx.shadowBlur=16;
   ctx.fillStyle='#061828';
   ctx.beginPath();ctx.moveTo(-w/2+3,h/2-3);ctx.lineTo(-w/2-9,h/2+7);ctx.lineTo(-w/2-2,h/2-9);ctx.closePath();ctx.fill();
   ctx.beginPath();ctx.moveTo(w/2-3,h/2-3);ctx.lineTo(w/2+9,h/2+7);ctx.lineTo(w/2+2,h/2-9);ctx.closePath();ctx.fill();
@@ -1228,12 +1159,11 @@ function drawShip(){
 function scorePopup(x,y,txt){
   const area=document.getElementById('gameArea');
   const rect=canvas.getBoundingClientRect(),ar=area.getBoundingClientRect();
-  const sx=rect.width/GAME_W,sy=rect.height/GAME_H;
   const el=document.createElement('div');el.className='score-popup';
-  el.style.left=(rect.left-ar.left+x*sx)+'px';el.style.top=(rect.top-ar.top+y*sy)+'px';
+  el.style.left=(rect.left-ar.left+x*(rect.width/GAME_W))+'px';
+  el.style.top=(rect.top-ar.top+y*(rect.height/GAME_H))+'px';
   el.style.color=eColor(1+~~(Math.random()*4));el.textContent=txt;
-  document.getElementById('gameArea').appendChild(el);
-  setTimeout(()=>el.remove(),920);
+  area.appendChild(el);setTimeout(()=>el.remove(),920);
 }
 
 function floatReward(txt){
@@ -1252,11 +1182,11 @@ function checkMilestones(){
       if(el){el.classList.add('ms-done');const ok=document.createElement('span');ok.className='ms-ok';ok.textContent='✓';el.appendChild(ok);}
       addFeed('mile','+'+xlm.toLocaleString()+' XLM','Milestone '+pts.toLocaleString()+' pts!');
       floatReward('+'+xlm.toLocaleString()+' XLM 🎉');
-      showToast('🎉 Milestone '+pts.toLocaleString()+'! Sending +'+xlm.toLocaleString()+' XLM!');
-      sendXLM(playerWallet,xlm).then(r=>{
+      showToast('🎉 Milestone! Sending +'+xlm.toLocaleString()+' XLM via server!');
+      apiPost('/api/reward/milestone',{playerAddress:playerWallet,milestone:pts}).then(r=>{
         if(r.success){
           addFeed('chain','+'+xlm.toLocaleString()+' XLM','✓ Confirmed! Tx: '+r.hash.slice(0,14)+'…');
-          showTokenNotif('Milestone 💰',pts.toLocaleString()+' pts!','+'+xlm.toLocaleString()+' XLM',playerWallet,r.hash);
+          showTokenNotif('Milestone 💰',pts.toLocaleString()+' pts!','+'+xlm.toLocaleString()+' XLM',playerWallet,r.hash,'🎯');
           setTimeout(()=>refreshBalance(),3000);
         }
       });
@@ -1266,15 +1196,9 @@ function checkMilestones(){
 
 /* ══ WAVE CLEAR ══ */
 async function waveClear(){
-  const w=G.wave,cfg=waveCfg(w);
-  G.totalEarned+=cfg.xlm;
+  const w=G.wave,cfg=waveCfg(w);G.totalEarned+=cfg.xlm;
   const sd=document.getElementById('wco-stats');sd.innerHTML='';
-  [
-    ['Wave','#'+w+' ['+cfg.diff.label+']','#00fff7'],
-    ['Enemies',''+G.waveKilled,'#ff6b00'],
-    ['Score',G.score.toLocaleString(),'#00fff7'],
-    ['Reward','+'+cfg.xlm.toLocaleString()+' XLM','#39ff14'],
-  ].forEach(([k,v,c])=>{
+  [['Wave','#'+w+' ['+cfg.diff.label+']','#00fff7'],['Enemies',''+G.waveKilled,'#ff6b00'],['Score',G.score.toLocaleString(),'#00fff7'],['Reward','+'+cfg.xlm.toLocaleString()+' XLM','#39ff14']].forEach(([k,v,c])=>{
     const row=document.createElement('div');row.className='ov-row';
     row.innerHTML=`<span class="ov-key">${k}</span><span class="ov-val" style="color:${c}">${v}</span>`;
     sd.appendChild(row);
@@ -1282,8 +1206,7 @@ async function waveClear(){
   document.getElementById('wco-reward').style.display='block';
   document.getElementById('wco-amt').textContent='+'+cfg.xlm.toLocaleString()+' XLM';
   const chainEl=document.getElementById('wco-chain');
-  chainEl.className='ov-chain';
-  chainEl.textContent='⏳ Sending '+cfg.xlm.toLocaleString()+' XLM to your wallet…';
+  chainEl.className='ov-chain';chainEl.textContent='⏳ Server sending '+cfg.xlm.toLocaleString()+' XLM…';
   const nftEl=document.getElementById('wco-nft');
   const nftNames={5:'Wave 5 Survivor · Uncommon',10:'Wave 10 Titan · Rare'};
   if((w===5||w===10)&&!G.nftWaves[w]){
@@ -1295,19 +1218,19 @@ async function waveClear(){
   }else{nftEl.style.display='none';}
   document.getElementById('wco-title').textContent='WAVE '+w+' CLEARED! 💰';
   document.getElementById('waveClearOv').classList.add('active');
-  addFeed('wave','+'+cfg.xlm.toLocaleString()+' XLM','Wave '+w+' cleared! ['+cfg.diff.label+']');
+  addFeed('wave','+'+cfg.xlm.toLocaleString()+' XLM','Wave '+w+' ['+cfg.diff.label+'] cleared!');
 
-  const result=await sendXLM(playerWallet,cfg.xlm);
+  const result = await apiPost('/api/reward/wave',{playerAddress:playerWallet,wave:w});
   if(result.success){
     chainEl.className='ov-chain ok';
-    chainEl.textContent='✓ '+cfg.xlm.toLocaleString()+' XLM confirmed! Tx: '+result.hash.slice(0,20)+'…';
+    chainEl.textContent='✅ '+cfg.xlm.toLocaleString()+' XLM confirmed! Tx: '+result.hash.slice(0,20)+'…';
     addFeed('chain','+'+cfg.xlm.toLocaleString()+' XLM','✓ On-chain! Tx: '+result.hash.slice(0,14)+'…');
-    showTokenNotif('Wave '+w+' Cleared! 💰','Real XLM sent!','+'+cfg.xlm.toLocaleString()+' XLM',playerWallet,result.hash);
+    showTokenNotif('Wave '+w+' Cleared! 💰','Real XLM sent to your wallet!','+'+cfg.xlm.toLocaleString()+' XLM',playerWallet,result.hash,'💰');
     setTimeout(()=>refreshBalance(),3000);
   }else{
     chainEl.className='ov-chain ok';
-    chainEl.textContent='✓ Reward processed — check your balance!';
-    showTokenNotif('Wave '+w+' Reward','Reward sent','+'+cfg.xlm.toLocaleString()+' XLM',playerWallet,null);
+    chainEl.textContent='⚠ Server error: '+(result.error||'Check server logs');
+    addFeed('err','','Wave reward failed: '+(result.error||'server offline'));
   }
 }
 
@@ -1320,8 +1243,7 @@ function buildGameOverStats(){
   const sd=document.getElementById('go-stats');sd.innerHTML='';
   [['Final Score',G.score.toLocaleString(),'#00fff7'],['Wave Reached',''+G.wave,'#ff6b00'],['Total Kills',''+G.kills,'#8b5cf6'],['XLM Earned',G.totalEarned.toLocaleString()+' XLM','#39ff14']].forEach(([k,v,c])=>{
     const row=document.createElement('div');row.className='ov-row';
-    row.innerHTML=`<span class="ov-key">${k}</span><span class="ov-val" style="color:${c}">${v}</span>`;
-    sd.appendChild(row);
+    row.innerHTML=`<span class="ov-key">${k}</span><span class="ov-val" style="color:${c}">${v}</span>`;sd.appendChild(row);
   });
   document.getElementById('go-total').textContent=G.totalEarned.toLocaleString()+' XLM';
 }
@@ -1329,22 +1251,18 @@ function buildGameOverStats(){
 function restartGame(){
   clearCdTimer();
   ['gameOverOv','waveClearOv','pauseOv','buyLifeOv'].forEach(id=>document.getElementById(id).classList.remove('active'));
-  G.paused=false;lifeBuyCost=500;lifeBuyCount=0;
-  initGame();
+  G.paused=false;lifeBuyCost=500;lifeBuyCount=0;initGame();
 }
 
 function togglePause(){
-  if(!G.running)return;
-  G.paused=!G.paused;
+  if(!G.running)return;G.paused=!G.paused;
   document.getElementById('pauseOv').classList.toggle('active',G.paused);
   document.getElementById('pauseBtn').textContent=G.paused?'▶ RESUME':'⏸ PAUSE';
   if(!G.paused)G.lastT=performance.now();
 }
 
 addEventListener('keydown',e=>{
-  if(e.key===' '&&!G.ready&&G.running&&!G.paused){
-    G.ready=true;showToast('🚀 Protect the base — earn 1,000 XLM!');e.preventDefault();return;
-  }
+  if(e.key===' '&&!G.ready&&G.running&&!G.paused){G.ready=true;showToast('🚀 Protect the base!');e.preventDefault();return;}
   G.keys[e.key]=true;
   if(e.key==='Escape'||e.key==='p'||e.key==='P')togglePause();
   if(e.key===' ')e.preventDefault();
@@ -1355,16 +1273,8 @@ function mk(k,d){G.keys[k]=d;}
 /* ══ LEADERBOARD ══ */
 function showLeaderboard(){
   const c=document.getElementById('lb-content');c.innerHTML='';
-  if(!G.leaderboard.length){
-    c.innerHTML='<div style="text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:0.74rem;padding:1rem;">No scores yet — play to get on the board!</div>';
-  }else{
-    G.leaderboard.slice(0,10).forEach((e,i)=>{
-      const rc=i===0?'r1':i===1?'r2':i===2?'r3':'rn';
-      const row=document.createElement('div');row.className='lb-row';
-      row.innerHTML=`<div class="lb-rank ${rc}">${i+1}</div><div class="lb-addr">${shortAddr(e.addr)}</div><div class="lb-score">${e.score.toLocaleString()}</div><div class="lb-wave">W${e.wave}</div><div class="lb-earn">${e.earned.toLocaleString()} XLM</div>`;
-      c.appendChild(row);
-    });
-  }
+  if(!G.leaderboard.length){c.innerHTML='<div style="text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:0.74rem;padding:1rem;">No scores yet!</div>';}
+  else{G.leaderboard.slice(0,10).forEach((e,i)=>{const rc=i===0?'r1':i===1?'r2':i===2?'r3':'rn';const row=document.createElement('div');row.className='lb-row';row.innerHTML=`<div class="lb-rank ${rc}">${i+1}</div><div class="lb-addr">${shortAddr(e.addr)}</div><div class="lb-score">${e.score.toLocaleString()}</div><div class="lb-wave">W${e.wave}</div><div class="lb-earn">${e.earned.toLocaleString()} XLM</div>`;c.appendChild(row);});}
   document.getElementById('lb-overlay').classList.add('active');
 }
 function hideLeaderboard(){document.getElementById('lb-overlay').classList.remove('active');}
@@ -1374,25 +1284,24 @@ function addFeed(type,amt,msg){
   const feed=document.getElementById('rewardFeed');
   const emp=feed.querySelector('[style]');if(emp&&emp.textContent.includes('Awaiting'))emp.remove();
   const item=document.createElement('div');item.className='rfeed-item';
-  const tc={wave:'rf-wave',mile:'rf-mile',nft:'rf-nft',tok:'rf-tok',chain:'rf-chain'}[type]||'rf-wave';
-  const tl={wave:'WAVE',mile:'MILESTONE',nft:'NFT',tok:'BONUS',chain:'ON-CHAIN'}[type]||type.toUpperCase();
+  const tc={wave:'rf-wave',mile:'rf-mile',nft:'rf-nft',tok:'rf-tok',chain:'rf-chain',err:'rf-err'}[type]||'rf-wave';
+  const tl={wave:'WAVE',mile:'MILESTONE',nft:'NFT',tok:'BONUS',chain:'ON-CHAIN',err:'ERROR'}[type]||type.toUpperCase();
   item.innerHTML=`<div class="rfeed-type ${tc}">${tl}</div>${amt?`<div class="rfeed-amt">${amt}</div>`:''}<div class="rfeed-msg">${msg}</div>`;
   feed.insertBefore(item,feed.firstChild);
 }
 
 /* ══ NOTIFICATIONS ══ */
 let notifT;
-function showTokenNotif(title,sub,amt,addr,hash){
+function showTokenNotif(title,sub,amt,addr,hash,icon='🪙'){
   const n=document.getElementById('tokenNotif');
+  document.getElementById('tn-icon').textContent=icon;
   document.getElementById('tn-title').textContent=title;
   document.getElementById('tn-sub').textContent=sub;
   document.getElementById('tn-amt').textContent=amt;
   document.getElementById('tn-to').textContent=shortAddr(addr);
-  document.getElementById('tn-status').textContent=hash?'✓ Confirmed on Stellar Testnet':'✓ Reward sent';
+  document.getElementById('tn-status').textContent=hash?'✓ Confirmed on Stellar Testnet':'✓ Processed';
   document.getElementById('tn-hash').textContent=hash?hash.slice(0,24)+'…':'Processing…';
-  const fill=document.getElementById('tn-fill');
-  fill.style.animation='none';fill.offsetHeight;
-  fill.style.animation='shrink 5s linear forwards';
+  const fill=document.getElementById('tn-fill');fill.style.animation='none';fill.offsetHeight;fill.style.animation='shrink 5s linear forwards';
   n.classList.add('show');clearTimeout(notifT);
   notifT=setTimeout(()=>n.classList.remove('show'),5500);
 }
