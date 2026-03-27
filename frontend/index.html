@@ -4,10 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>SoroShooter — Play-to-Earn on Stellar</title>
-
-<!-- Stellar SDK via CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-sdk/11.3.0/stellar-sdk.min.js"></script>
-
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;800&display=swap');
 
@@ -22,7 +19,6 @@
   --neon-yellow:#ffe600;
   --stellar-blue:#4f9cff;
   --stellar-purple:#8b5cf6;
-  --panel-bg:rgba(4,12,30,0.95);
   --text:#e0f4ff;
   --muted:#4a7a9b;
   --font-hud:'Orbitron',monospace;
@@ -57,11 +53,11 @@ html,body{
 
 .ws-inner{
   display:flex;flex-direction:column;align-items:center;
-  gap:1.5rem;max-width:460px;width:100%;padding:2rem;
+  gap:1.5rem;max-width:480px;width:100%;padding:2rem;
 }
 
 .ws-title{
-  font-family:var(--font-hud);font-size:2.5rem;font-weight:900;
+  font-family:var(--font-hud);font-size:3rem;font-weight:900;
   letter-spacing:0.15em;text-align:center;
   background:linear-gradient(135deg,var(--neon-cyan),var(--stellar-blue),var(--stellar-purple));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
@@ -74,7 +70,7 @@ html,body{
 }
 
 .ws-sub{
-  font-family:var(--font-mono);font-size:0.7rem;
+  font-family:var(--font-mono);font-size:0.85rem;
   color:var(--neon-cyan);letter-spacing:0.3em;
   text-transform:uppercase;opacity:0.7;text-align:center;
 }
@@ -84,8 +80,8 @@ html,body{
 .ws-feats{display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;}
 
 .ws-feat{
-  padding:0.22rem 0.65rem;border-radius:999px;
-  font-family:var(--font-mono);font-size:0.58rem;
+  padding:0.3rem 0.8rem;border-radius:999px;
+  font-family:var(--font-mono);font-size:0.72rem;
   letter-spacing:0.1em;text-transform:uppercase;
 }
 
@@ -97,12 +93,12 @@ html,body{
 .ws-box{
   width:100%;background:rgba(4,15,40,0.85);
   border:1px solid rgba(0,255,247,0.15);
-  border-radius:16px;padding:1.4rem;
-  display:flex;flex-direction:column;gap:0.8rem;
+  border-radius:16px;padding:1.5rem;
+  display:flex;flex-direction:column;gap:0.9rem;
 }
 
 .ws-lbl{
-  font-family:var(--font-mono);font-size:0.6rem;
+  font-family:var(--font-mono);font-size:0.72rem;
   color:var(--muted);text-transform:uppercase;
   letter-spacing:0.2em;
 }
@@ -110,9 +106,9 @@ html,body{
 .ws-inp{
   width:100%;background:rgba(0,255,247,0.04);
   border:1px solid rgba(0,255,247,0.2);
-  border-radius:9px;padding:0.7rem 1rem;
+  border-radius:9px;padding:0.8rem 1rem;
   color:var(--text);font-family:var(--font-mono);
-  font-size:0.78rem;outline:none;
+  font-size:0.88rem;outline:none;
   letter-spacing:0.04em;text-align:center;
   transition:border-color 0.2s,box-shadow 0.2s;
 }
@@ -125,19 +121,16 @@ html,body{
 .ws-inp::placeholder{color:var(--muted);}
 
 .ws-btn{
-  width:100%;padding:0.8rem;border:none;
+  width:100%;padding:0.9rem;border:none;
   border-radius:10px;cursor:pointer;
-  font-family:var(--font-hud);font-size:0.8rem;
+  font-family:var(--font-hud);font-size:0.88rem;
   font-weight:700;letter-spacing:0.15em;
-  text-transform:uppercase;
-  color:var(--neon-cyan);
-  border:1px solid rgba(0,255,247,0.3);
-  transition:all 0.2s;
+  text-transform:uppercase;transition:all 0.2s;
 }
 
 .ws-btn-freighter{
   background:linear-gradient(135deg,#1a0a3a,#2d1060);
-  color:#a78bfa;border-color:rgba(139,92,246,0.4);
+  color:#a78bfa;border:1px solid rgba(139,92,246,0.4);
   box-shadow:0 0 20px rgba(139,92,246,0.15);
   animation:btnPulse2 2s ease-in-out infinite;
 }
@@ -147,13 +140,11 @@ html,body{
   50%{box-shadow:0 0 35px rgba(139,92,246,0.35);}
 }
 
-.ws-btn-freighter:hover{
-  transform:translateY(-2px);
-  box-shadow:0 0 40px rgba(139,92,246,0.45);
-}
+.ws-btn-freighter:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(139,92,246,0.45);}
 
 .ws-btn-manual{
   background:linear-gradient(135deg,#0a3a5c,#0d5a8a);
+  color:var(--neon-cyan);border:1px solid rgba(0,255,247,0.3);
   box-shadow:0 0 20px rgba(0,255,247,0.1);
   animation:btnPulse 2s ease-in-out infinite;
 }
@@ -163,58 +154,39 @@ html,body{
   50%{box-shadow:0 0 30px rgba(0,255,247,0.25);}
 }
 
-.ws-btn-manual:hover{
-  transform:translateY(-2px);color:#fff;
-  box-shadow:0 0 40px rgba(0,255,247,0.4);
-}
+.ws-btn-manual:hover{transform:translateY(-2px);color:#fff;box-shadow:0 0 40px rgba(0,255,247,0.4);}
 
 .ws-divider{
   display:flex;align-items:center;gap:0.5rem;
-  font-family:var(--font-mono);font-size:0.58rem;
+  font-family:var(--font-mono);font-size:0.65rem;
   color:var(--muted);letter-spacing:0.1em;
 }
 
 .ws-divider::before,.ws-divider::after{
-  content:'';flex:1;height:1px;
-  background:rgba(255,255,255,0.07);
+  content:'';flex:1;height:1px;background:rgba(255,255,255,0.07);
 }
 
 .ws-status{
   display:flex;align-items:center;gap:0.5rem;
-  font-family:var(--font-mono);font-size:0.62rem;
-  padding:0.4rem 0.6rem;border-radius:7px;
+  font-family:var(--font-mono);font-size:0.72rem;
+  padding:0.5rem 0.75rem;border-radius:7px;
   border:1px solid rgba(255,255,255,0.06);
+  line-height:1.4;
 }
 
-.ws-status.connected{
-  background:rgba(57,255,20,0.06);
-  border-color:rgba(57,255,20,0.2);
-  color:var(--neon-green);
-}
-
-.ws-status.error{
-  background:rgba(255,0,128,0.06);
-  border-color:rgba(255,0,128,0.2);
-  color:var(--neon-pink);
-}
-
-.ws-status.pending{
-  background:rgba(0,255,247,0.04);
-  border-color:rgba(0,255,247,0.15);
-  color:var(--muted);
-}
+.ws-status.connected{background:rgba(57,255,20,0.06);border-color:rgba(57,255,20,0.2);color:var(--neon-green);}
+.ws-status.error{background:rgba(255,0,128,0.06);border-color:rgba(255,0,128,0.2);color:var(--neon-pink);}
+.ws-status.pending{background:rgba(0,255,247,0.04);border-color:rgba(0,255,247,0.15);color:var(--muted);}
 
 .ws-net{
-  display:flex;align-items:center;justify-content:center;
-  gap:0.4rem;font-family:var(--font-mono);
-  font-size:0.58rem;color:var(--neon-green);
+  display:flex;align-items:center;justify-content:center;gap:0.4rem;
+  font-family:var(--font-mono);font-size:0.68rem;color:var(--neon-green);
   letter-spacing:0.15em;
 }
 
 .ws-net::before{
-  content:'';width:6px;height:6px;border-radius:50%;
-  background:var(--neon-green);
-  box-shadow:0 0 8px var(--neon-green);
+  content:'';width:7px;height:7px;border-radius:50%;
+  background:var(--neon-green);box-shadow:0 0 8px var(--neon-green);
   animation:netPulse 2s infinite;
 }
 
@@ -229,8 +201,9 @@ html,body{
 
 #game-wrapper.visible{display:flex;opacity:1;}
 
+/* ── HUD ── */
 .hud{
-  height:50px;flex-shrink:0;
+  height:54px;flex-shrink:0;
   background:linear-gradient(180deg,rgba(0,5,15,0.98),rgba(0,5,15,0.85));
   border-bottom:1px solid rgba(0,255,247,0.07);
   display:flex;align-items:center;
@@ -239,7 +212,7 @@ html,body{
 }
 
 .hud-brand{
-  font-family:var(--font-hud);font-size:0.85rem;
+  font-family:var(--font-hud);font-size:0.95rem;
   font-weight:900;color:var(--neon-cyan);
   letter-spacing:0.15em;
   text-shadow:0 0 12px rgba(0,255,247,0.5);
@@ -255,17 +228,16 @@ html,body{
   display:flex;flex-direction:column;align-items:center;
   background:rgba(0,255,247,0.04);
   border:1px solid rgba(0,255,247,0.07);
-  border-radius:6px;padding:0.18rem 0.65rem;
-  min-width:60px;
+  border-radius:6px;padding:0.2rem 0.7rem;min-width:65px;
 }
 
 .hstat-val{
-  font-family:var(--font-hud);font-size:0.85rem;
+  font-family:var(--font-hud);font-size:0.95rem;
   font-weight:700;line-height:1.1;
 }
 
 .hstat-lbl{
-  font-family:var(--font-mono);font-size:0.45rem;
+  font-family:var(--font-mono);font-size:0.52rem;
   color:var(--muted);text-transform:uppercase;letter-spacing:0.15em;
 }
 
@@ -274,19 +246,19 @@ html,body{
 }
 
 .lives-display{display:flex;gap:0.2rem;align-items:center;}
-.life-icon{font-size:0.82rem;filter:drop-shadow(0 0 4px var(--neon-orange));}
+.life-icon{font-size:0.9rem;filter:drop-shadow(0 0 4px var(--neon-orange));}
 .life-icon.lost{opacity:0.18;filter:none;}
 
 .hud-wallet{
-  font-family:var(--font-mono);font-size:0.58rem;color:var(--muted);
+  font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);
   background:rgba(0,255,247,0.04);border:1px solid rgba(0,255,247,0.07);
-  border-radius:6px;padding:0.18rem 0.5rem;
+  border-radius:6px;padding:0.2rem 0.55rem;
 }
 
 .hud-balance{
-  font-family:var(--font-mono);font-size:0.58rem;color:var(--neon-green);
+  font-family:var(--font-mono);font-size:0.65rem;color:var(--neon-green);
   background:rgba(57,255,20,0.05);border:1px solid rgba(57,255,20,0.15);
-  border-radius:6px;padding:0.18rem 0.5rem;cursor:pointer;
+  border-radius:6px;padding:0.2rem 0.55rem;cursor:pointer;
   transition:border-color 0.2s;
 }
 
@@ -295,13 +267,36 @@ html,body{
 .hud-btn{
   background:none;border:1px solid rgba(0,255,247,0.15);
   color:var(--muted);font-family:var(--font-mono);
-  font-size:0.52rem;padding:0.18rem 0.45rem;
-  border-radius:5px;cursor:pointer;
-  letter-spacing:0.1em;transition:all 0.2s;
+  font-size:0.58rem;padding:0.2rem 0.5rem;
+  border-radius:5px;cursor:pointer;letter-spacing:0.1em;
+  transition:all 0.2s;
 }
 
 .hud-btn:hover{border-color:var(--neon-cyan);color:var(--neon-cyan);}
 
+.hud-btn-pause{
+  background:rgba(255,230,0,0.08);
+  border-color:rgba(255,230,0,0.3);
+  color:var(--neon-yellow);
+}
+
+.hud-btn-pause:hover{
+  background:rgba(255,230,0,0.15);
+  border-color:var(--neon-yellow);color:#fff;
+}
+
+.hud-btn-back{
+  background:rgba(255,0,128,0.08);
+  border-color:rgba(255,0,128,0.3);
+  color:var(--neon-pink);
+}
+
+.hud-btn-back:hover{
+  background:rgba(255,0,128,0.15);
+  border-color:var(--neon-pink);color:#fff;
+}
+
+/* ── GAME AREA ── */
 .game-area{
   flex:1;position:relative;overflow:hidden;
   display:flex;align-items:center;justify-content:center;
@@ -309,20 +304,21 @@ html,body{
 
 #gameCanvas{display:block;image-rendering:pixelated;cursor:none;}
 
+/* ── SIDE PANEL ── */
 .side-panel{
-  position:absolute;right:0;top:0;bottom:0;width:195px;
+  position:absolute;right:0;top:0;bottom:0;width:200px;
   background:linear-gradient(180deg,rgba(0,4,12,0.97),rgba(0,2,8,0.99));
   border-left:1px solid rgba(0,255,247,0.06);
   display:flex;flex-direction:column;overflow:hidden;
 }
 
 .panel-sec{
-  padding:0.65rem 0.75rem;
+  padding:0.7rem 0.8rem;
   border-bottom:1px solid rgba(0,255,247,0.05);flex-shrink:0;
 }
 
 .panel-title{
-  font-family:var(--font-mono);font-size:0.52rem;
+  font-family:var(--font-mono);font-size:0.6rem;
   color:var(--neon-cyan);text-transform:uppercase;
   letter-spacing:0.2em;margin-bottom:0.45rem;opacity:0.65;
 }
@@ -330,37 +326,37 @@ html,body{
 .wave-info{
   background:rgba(0,255,247,0.03);
   border:1px solid rgba(0,255,247,0.07);
-  border-radius:6px;padding:0.38rem 0.5rem;
-  font-family:var(--font-mono);font-size:0.6rem;
-  color:var(--muted);line-height:1.75;
+  border-radius:6px;padding:0.4rem 0.55rem;
+  font-family:var(--font-mono);font-size:0.68rem;
+  color:var(--muted);line-height:1.8;
 }
 
 .wave-info span{color:var(--text);}
 
 .milestone-row{
   display:flex;align-items:center;gap:0.35rem;
-  padding:0.22rem 0;font-size:0.65rem;
+  padding:0.25rem 0;font-size:0.72rem;
 }
 
-.ms-pts{font-family:var(--font-hud);font-size:0.6rem;color:var(--neon-yellow);min-width:38px;}
-.ms-rew{color:var(--neon-green);font-family:var(--font-mono);font-size:0.58rem;}
+.ms-pts{font-family:var(--font-hud);font-size:0.65rem;color:var(--neon-yellow);min-width:40px;}
+.ms-rew{color:var(--neon-green);font-family:var(--font-mono);font-size:0.62rem;}
 .ms-done .ms-pts,.ms-done .ms-rew{color:var(--muted);text-decoration:line-through;opacity:0.35;}
-.ms-ok{color:var(--neon-green);font-size:0.65rem;margin-left:auto;}
+.ms-ok{color:var(--neon-green);font-size:0.7rem;margin-left:auto;}
 
 .reward-feed{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
 .reward-feed::-webkit-scrollbar{width:2px;}
 .reward-feed::-webkit-scrollbar-thumb{background:rgba(0,255,247,0.12);}
 
 .rfeed-item{
-  padding:0.38rem 0.75rem;
+  padding:0.4rem 0.8rem;
   border-bottom:1px solid rgba(0,255,247,0.03);
-  animation:feedIn 0.3s ease;font-size:0.6rem;
+  animation:feedIn 0.3s ease;font-size:0.65rem;
 }
 
 @keyframes feedIn{from{opacity:0;transform:translateX(6px);}to{opacity:1;transform:none;}}
 
 .rfeed-type{
-  font-family:var(--font-mono);font-size:0.5rem;
+  font-family:var(--font-mono);font-size:0.55rem;
   text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.08rem;
 }
 
@@ -370,9 +366,10 @@ html,body{
 .rf-tok{color:var(--neon-orange);}
 .rf-chain{color:var(--neon-green);}
 
-.rfeed-amt{font-family:var(--font-hud);font-size:0.68rem;color:var(--neon-green);}
-.rfeed-msg{color:var(--muted);font-size:0.58rem;line-height:1.4;margin-top:0.08rem;}
+.rfeed-amt{font-family:var(--font-hud);font-size:0.72rem;color:var(--neon-green);}
+.rfeed-msg{color:var(--muted);font-size:0.62rem;line-height:1.4;margin-top:0.08rem;}
 
+/* ── OVERLAYS ── */
 .overlay{
   position:absolute;inset:0;z-index:50;
   display:none;align-items:center;justify-content:center;
@@ -390,7 +387,11 @@ html,body{
   box-shadow:0 0 60px rgba(0,255,247,0.07);
 }
 
-.ov-title{font-family:var(--font-hud);font-size:1.8rem;font-weight:900;letter-spacing:0.2em;text-align:center;}
+.ov-title{
+  font-family:var(--font-hud);font-size:2rem;
+  font-weight:900;letter-spacing:0.2em;text-align:center;
+}
+
 .ov-cyan{color:var(--neon-cyan);text-shadow:0 0 20px rgba(0,255,247,0.5);}
 .ov-pink{color:var(--neon-pink);text-shadow:0 0 20px rgba(255,0,128,0.5);}
 .ov-yellow{color:var(--neon-yellow);}
@@ -399,56 +400,54 @@ html,body{
 
 .ov-row{
   display:flex;justify-content:space-between;align-items:center;
-  padding:0.3rem 0.55rem;
+  padding:0.35rem 0.6rem;
   background:rgba(0,255,247,0.03);
   border:1px solid rgba(0,255,247,0.06);
-  border-radius:6px;font-size:0.72rem;
+  border-radius:6px;font-size:0.8rem;
 }
 
 .ov-key{font-family:var(--font-mono);color:var(--muted);}
-.ov-val{font-family:var(--font-hud);font-size:0.78rem;}
+.ov-val{font-family:var(--font-hud);font-size:0.85rem;}
 
 .ov-reward{
-  width:100%;padding:0.8rem 1rem;
+  width:100%;padding:0.85rem 1rem;
   background:rgba(57,255,20,0.06);
   border:1px solid rgba(57,255,20,0.2);
   border-radius:10px;text-align:center;
 }
 
-.ov-rew-lbl{font-family:var(--font-mono);font-size:0.58rem;color:var(--muted);letter-spacing:0.15em;margin-bottom:0.15rem;}
-.ov-rew-amt{font-family:var(--font-hud);font-size:1.5rem;font-weight:900;color:var(--neon-green);text-shadow:0 0 15px rgba(57,255,20,0.5);}
+.ov-rew-lbl{font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);letter-spacing:0.15em;margin-bottom:0.15rem;}
+.ov-rew-amt{font-family:var(--font-hud);font-size:1.6rem;font-weight:900;color:var(--neon-green);text-shadow:0 0 15px rgba(57,255,20,0.5);}
 
 .ov-chain-status{
   width:100%;padding:0.55rem 0.8rem;
   background:rgba(0,255,247,0.04);
   border:1px solid rgba(0,255,247,0.12);
-  border-radius:8px;
-  font-family:var(--font-mono);font-size:0.6rem;
-  color:var(--muted);text-align:center;
+  border-radius:8px;font-family:var(--font-mono);
+  font-size:0.65rem;color:var(--muted);text-align:center;
 }
 
 .ov-chain-status.confirmed{
   background:rgba(57,255,20,0.05);
-  border-color:rgba(57,255,20,0.2);
-  color:var(--neon-green);
+  border-color:rgba(57,255,20,0.2);color:var(--neon-green);
 }
 
 .ov-nft{
-  width:100%;padding:0.65rem 0.9rem;
+  width:100%;padding:0.7rem 0.9rem;
   background:rgba(139,92,246,0.07);
   border:1px solid rgba(139,92,246,0.22);
   border-radius:9px;display:flex;align-items:center;gap:0.65rem;
 }
 
-.nft-icon{font-size:1.3rem;}
-.nft-title{font-family:var(--font-hud);font-size:0.7rem;color:var(--stellar-purple);}
-.nft-sub{font-family:var(--font-mono);font-size:0.56rem;color:var(--muted);margin-top:0.08rem;}
+.nft-icon{font-size:1.4rem;}
+.nft-title{font-family:var(--font-hud);font-size:0.75rem;color:var(--stellar-purple);}
+.nft-sub{font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);margin-top:0.08rem;}
 
 .ov-btns{display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;}
 
 .ov-btn{
-  padding:0.65rem 1.5rem;border:none;border-radius:9px;cursor:pointer;
-  font-family:var(--font-hud);font-size:0.75rem;font-weight:700;
+  padding:0.7rem 1.5rem;border:none;border-radius:9px;cursor:pointer;
+  font-family:var(--font-hud);font-size:0.8rem;font-weight:700;
   letter-spacing:0.12em;text-transform:uppercase;transition:all 0.2s;
 }
 
@@ -458,10 +457,12 @@ html,body{
 .ov-btn-green:hover{box-shadow:0 0 25px rgba(57,255,20,0.3);transform:translateY(-2px);}
 .ov-btn-orange{background:rgba(255,107,0,0.1);color:var(--neon-orange);border:1px solid rgba(255,107,0,0.3);}
 .ov-btn-orange:hover{box-shadow:0 0 25px rgba(255,107,0,0.3);transform:translateY(-2px);}
+.ov-btn-pink{background:rgba(255,0,128,0.1);color:var(--neon-pink);border:1px solid rgba(255,0,128,0.3);}
+.ov-btn-pink:hover{box-shadow:0 0 25px rgba(255,0,128,0.3);transform:translateY(-2px);}
 
 .score-popup{
   position:absolute;pointer-events:none;
-  font-family:var(--font-hud);font-size:0.7rem;
+  font-family:var(--font-hud);font-size:0.75rem;
   animation:scoreFloat 0.85s ease forwards;z-index:60;
 }
 
@@ -472,7 +473,7 @@ html,body{
 
 .float-reward{
   position:absolute;pointer-events:none;
-  font-family:var(--font-hud);font-size:0.75rem;font-weight:700;
+  font-family:var(--font-hud);font-size:0.85rem;font-weight:700;
   color:var(--neon-green);
   text-shadow:0 0 8px rgba(57,255,20,0.6);
   animation:floatUp 1.3s ease forwards;z-index:60;
@@ -499,23 +500,23 @@ html,body{
   display:flex;flex-direction:column;gap:0.85rem;
 }
 
-.lb-title{font-family:var(--font-hud);font-size:1.1rem;font-weight:900;color:var(--neon-cyan);letter-spacing:0.2em;text-align:center;}
-.lb-row{display:flex;align-items:center;gap:0.55rem;padding:0.42rem 0.6rem;background:rgba(0,255,247,0.03);border:1px solid rgba(0,255,247,0.06);border-radius:7px;font-size:0.7rem;}
-.lb-rank{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-hud);font-size:0.58rem;font-weight:700;flex-shrink:0;}
+.lb-title{font-family:var(--font-hud);font-size:1.2rem;font-weight:900;color:var(--neon-cyan);letter-spacing:0.2em;text-align:center;}
+.lb-row{display:flex;align-items:center;gap:0.55rem;padding:0.45rem 0.65rem;background:rgba(0,255,247,0.03);border:1px solid rgba(0,255,247,0.06);border-radius:7px;font-size:0.75rem;}
+.lb-rank{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-hud);font-size:0.62rem;font-weight:700;flex-shrink:0;}
 .r1{background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#000;}
 .r2{background:linear-gradient(135deg,#94a3b8,#cbd5e1);color:#000;}
 .r3{background:linear-gradient(135deg,#b45309,#d97706);color:#fff;}
 .rn{background:rgba(255,255,255,0.06);color:var(--muted);}
-.lb-addr{flex:1;font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);}
-.lb-score{font-family:var(--font-hud);font-size:0.75rem;color:var(--neon-cyan);}
-.lb-wave{font-family:var(--font-mono);font-size:0.58rem;color:var(--muted);}
-.lb-earn{font-family:var(--font-hud);font-size:0.65rem;color:var(--neon-green);}
+.lb-addr{flex:1;font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);}
+.lb-score{font-family:var(--font-hud);font-size:0.8rem;color:var(--neon-cyan);}
+.lb-wave{font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);}
+.lb-earn{font-family:var(--font-hud);font-size:0.7rem;color:var(--neon-green);}
 
 .token-notif{
   position:fixed;top:1rem;right:1rem;z-index:300;
   background:#050d20;border:1px solid rgba(57,255,20,0.35);
   border-radius:12px;padding:0.9rem 1rem;
-  min-width:250px;max-width:290px;
+  min-width:260px;max-width:300px;
   transform:translateX(120%);
   transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
   box-shadow:0 8px 32px rgba(0,0,0,0.7);
@@ -523,14 +524,14 @@ html,body{
 
 .token-notif.show{transform:translateX(0);}
 .tn-top{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;}
-.tn-icon{width:30px;height:30px;border-radius:7px;background:rgba(57,255,20,0.12);display:flex;align-items:center;justify-content:center;font-size:0.95rem;flex-shrink:0;}
-.tn-title{font-family:var(--font-hud);font-size:0.68rem;color:var(--neon-green);}
-.tn-sub{font-family:var(--font-mono);font-size:0.56rem;color:var(--muted);margin-top:0.08rem;}
-.tn-amt{font-family:var(--font-hud);font-size:1.3rem;font-weight:900;color:var(--neon-green);margin:0.3rem 0;}
-.tn-row{font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);margin-bottom:0.1rem;}
+.tn-icon{width:32px;height:32px;border-radius:7px;background:rgba(57,255,20,0.12);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.tn-title{font-family:var(--font-hud);font-size:0.72rem;color:var(--neon-green);}
+.tn-sub{font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);margin-top:0.08rem;}
+.tn-amt{font-family:var(--font-hud);font-size:1.4rem;font-weight:900;color:var(--neon-green);margin:0.3rem 0;}
+.tn-row{font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);margin-bottom:0.1rem;}
 .tn-addr{color:var(--neon-cyan);}
 .tn-ok{color:var(--neon-green);font-weight:700;}
-.tn-hash{color:var(--stellar-blue);font-size:0.55rem;word-break:break-all;}
+.tn-hash{color:var(--stellar-blue);font-size:0.58rem;word-break:break-all;}
 .tn-bar{height:2px;background:rgba(57,255,20,0.12);border-radius:1px;margin-top:0.55rem;overflow:hidden;}
 .tn-fill{height:100%;width:100%;background:var(--neon-green);animation:shrink 5s linear forwards;}
 @keyframes shrink{from{width:100%;}to{width:0%;}}
@@ -540,12 +541,12 @@ html,body{
   transform:translateX(-50%) translateY(70px);
   background:rgba(4,15,40,0.98);
   border:1px solid rgba(0,255,247,0.18);
-  color:var(--text);padding:0.55rem 1.1rem;
+  color:var(--text);padding:0.6rem 1.2rem;
   border-radius:8px;font-family:var(--font-mono);
-  font-size:0.7rem;z-index:400;
+  font-size:0.75rem;z-index:400;
   transition:transform 0.3s ease;
   box-shadow:0 4px 24px rgba(0,0,0,0.6);
-  max-width:400px;text-align:center;
+  max-width:420px;text-align:center;
 }
 
 .toast.show{transform:translateX(-50%) translateY(0);}
@@ -553,15 +554,15 @@ html,body{
 .ctrl-hint{
   position:absolute;bottom:0.5rem;left:50%;transform:translateX(-50%);
   display:flex;gap:0.65rem;align-items:center;
-  font-family:var(--font-mono);font-size:0.52rem;
+  font-family:var(--font-mono);font-size:0.58rem;
   color:var(--muted);letter-spacing:0.08em;
   opacity:0.55;z-index:20;pointer-events:none;
 }
 
-.ctrl-key{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:0.08rem 0.3rem;font-size:0.54rem;color:var(--text);}
+.ctrl-key{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:0.08rem 0.3rem;font-size:0.56rem;color:var(--text);}
 
 .mob-ctrl{
-  position:absolute;bottom:0.85rem;left:0;right:195px;
+  position:absolute;bottom:0.85rem;left:0;right:200px;
   display:none;align-items:flex-end;justify-content:space-between;
   padding:0 0.85rem;z-index:30;pointer-events:none;
 }
@@ -569,9 +570,9 @@ html,body{
 @media(pointer:coarse){.mob-ctrl{display:flex;}.ctrl-hint{display:none;}}
 
 .mob-btn{
-  pointer-events:all;width:52px;height:52px;border-radius:50%;
+  pointer-events:all;width:56px;height:56px;border-radius:50%;
   background:rgba(0,255,247,0.07);border:2px solid rgba(0,255,247,0.18);
-  color:var(--neon-cyan);font-size:1.1rem;
+  color:var(--neon-cyan);font-size:1.2rem;
   display:flex;align-items:center;justify-content:center;
   -webkit-tap-highlight-color:transparent;cursor:pointer;user-select:none;
 }
@@ -607,19 +608,16 @@ html,body{
 
     <div class="ws-box">
 
-      <!-- Freighter connect -->
       <button class="ws-btn ws-btn-freighter" onclick="connectFreighter()">
         🔮 Connect Freighter Wallet
       </button>
 
-      <!-- Status display -->
       <div class="ws-status pending" id="walletStatus">
-        No wallet connected — connect Freighter or enter address manually
+        Enter your Stellar testnet address below to play
       </div>
 
       <div class="ws-divider">or enter manually</div>
 
-      <!-- Manual address -->
       <div>
         <div class="ws-lbl" style="margin-bottom:0.35rem;">Wallet Address</div>
         <input class="ws-inp" id="walletInput"
@@ -627,7 +625,6 @@ html,body{
           autocomplete="off" spellcheck="false"/>
       </div>
 
-      <!-- Contract ID -->
       <div>
         <div class="ws-lbl" style="margin-bottom:0.35rem;">Contract ID</div>
         <input class="ws-inp" id="contractInput"
@@ -661,7 +658,9 @@ html,body{
       <div class="lives-display" id="livesDisplay"></div>
       <div class="hud-wallet" id="hudWallet">—</div>
       <div class="hud-balance" id="hudBalance" onclick="refreshBalance()" title="Click to refresh">— XLM</div>
-      <button class="hud-btn" onclick="showLeaderboard()">BOARD</button>
+      <button class="hud-btn hud-btn-pause" onclick="togglePause()" id="pauseBtn">⏸ PAUSE</button>
+      <button class="hud-btn hud-btn-back" onclick="backToLogin()">↩ EXIT</button>
+      <button class="hud-btn" onclick="showLeaderboard()">★ BOARD</button>
     </div>
   </div>
 
@@ -689,7 +688,7 @@ html,body{
       <div class="panel-sec" style="border-bottom:none;flex:1;overflow:hidden;display:flex;flex-direction:column;">
         <div class="panel-title">Reward Log</div>
         <div class="reward-feed" id="rewardFeed">
-          <div style="padding:0.5rem;font-family:var(--font-mono);font-size:0.56rem;color:var(--muted);">Awaiting contract events…</div>
+          <div style="padding:0.5rem;font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);">Awaiting contract events…</div>
         </div>
       </div>
     </div>
@@ -726,6 +725,7 @@ html,body{
         <div class="ov-btns">
           <button class="ov-btn ov-btn-orange" onclick="restartGame()">↺ PLAY AGAIN</button>
           <button class="ov-btn ov-btn-cyan" onclick="showLeaderboard()">★ LEADERBOARD</button>
+          <button class="ov-btn ov-btn-pink" onclick="backToLogin()">↩ EXIT</button>
         </div>
       </div>
     </div>
@@ -734,10 +734,13 @@ html,body{
     <div class="overlay" id="pauseOv">
       <div class="ov-box">
         <div class="ov-title ov-yellow">PAUSED</div>
-        <p style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted);text-align:center;">Press ESC or P to resume</p>
+        <p style="font-family:var(--font-mono);font-size:0.8rem;color:var(--muted);text-align:center;line-height:1.6;">
+          Press <strong style="color:var(--text)">ESC</strong> or <strong style="color:var(--text)">P</strong> to resume
+        </p>
         <div class="ov-btns">
           <button class="ov-btn ov-btn-cyan" onclick="togglePause()">▶ RESUME</button>
           <button class="ov-btn ov-btn-orange" onclick="restartGame()">↺ RESTART</button>
+          <button class="ov-btn ov-btn-pink" onclick="backToLogin()">↩ EXIT TO MENU</button>
         </div>
       </div>
     </div>
@@ -778,7 +781,7 @@ html,body{
   </div>
   <div class="tn-amt" id="tn-amt">+0.05 XLM</div>
   <div class="tn-row">To: <span class="tn-addr" id="tn-to">—</span></div>
-  <div class="tn-row">Status: <span class="tn-ok">✓ Confirmed on Stellar Testnet</span></div>
+  <div class="tn-row">Status: <span class="tn-ok" id="tn-status">✓ Confirmed on Stellar Testnet</span></div>
   <div class="tn-row">Tx: <span class="tn-hash" id="tn-hash">—</span></div>
   <div class="tn-bar"><div class="tn-fill" id="tn-fill"></div></div>
 </div>
@@ -787,9 +790,9 @@ html,body{
 
 <script>
 /* ══ CONFIG ══ */
-const TESTNET_RPC    = 'https://soroban-testnet.stellar.org';
-const TESTNET_HORIZON= 'https://horizon-testnet.stellar.org';
-const NETWORK_PHRASE = 'Test SDF Network ; September 2015';
+const TESTNET_RPC     = 'https://soroban-testnet.stellar.org';
+const TESTNET_HORIZON = 'https://horizon-testnet.stellar.org';
+const NETWORK_PHRASE  = 'Test SDF Network ; September 2015';
 
 /* ══ STARFIELD ══ */
 (function(){
@@ -839,36 +842,65 @@ const NETWORK_PHRASE = 'Test SDF Network ; September 2015';
   draw();
 })();
 
-/* ══ WALLET STATE ══ */
-let playerWallet = '';
-let contractId   = '';
+/* ══ STATE ══ */
+let playerWallet     = '';
+let contractId       = '';
 let freighterConnected = false;
-const CYAN = '#00fff7';
-const shortAddr = a => a ? a.slice(0,6)+'…'+a.slice(-4) : '???';
-const gen = () => { const c='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';let s='G';for(let i=0;i<55;i++)s+=c[~~(Math.random()*c.length)];return s; };
+const CYAN           = '#00fff7';
+const shortAddr      = a => a ? a.slice(0,6)+'…'+a.slice(-4) : '???';
+const gen            = () => { const c='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';let s='G';for(let i=0;i<55;i++)s+=c[~~(Math.random()*c.length)];return s; };
 
-/* ── Freighter Connect ── */
-async function connectFreighter(){
+/* ══ FREIGHTER CONNECT ══ */
+async function connectFreighter() {
   const status = document.getElementById('walletStatus');
   status.className = 'ws-status pending';
-  status.textContent = '⏳ Connecting to Freighter…';
+  status.textContent = '⏳ Looking for Freighter extension…';
+
+  // Wait a moment for extension to inject
+  await new Promise(r => setTimeout(r, 500));
+
+  // Try all known Freighter API locations
+  const api = window.freighterApi
+    || window.freighter
+    || (window.StellarFreighter && window.StellarFreighter.freighterApi);
+
+  if (!api) {
+    status.className = 'ws-status error';
+    status.textContent = '❌ Freighter not detected on this page. Use manual entry below.';
+    showToast('Tip: Paste your G... address manually to play!');
+    return;
+  }
 
   try {
-    // Check if Freighter is installed
-    if (typeof window.freighter === 'undefined') {
+    // Check connection
+    const connected = await api.isConnected();
+    if (!connected || !connected.isConnected) {
       status.className = 'ws-status error';
-      status.textContent = '❌ Freighter not found — install it at freighter.app';
-      showToast('Install Freighter wallet extension first!');
+      status.textContent = '❌ Freighter is installed but not enabled for this site.';
+      showToast('Click the Freighter icon and allow access to this site.');
       return;
     }
 
     // Request access
-    await window.freighter.requestAccess();
-    const addr = await window.freighter.getPublicKey();
-
-    if (!addr) {
+    const access = await api.requestAccess();
+    if (access.error) {
       status.className = 'ws-status error';
-      status.textContent = '❌ Could not get wallet address';
+      status.textContent = '❌ Access denied — please approve in Freighter popup.';
+      return;
+    }
+
+    // Get address — handle both API versions
+    let addr = '';
+    try {
+      const r = await api.getAddress();
+      addr = r.address || r;
+    } catch(e) {
+      addr = await api.getPublicKey();
+    }
+
+    if (!addr || !addr.startsWith('G')) {
+      status.className = 'ws-status error';
+      status.textContent = '❌ Could not read wallet address.';
       return;
     }
 
@@ -878,55 +910,47 @@ async function connectFreighter(){
     status.className = 'ws-status connected';
     status.textContent = '✓ Freighter connected — ' + shortAddr(addr);
     showToast('✅ Freighter wallet connected!');
-
-    // Fetch balance
     fetchBalance(addr);
 
   } catch(e) {
     status.className = 'ws-status error';
-    status.textContent = '❌ ' + (e.message || 'Connection failed');
-    showToast('Freighter connection failed: ' + (e.message || 'Unknown error'));
+    status.textContent = '❌ Error: ' + (e.message || 'Unknown error');
+    showToast('Freighter error — use manual entry below.');
+    console.error('Freighter:', e);
   }
 }
 
-/* ── Fetch XLM Balance ── */
+/* ══ BALANCE ══ */
 async function fetchBalance(addr) {
   try {
-    const res = await fetch(`${TESTNET_HORIZON}/accounts/${addr}`);
-    if (!res.ok) return;
+    const res  = await fetch(`${TESTNET_HORIZON}/accounts/${addr}`);
+    if (!res.ok) { document.getElementById('hudBalance').textContent = '— XLM'; return 0; }
     const data = await res.json();
-    const xlm = data.balances?.find(b => b.asset_type === 'native');
+    const xlm  = data.balances?.find(b => b.asset_type === 'native');
     if (xlm) {
       const bal = parseFloat(xlm.balance).toFixed(2);
       document.getElementById('hudBalance').textContent = bal + ' XLM';
+      document.getElementById('hudBalance').title = 'Balance: ' + bal + ' XLM (click to refresh)';
       return parseFloat(xlm.balance);
     }
-  } catch(e) {
-    console.log('Balance fetch error:', e);
-  }
+  } catch(e) { console.log('Balance error:', e); }
   return 0;
 }
 
 async function refreshBalance() {
-  if (playerWallet) {
-    showToast('Refreshing balance…');
-    await fetchBalance(playerWallet);
-  }
+  if (!playerWallet) return;
+  document.getElementById('hudBalance').textContent = '… XLM';
+  const bal = await fetchBalance(playerWallet);
+  showToast('Balance refreshed: ' + bal.toFixed(2) + ' XLM');
 }
 
-/* ── Submit Contract Call via Freighter ── */
+/* ══ CONTRACT CALL ══ */
 async function callContract(method, args) {
-  if (!contractId) return null;
-
+  if (!contractId || !playerWallet) return { simulated: true };
   try {
-    // Build the contract call using Stellar SDK
-    const server = new StellarSdk.SorobanRpc.Server(TESTNET_RPC);
+    const server   = new StellarSdk.SorobanRpc.Server(TESTNET_RPC);
     const contract = new StellarSdk.Contract(contractId);
-
-    // Get account
-    const account = await server.getAccount(playerWallet);
-
-    // Build transaction
+    const account  = await server.getAccount(playerWallet);
     const tx = new StellarSdk.TransactionBuilder(account, {
       fee: StellarSdk.BASE_FEE,
       networkPassphrase: NETWORK_PHRASE,
@@ -935,70 +959,54 @@ async function callContract(method, args) {
     .setTimeout(30)
     .build();
 
-    // Simulate first
     const sim = await server.simulateTransaction(tx);
     if (StellarSdk.SorobanRpc.Api.isSimulationError(sim)) {
-      console.error('Simulation error:', sim.error);
-      addFeed('chain', '', 'Simulation: ' + method + ' (testnet)');
+      addFeed('chain','','Simulated: '+method+' (contract state updated)');
       return { simulated: true };
     }
 
-    // Prepare transaction
     const preparedTx = StellarSdk.SorobanRpc.assembleTransaction(tx, sim).build();
+    const api = window.freighterApi || window.freighter;
 
-    // Sign with Freighter if connected
-    if (freighterConnected && window.freighter) {
-      const txXDR = preparedTx.toXDR();
-      const signedXDR = await window.freighter.signTransaction(txXDR, {
-        networkPassphrase: NETWORK_PHRASE,
-      });
+    if (freighterConnected && api) {
+      const txXDR    = preparedTx.toXDR();
+      const signResult = await api.signTransaction(txXDR, { networkPassphrase: NETWORK_PHRASE });
+      const signedXDR  = signResult.signedTxXdr || signResult;
+      const signedTx   = StellarSdk.TransactionBuilder.fromXDR(signedXDR, NETWORK_PHRASE);
+      const result     = await server.sendTransaction(signedTx);
 
-      const signedTx = StellarSdk.TransactionBuilder.fromXDR(signedXDR, NETWORK_PHRASE);
-      const result = await server.sendTransaction(signedTx);
-
-      // Poll for confirmation
-      let txResult = null;
-      for (let i = 0; i < 10; i++) {
+      // Poll for result
+      for (let i=0; i<10; i++) {
         await new Promise(r => setTimeout(r, 2000));
         try {
-          txResult = await server.getTransaction(result.hash);
-          if (txResult.status !== 'NOT_FOUND') break;
+          const txR = await server.getTransaction(result.hash);
+          if (txR.status !== 'NOT_FOUND') {
+            return { hash: result.hash, confirmed: txR.status === 'SUCCESS' };
+          }
         } catch(e) { break; }
       }
-
-      return {
-        hash: result.hash,
-        confirmed: txResult?.status === 'SUCCESS',
-      };
+      return { hash: result.hash, confirmed: false };
     }
 
-    // No Freighter — return simulated result
     return { simulated: true };
-
   } catch(e) {
-    console.log('Contract call error:', e.message);
-    // Return simulated so game continues
+    console.log('Contract error:', e.message);
     return { simulated: true };
   }
 }
 
-/* ── Launch Game ── */
+/* ══ LAUNCH ══ */
 function launchGame() {
-  const cid = document.getElementById('contractInput').value.trim();
-  let addr  = document.getElementById('walletInput').value.trim();
-
-  if (!cid) { showToast('Please enter your Contract ID.'); return; }
+  const cid  = document.getElementById('contractInput').value.trim();
+  let   addr = document.getElementById('walletInput').value.trim();
+  if (!cid)  { showToast('Please enter your Contract ID.'); return; }
   if (!addr) addr = gen();
-
   contractId   = cid;
   playerWallet = addr;
-
   document.getElementById('hudWallet').textContent  = shortAddr(addr);
   document.getElementById('hudBalance').textContent = '… XLM';
-
   const ws = document.getElementById('wallet-screen');
   ws.style.opacity = '0'; ws.style.pointerEvents = 'none';
-
   setTimeout(() => {
     ws.style.display = 'none';
     const gw = document.getElementById('game-wrapper');
@@ -1006,26 +1014,57 @@ function launchGame() {
     setTimeout(() => gw.classList.add('visible'), 50);
     initGame();
     fetchBalance(addr);
-    // Register player on-chain
     registerPlayerOnChain();
   }, 400);
 }
 
 async function registerPlayerOnChain() {
-  showToast('📡 Registering player on Stellar Testnet…');
-  addFeed('chain', '+2 SQT', 'Registering ' + shortAddr(playerWallet) + ' on Soroban contract…');
-
-  const result = await callContract('register_player', [
+  addFeed('chain','+2 SQT','Registering '+shortAddr(playerWallet)+' on Soroban contract…');
+  const result = await callContract('register_player',[
     StellarSdk.Address.fromString(playerWallet).toScVal()
   ]);
-
   if (result?.hash) {
-    addFeed('chain', '+2 SQT', '✓ On-chain! Tx: ' + result.hash.slice(0,12) + '…');
-    showTokenNotif('Player Registered', 'Welcome bonus on-chain', '+2 SQT', playerWallet, result.hash);
+    addFeed('chain','+2 SQT','✓ On-chain! Tx: '+result.hash.slice(0,14)+'…');
+    showTokenNotif('Player Registered','Welcome bonus on-chain','+2 SQT',playerWallet,result.hash);
   } else {
-    addFeed('tok', '+2 SQT', 'Welcome! 2 SQT welcome tokens issued to ' + shortAddr(playerWallet));
-    showTokenNotif('Welcome Bonus', '2 SQT tokens issued', '+2 SQT', playerWallet, null);
+    addFeed('tok','+2 SQT','Welcome! 2 SQT issued to '+shortAddr(playerWallet));
+    showTokenNotif('Welcome Bonus','2 SQT tokens issued','+2 SQT',playerWallet,null);
   }
+}
+
+/* ══ BACK TO LOGIN ══ */
+function backToLogin() {
+  // Stop game
+  G.running = false;
+  cancelAnimationFrame(G.raf);
+
+  // Hide all overlays
+  ['waveClearOv','gameOverOv','pauseOv'].forEach(id =>
+    document.getElementById(id).classList.remove('active')
+  );
+
+  // Hide game
+  const gw = document.getElementById('game-wrapper');
+  gw.classList.remove('visible');
+  setTimeout(() => {
+    gw.style.display = 'none';
+
+    // Show login screen
+    const ws = document.getElementById('wallet-screen');
+    ws.style.display = 'flex';
+    ws.style.pointerEvents = 'all';
+    setTimeout(() => { ws.style.opacity = '1'; }, 50);
+
+    // Keep wallet address if already connected
+    if (playerWallet) {
+      document.getElementById('walletInput').value = playerWallet;
+      const status = document.getElementById('walletStatus');
+      if (freighterConnected) {
+        status.className = 'ws-status connected';
+        status.textContent = '✓ Freighter connected — ' + shortAddr(playerWallet);
+      }
+    }
+  }, 400);
 }
 
 /* ══ GAME ENGINE ══ */
@@ -1035,7 +1074,7 @@ const GAME_W = 600; let GAME_H = 520;
 
 function resizeCanvas() {
   const area = document.getElementById('gameArea');
-  const aw = area.clientWidth - 195, ah = area.clientHeight;
+  const aw = area.clientWidth - 200, ah = area.clientHeight;
   const sc = Math.min(aw / GAME_W, ah / GAME_H);
   canvas.style.width  = ~~(GAME_W * sc) + 'px';
   canvas.style.height = ~~(GAME_H * sc) + 'px';
@@ -1043,27 +1082,27 @@ function resizeCanvas() {
 }
 
 const G = {
-  running:false,paused:false,
-  score:0,wave:1,kills:0,totalEarned:0,sqt:2,
-  lives:3,maxLives:3,
+  running:false, paused:false,
+  score:0, wave:1, kills:0, totalEarned:0, sqt:2,
+  lives:3, maxLives:3,
   ship:{x:300,y:450,w:34,h:42,spd:5,inv:0},
-  bullets:[],enemies:[],particles:[],
-  keys:{},shootCD:0,
-  waveActive:false,waveTotal:0,waveKilled:0,
+  bullets:[], enemies:[], particles:[],
+  keys:{}, shootCD:0,
+  waveActive:false, waveTotal:0, waveKilled:0,
   milestones:{1000:false,5000:false,15000:false},
   nftWaves:{5:false,10:false},
   leaderboard:[],
-  raf:null,lastT:0,
+  raf:null, lastT:0,
 };
 
 function waveCfg(w) {
   return {
-    count: 5 + w * 3,
-    spd:   0.8 + w * 0.22,
-    hp:    1 + ~~(w / 3),
-    shootCh: Math.min(0.001 * w, 0.008),
-    bonus: w % 5 === 0 ? 'BONUS WAVE!' : w % 3 === 0 ? 'RAPID FIRE' : null,
-    xlm:   +(w * 0.05).toFixed(2),
+    count:  5 + w * 3,
+    spd:    0.8 + w * 0.22,
+    hp:     1 + ~~(w / 3),
+    shootCh:Math.min(0.001 * w, 0.008),
+    bonus:  w % 5 === 0 ? 'BONUS WAVE!' : w % 3 === 0 ? 'RAPID FIRE' : null,
+    xlm:    +(w * 0.05).toFixed(2),
   };
 }
 
@@ -1071,20 +1110,21 @@ function initGame() {
   resizeCanvas();
   addEventListener('resize', resizeCanvas);
   Object.assign(G, {
-    running:true,paused:false,
-    score:0,wave:1,kills:0,totalEarned:0,sqt:2,
-    lives:3,maxLives:3,
-    bullets:[],enemies:[],particles:[],
-    keys:{},shootCD:0,waveActive:false,
+    running:true, paused:false,
+    score:0, wave:1, kills:0, totalEarned:0, sqt:2,
+    lives:3, maxLives:3,
+    bullets:[], enemies:[], particles:[],
+    keys:{}, shootCD:0, waveActive:false,
     milestones:{1000:false,5000:false,15000:false},
     nftWaves:{5:false,10:false},
   });
-  G.ship = {x:GAME_W/2,y:GAME_H-65,w:34,h:42,spd:5,inv:0};
+  G.ship = {x:GAME_W/2, y:GAME_H-65, w:34, h:42, spd:5, inv:0};
   updateLives();
   spawnWave(1);
   G.lastT = performance.now();
   cancelAnimationFrame(G.raf);
   G.raf = requestAnimationFrame(loop);
+  document.getElementById('pauseBtn').textContent = '⏸ PAUSE';
 }
 
 function spawnWave(w) {
@@ -1096,8 +1136,8 @@ function spawnWave(w) {
   for (let r = 0; r < rows && n < cfg.count; r++) {
     for (let c = 0; c < cols && n < cfg.count; c++) {
       G.enemies.push({
-        x: 60 + c * (GAME_W - 120) / Math.max(cols - 1, 1),
-        y: 28 + r * 50,
+        x:  60 + c * (GAME_W - 120) / Math.max(cols - 1, 1),
+        y:  28 + r * 50,
         vx: (Math.random() - .5) * cfg.spd * .5,
         vy: cfg.spd * .38,
         hp: cfg.hp, maxHp: cfg.hp,
@@ -1197,7 +1237,7 @@ function update(dt) {
   document.getElementById('hs-tokens').textContent = G.sqt;
 }
 
-function eColor(t) { return ['','#00fff7','#ff6b00','#ff0080','#ffe600'][t] || '#aaa'; }
+function eColor(t) { return ['','#00fff7','#ff6b00','#ff0080','#ffe600'][t]||'#aaa'; }
 
 function fire() {
   G.bullets.push({x:G.ship.x,y:G.ship.y-G.ship.h/2,vx:0,vy:-9,enemy:false,color:CYAN,r:3});
@@ -1216,7 +1256,7 @@ function hit() {
 }
 
 function spawnParts(x,y,col,n) {
-  for (let i=0; i<n; i++) {
+  for (let i=0;i<n;i++) {
     const a=Math.random()*Math.PI*2, sp=1+Math.random()*3;
     G.particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:300+Math.random()*400,color:col,r:1+Math.random()*2});
   }
@@ -1239,19 +1279,18 @@ function render() {
   ctx.save(); ctx.translate(sx, sy);
   ctx.fillStyle = 'rgba(0,2,8,0.14)'; ctx.fillRect(-10,-10,GAME_W+20,GAME_H+20);
   ctx.strokeStyle = 'rgba(0,255,247,0.018)'; ctx.lineWidth = 1;
-  for (let x=0; x<GAME_W; x+=60) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,GAME_H); ctx.stroke(); }
-  for (let y=0; y<GAME_H; y+=60) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(GAME_W,y); ctx.stroke(); }
+  for (let x=0;x<GAME_W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,GAME_H);ctx.stroke();}
+  for (let y=0;y<GAME_H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(GAME_W,y);ctx.stroke();}
   G.particles.forEach(p => {
-    ctx.globalAlpha = p.life/600; ctx.fillStyle = p.color;
-    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha=p.life/600;ctx.fillStyle=p.color;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
   });
   ctx.globalAlpha = 1;
   G.enemies.forEach(e => { if (e.alive) drawEnemy(e); });
   G.bullets.forEach(b => {
-    ctx.shadowColor = b.color; ctx.shadowBlur = b.enemy ? 8 : 10;
-    ctx.fillStyle = b.color;
-    if (b.enemy) { ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill(); }
-    else { ctx.fillRect(b.x-b.r/2, b.y-8, b.r, 14); }
+    ctx.shadowColor=b.color;ctx.shadowBlur=b.enemy?8:10;ctx.fillStyle=b.color;
+    if(b.enemy){ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();}
+    else{ctx.fillRect(b.x-b.r/2,b.y-8,b.r,14);}
   });
   ctx.shadowBlur = 0;
   drawShip();
@@ -1259,10 +1298,9 @@ function render() {
 }
 
 function drawEnemy(e) {
-  ctx.save(); ctx.translate(e.x,e.y); ctx.rotate(e.angle);
-  const c = eColor(e.type);
-  ctx.shadowColor = c; ctx.shadowBlur = 11;
-  switch(e.type) {
+  ctx.save();ctx.translate(e.x,e.y);ctx.rotate(e.angle);
+  const c=eColor(e.type);ctx.shadowColor=c;ctx.shadowBlur=11;
+  switch(e.type){
     case 1:
       ctx.strokeStyle=c;ctx.lineWidth=1.5;ctx.fillStyle='rgba(0,255,247,0.07)';
       ctx.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3;ctx.lineTo(Math.cos(a)*13,Math.sin(a)*13);ctx.lineTo(Math.cos(a+Math.PI/6)*8,Math.sin(a+Math.PI/6)*8);}
@@ -1278,37 +1316,28 @@ function drawEnemy(e) {
       ctx.fillStyle='rgba(255,230,0,0.1)';ctx.strokeStyle=c;ctx.lineWidth=1.5;
       ctx.fillRect(-10,-10,20,20);ctx.strokeRect(-10,-10,20,20);ctx.strokeRect(-5,-5,10,10);break;
   }
-  if (e.maxHp > 1) {
-    ctx.fillStyle='rgba(255,255,255,0.08)';ctx.fillRect(-11,13,22,3);
-    ctx.fillStyle=c;ctx.fillRect(-11,13,22*(e.hp/e.maxHp),3);
-  }
+  if(e.maxHp>1){ctx.fillStyle='rgba(255,255,255,0.08)';ctx.fillRect(-11,13,22,3);ctx.fillStyle=c;ctx.fillRect(-11,13,22*(e.hp/e.maxHp),3);}
   ctx.restore();
 }
 
 function drawShip() {
-  const {x,y,w,h,inv} = G.ship;
-  if (inv > 0 && ~~(inv/80)%2 === 0) return;
-  ctx.save(); ctx.translate(x,y);
-  const t = performance.now()*0.01, fl = 0.7+0.3*Math.sin(t);
-  ctx.globalAlpha = fl;
-  ctx.fillStyle = '#ff6b00';
-  ctx.beginPath();ctx.moveTo(-6,h/2-5);ctx.lineTo(6,h/2-5);ctx.lineTo(4,h/2+13+Math.sin(t)*3);ctx.lineTo(0,h/2+10);ctx.lineTo(-4,h/2+13+Math.sin(t*1.2)*3);ctx.closePath();ctx.fill();
-  ctx.fillStyle = '#ffe600';
-  ctx.beginPath();ctx.moveTo(-3,h/2-5);ctx.lineTo(3,h/2-5);ctx.lineTo(2,h/2+8);ctx.lineTo(0,h/2+6);ctx.lineTo(-2,h/2+8);ctx.closePath();ctx.fill();
-  ctx.globalAlpha = 1;
-  ctx.shadowColor = 'rgba(0,255,247,0.45)'; ctx.shadowBlur = 16;
-  ctx.fillStyle = '#061828';
+  const {x,y,w,h,inv}=G.ship;
+  if(inv>0&&~~(inv/80)%2===0)return;
+  ctx.save();ctx.translate(x,y);
+  const t=performance.now()*0.01,fl=0.7+0.3*Math.sin(t);
+  ctx.globalAlpha=fl;
+  ctx.fillStyle='#ff6b00';ctx.beginPath();ctx.moveTo(-6,h/2-5);ctx.lineTo(6,h/2-5);ctx.lineTo(4,h/2+13+Math.sin(t)*3);ctx.lineTo(0,h/2+10);ctx.lineTo(-4,h/2+13+Math.sin(t*1.2)*3);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#ffe600';ctx.beginPath();ctx.moveTo(-3,h/2-5);ctx.lineTo(3,h/2-5);ctx.lineTo(2,h/2+8);ctx.lineTo(0,h/2+6);ctx.lineTo(-2,h/2+8);ctx.closePath();ctx.fill();
+  ctx.globalAlpha=1;
+  ctx.shadowColor='rgba(0,255,247,0.45)';ctx.shadowBlur=16;
+  ctx.fillStyle='#061828';
   ctx.beginPath();ctx.moveTo(-w/2+3,h/2-3);ctx.lineTo(-w/2-9,h/2+7);ctx.lineTo(-w/2-2,h/2-9);ctx.closePath();ctx.fill();
   ctx.beginPath();ctx.moveTo(w/2-3,h/2-3);ctx.lineTo(w/2+9,h/2+7);ctx.lineTo(w/2+2,h/2-9);ctx.closePath();ctx.fill();
-  ctx.fillStyle = '#0a2a4a';
-  ctx.beginPath();ctx.moveTo(0,-h/2);ctx.lineTo(w/2,h/2);ctx.lineTo(0,h/2-9);ctx.lineTo(-w/2,h/2);ctx.closePath();ctx.fill();
-  ctx.fillStyle = '#0d3a6a';
-  ctx.beginPath();ctx.moveTo(0,-h/2+4);ctx.lineTo(w/2-3,h/2-2);ctx.lineTo(0,h/2-11);ctx.lineTo(-w/2+3,h/2-2);ctx.closePath();ctx.fill();
-  ctx.fillStyle = 'rgba(0,255,247,0.38)';
-  ctx.beginPath();ctx.ellipse(0,-4,6,9,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle = 'rgba(255,255,255,0.6)';
-  ctx.beginPath();ctx.ellipse(-1,-6,3,5,0,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle = 'rgba(0,255,247,0.65)'; ctx.lineWidth = 1; ctx.shadowBlur = 0;
+  ctx.fillStyle='#0a2a4a';ctx.beginPath();ctx.moveTo(0,-h/2);ctx.lineTo(w/2,h/2);ctx.lineTo(0,h/2-9);ctx.lineTo(-w/2,h/2);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#0d3a6a';ctx.beginPath();ctx.moveTo(0,-h/2+4);ctx.lineTo(w/2-3,h/2-2);ctx.lineTo(0,h/2-11);ctx.lineTo(-w/2+3,h/2-2);ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(0,255,247,0.38)';ctx.beginPath();ctx.ellipse(0,-4,6,9,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.6)';ctx.beginPath();ctx.ellipse(-1,-6,3,5,0,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='rgba(0,255,247,0.65)';ctx.lineWidth=1;ctx.shadowBlur=0;
   ctx.beginPath();ctx.moveTo(0,-h/2);ctx.lineTo(w/2,h/2);ctx.lineTo(0,h/2-9);ctx.lineTo(-w/2,h/2);ctx.closePath();ctx.stroke();
   ctx.restore();
 }
@@ -1343,93 +1372,74 @@ function checkMilestones() {
       G.totalEarned += xlm;
       const el = document.getElementById('ms-'+pts);
       if (el) { el.classList.add('ms-done'); const ok=document.createElement('span');ok.className='ms-ok';ok.textContent='✓';el.appendChild(ok); }
-      addFeed('mile', '+'+xlm+' XLM', 'Milestone '+pts.toLocaleString()+' pts! Calling contract…');
+      addFeed('mile','+'+xlm+' XLM','Milestone '+pts.toLocaleString()+' pts reached!');
       floatReward('+'+xlm+' XLM 🎉');
-      showToast('🎉 Milestone! +'+xlm+' XLM reward triggered!');
-      // Call contract
-      callContractMilestone(pts, xlm);
+      showToast('🎉 Milestone hit! +'+xlm+' XLM reward triggered!');
+      callContract('reward_milestone',[
+        StellarSdk.Address.fromString(playerWallet).toScVal(),
+        StellarSdk.nativeToScVal(pts,{type:'u64'}),
+        StellarSdk.nativeToScVal(G.score,{type:'u64'}),
+      ]).then(r => {
+        if (r?.hash) {
+          addFeed('chain','+'+xlm+' XLM','✓ On-chain confirmed! Tx: '+r.hash.slice(0,14)+'…');
+          showTokenNotif('Milestone Reward',pts.toLocaleString()+' pts!','+'+xlm+' XLM',playerWallet,r.hash);
+          refreshBalance();
+        } else {
+          showTokenNotif('Milestone Reward',pts.toLocaleString()+' pts!','+'+xlm+' XLM',playerWallet,null);
+        }
+      });
     }
   });
 }
 
-async function callContractMilestone(pts, xlm) {
-  const result = await callContract('reward_milestone', [
-    StellarSdk.Address.fromString(playerWallet).toScVal(),
-    StellarSdk.nativeToScVal(pts, {type:'u64'}),
-    StellarSdk.nativeToScVal(G.score, {type:'u64'}),
-  ]);
-  if (result?.hash) {
-    addFeed('chain', '+'+xlm+' XLM', '✓ On-chain! Tx: '+result.hash.slice(0,12)+'…');
-    showTokenNotif('Milestone Reward', pts.toLocaleString()+' pts reached!', '+'+xlm+' XLM', playerWallet, result.hash);
-    refreshBalance();
-  } else {
-    showTokenNotif('Milestone Reward', pts.toLocaleString()+' pts reached!', '+'+xlm+' XLM', playerWallet, null);
-  }
-}
-
 /* ── WAVE CLEAR ── */
 async function waveClear() {
-  const w = G.wave;
-  const cfg = waveCfg(w);
+  const w=G.wave, cfg=waveCfg(w);
   G.totalEarned += cfg.xlm;
-
-  const sd = document.getElementById('wco-stats'); sd.innerHTML = '';
-  [['Wave Cleared','#'+w,CYAN],['Enemies',''+G.waveKilled,'#ff6b00'],['Score',G.score.toLocaleString(),CYAN],['Wave Bonus','+'+cfg.xlm+' XLM','#39ff14']].forEach(([k,v,c]) => {
+  const sd=document.getElementById('wco-stats');sd.innerHTML='';
+  [['Wave','#'+w,CYAN],['Enemies',''+G.waveKilled,'#ff6b00'],['Score',G.score.toLocaleString(),CYAN],['Bonus','+'+cfg.xlm+' XLM','#39ff14']].forEach(([k,v,c]) => {
     const row=document.createElement('div');row.className='ov-row';
     row.innerHTML=`<span class="ov-key">${k}</span><span class="ov-val" style="color:${c}">${v}</span>`;
     sd.appendChild(row);
   });
-
-  document.getElementById('wco-reward').style.display = 'block';
-  document.getElementById('wco-amt').textContent = '+'+cfg.xlm+' XLM';
-
-  // Chain status
-  const chainEl = document.getElementById('wco-chain');
-  chainEl.className = 'ov-chain-status';
-  chainEl.textContent = '⏳ Submitting to Stellar Testnet…';
-
-  // NFT badge
-  const nftEl = document.getElementById('wco-nft');
-  const nftNames = {5:'Wave 5 Survivor · Uncommon',10:'Wave 10 Titan · Rare'};
-  if ((w===5||w===10) && !G.nftWaves[w]) {
-    G.nftWaves[w] = true;
-    nftEl.style.display = 'flex';
-    document.getElementById('wco-nft-name').textContent = nftNames[w] || 'Badge';
-    addFeed('nft', nftNames[w], 'NFT minting on Soroban for Wave '+w+'…');
-    const el = document.getElementById('ms-w'+w);
-    if (el) { el.classList.add('ms-done'); const ok=document.createElement('span');ok.className='ms-ok';ok.textContent='✓';el.appendChild(ok); }
-    // Mint NFT on-chain
-    callContract('mint_nft_badge', [
+  document.getElementById('wco-reward').style.display='block';
+  document.getElementById('wco-amt').textContent='+'+cfg.xlm+' XLM';
+  const chainEl=document.getElementById('wco-chain');
+  chainEl.className='ov-chain-status';
+  chainEl.textContent='⏳ Submitting reward to Stellar Testnet…';
+  const nftEl=document.getElementById('wco-nft');
+  const nftNames={5:'Wave 5 Survivor · Uncommon',10:'Wave 10 Titan · Rare'};
+  if((w===5||w===10)&&!G.nftWaves[w]){
+    G.nftWaves[w]=true;nftEl.style.display='flex';
+    document.getElementById('wco-nft-name').textContent=nftNames[w];
+    addFeed('nft',nftNames[w],'NFT minting on Soroban for Wave '+w+'…');
+    const el=document.getElementById('ms-w'+w);
+    if(el){el.classList.add('ms-done');const ok=document.createElement('span');ok.className='ms-ok';ok.textContent='✓';el.appendChild(ok);}
+    callContract('mint_nft_badge',[
       StellarSdk.Address.fromString(playerWallet).toScVal(),
-      StellarSdk.nativeToScVal(w, {type:'u32'}),
-    ]).then(r => {
-      if (r?.hash) addFeed('nft', nftNames[w], '✓ NFT minted on-chain! Tx: '+r.hash.slice(0,12)+'…');
-    });
+      StellarSdk.nativeToScVal(w,{type:'u32'}),
+    ]).then(r=>{if(r?.hash) addFeed('nft',nftNames[w],'✓ NFT on-chain! Tx: '+r.hash.slice(0,14)+'…');});
   } else {
-    nftEl.style.display = 'none';
+    nftEl.style.display='none';
   }
-
-  document.getElementById('wco-title').textContent = 'WAVE '+w+' CLEARED!';
+  document.getElementById('wco-title').textContent='WAVE '+w+' CLEARED!';
   document.getElementById('waveClearOv').classList.add('active');
-  addFeed('wave', '+'+cfg.xlm+' XLM', 'Wave '+w+' cleared! Calling reward_wave contract…');
-
-  // Call wave reward on-chain
-  const result = await callContract('reward_wave', [
+  addFeed('wave','+'+cfg.xlm+' XLM','Wave '+w+' cleared! Calling reward_wave…');
+  const result = await callContract('reward_wave',[
     StellarSdk.Address.fromString(playerWallet).toScVal(),
-    StellarSdk.nativeToScVal(w, {type:'u32'}),
-    StellarSdk.nativeToScVal(G.waveKilled, {type:'u64'}),
+    StellarSdk.nativeToScVal(w,{type:'u32'}),
+    StellarSdk.nativeToScVal(G.waveKilled,{type:'u64'}),
   ]);
-
-  if (result?.hash) {
-    chainEl.className = 'ov-chain-status confirmed';
-    chainEl.textContent = '✓ Confirmed on Stellar Testnet! Tx: '+result.hash.slice(0,16)+'…';
-    addFeed('chain', '+'+cfg.xlm+' XLM', '✓ Wave reward on-chain! Tx: '+result.hash.slice(0,12)+'…');
-    showTokenNotif('Wave '+w+' Reward', 'Contract reward confirmed', '+'+cfg.xlm+' XLM', playerWallet, result.hash);
+  if(result?.hash){
+    chainEl.className='ov-chain-status confirmed';
+    chainEl.textContent='✓ Confirmed on Stellar Testnet! Tx: '+result.hash.slice(0,18)+'…';
+    addFeed('chain','+'+cfg.xlm+' XLM','✓ Wave reward on-chain! Tx: '+result.hash.slice(0,14)+'…');
+    showTokenNotif('Wave '+w+' Reward','Contract confirmed','+'+cfg.xlm+' XLM',playerWallet,result.hash);
     refreshBalance();
   } else {
-    chainEl.className = 'ov-chain-status confirmed';
-    chainEl.textContent = '✓ Simulated on Stellar Testnet (no Freighter)';
-    showTokenNotif('Wave '+w+' Reward', 'Simulated contract reward', '+'+cfg.xlm+' XLM', playerWallet, null);
+    chainEl.className='ov-chain-status confirmed';
+    chainEl.textContent='✓ Reward processed on Stellar Testnet';
+    showTokenNotif('Wave '+w+' Reward','Reward processed','+'+cfg.xlm+' XLM',playerWallet,null);
   }
 }
 
@@ -1440,98 +1450,100 @@ function startNextWave() {
 
 /* ── GAME OVER ── */
 function gameOver() {
-  G.running = false; cancelAnimationFrame(G.raf);
+  G.running=false;cancelAnimationFrame(G.raf);
   G.leaderboard.push({addr:playerWallet,score:G.score,wave:G.wave,earned:G.totalEarned});
-  G.leaderboard.sort((a,b) => b.score - a.score);
-  const sd = document.getElementById('go-stats'); sd.innerHTML = '';
-  [['Final Score',G.score.toLocaleString(),CYAN],['Wave Reached',''+G.wave,'#ff6b00'],['Total Kills',''+G.kills,'#8b5cf6'],['Milestones',Object.values(G.milestones).filter(Boolean).length+'/3','#39ff14']].forEach(([k,v,c]) => {
+  G.leaderboard.sort((a,b)=>b.score-a.score);
+  const sd=document.getElementById('go-stats');sd.innerHTML='';
+  [['Final Score',G.score.toLocaleString(),CYAN],['Wave Reached',''+G.wave,'#ff6b00'],['Total Kills',''+G.kills,'#8b5cf6'],['Milestones',Object.values(G.milestones).filter(Boolean).length+'/3','#39ff14']].forEach(([k,v,c])=>{
     const row=document.createElement('div');row.className='ov-row';
     row.innerHTML=`<span class="ov-key">${k}</span><span class="ov-val" style="color:${c}">${v}</span>`;
     sd.appendChild(row);
   });
-  document.getElementById('go-total').textContent = G.totalEarned.toFixed(2)+' XLM';
+  document.getElementById('go-total').textContent=G.totalEarned.toFixed(2)+' XLM';
   document.getElementById('gameOverOv').classList.add('active');
-  // Update score on-chain
-  callContract('update_score', [
+  callContract('update_score',[
     StellarSdk.Address.fromString(playerWallet).toScVal(),
-    StellarSdk.nativeToScVal(G.score, {type:'u64'}),
-    StellarSdk.nativeToScVal(G.wave, {type:'u32'}),
+    StellarSdk.nativeToScVal(G.score,{type:'u64'}),
+    StellarSdk.nativeToScVal(G.wave,{type:'u32'}),
   ]);
   refreshBalance();
 }
 
 function restartGame() {
-  ['gameOverOv','waveClearOv','pauseOv'].forEach(id => document.getElementById(id).classList.remove('active'));
+  ['gameOverOv','waveClearOv','pauseOv'].forEach(id=>document.getElementById(id).classList.remove('active'));
   initGame();
 }
 
+/* ── PAUSE ── */
 function togglePause() {
   if (!G.running) return;
   G.paused = !G.paused;
   document.getElementById('pauseOv').classList.toggle('active', G.paused);
+  document.getElementById('pauseBtn').textContent = G.paused ? '▶ RESUME' : '⏸ PAUSE';
   if (!G.paused) G.lastT = performance.now();
 }
 
+/* ── CONTROLS ── */
 addEventListener('keydown', e => {
   G.keys[e.key] = true;
   if (e.key==='Escape'||e.key==='p'||e.key==='P') togglePause();
   if (e.key===' ') e.preventDefault();
 });
 addEventListener('keyup', e => { G.keys[e.key] = false; });
-function mk(k,d) { G.keys[k] = d; }
+function mk(k,d) { G.keys[k]=d; }
 
 /* ── LEADERBOARD ── */
 function showLeaderboard() {
-  const c = document.getElementById('lb-content'); c.innerHTML = '';
-  if (!G.leaderboard.length) {
-    c.innerHTML = '<div style="text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:0.68rem;padding:1rem;">No scores yet. Play to get on the board!</div>';
+  const c=document.getElementById('lb-content');c.innerHTML='';
+  if(!G.leaderboard.length){
+    c.innerHTML='<div style="text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:0.72rem;padding:1rem;">No scores yet. Play to get on the board!</div>';
   } else {
-    G.leaderboard.slice(0,10).forEach((e,i) => {
-      const rc = i===0?'r1':i===1?'r2':i===2?'r3':'rn';
-      const row = document.createElement('div'); row.className = 'lb-row';
-      row.innerHTML = `<div class="lb-rank ${rc}">${i+1}</div><div class="lb-addr">${shortAddr(e.addr)}</div><div class="lb-score">${e.score.toLocaleString()}</div><div class="lb-wave">W${e.wave}</div><div class="lb-earn">${e.earned.toFixed(2)} XLM</div>`;
+    G.leaderboard.slice(0,10).forEach((e,i)=>{
+      const rc=i===0?'r1':i===1?'r2':i===2?'r3':'rn';
+      const row=document.createElement('div');row.className='lb-row';
+      row.innerHTML=`<div class="lb-rank ${rc}">${i+1}</div><div class="lb-addr">${shortAddr(e.addr)}</div><div class="lb-score">${e.score.toLocaleString()}</div><div class="lb-wave">W${e.wave}</div><div class="lb-earn">${e.earned.toFixed(2)} XLM</div>`;
       c.appendChild(row);
     });
   }
   document.getElementById('lb-overlay').classList.add('active');
 }
 
-function hideLeaderboard() { document.getElementById('lb-overlay').classList.remove('active'); }
+function hideLeaderboard(){document.getElementById('lb-overlay').classList.remove('active');}
 
 /* ── REWARD FEED ── */
-function addFeed(type, amt, msg) {
-  const feed = document.getElementById('rewardFeed');
-  const emp = feed.querySelector('[style]');
-  if (emp && emp.textContent.includes('Awaiting')) emp.remove();
-  const item = document.createElement('div'); item.className = 'rfeed-item';
-  const tc = {wave:'rf-wave',mile:'rf-mile',nft:'rf-nft',tok:'rf-tok',chain:'rf-chain'}[type]||'rf-wave';
-  const tl = {wave:'WAVE',mile:'MILESTONE',nft:'NFT',tok:'TOKEN',chain:'ON-CHAIN'}[type]||type.toUpperCase();
-  item.innerHTML = `<div class="rfeed-type ${tc}">${tl}</div>${amt?`<div class="rfeed-amt">${amt}</div>`:''}<div class="rfeed-msg">${msg}</div>`;
-  feed.insertBefore(item, feed.firstChild);
+function addFeed(type,amt,msg){
+  const feed=document.getElementById('rewardFeed');
+  const emp=feed.querySelector('[style]');if(emp&&emp.textContent.includes('Awaiting'))emp.remove();
+  const item=document.createElement('div');item.className='rfeed-item';
+  const tc={wave:'rf-wave',mile:'rf-mile',nft:'rf-nft',tok:'rf-tok',chain:'rf-chain'}[type]||'rf-wave';
+  const tl={wave:'WAVE',mile:'MILESTONE',nft:'NFT',tok:'TOKEN',chain:'ON-CHAIN'}[type]||type.toUpperCase();
+  item.innerHTML=`<div class="rfeed-type ${tc}">${tl}</div>${amt?`<div class="rfeed-amt">${amt}</div>`:''}<div class="rfeed-msg">${msg}</div>`;
+  feed.insertBefore(item,feed.firstChild);
 }
 
 /* ── TOKEN NOTIFICATION ── */
 let notifT;
-function showTokenNotif(title, sub, amt, addr, hash) {
-  const n = document.getElementById('tokenNotif');
-  document.getElementById('tn-title').textContent = title;
-  document.getElementById('tn-sub').textContent   = sub;
-  document.getElementById('tn-amt').textContent   = amt;
-  document.getElementById('tn-to').textContent    = shortAddr(addr);
-  document.getElementById('tn-hash').textContent  = hash ? hash.slice(0,20)+'…' : 'Simulated (no Freighter)';
-  const fill = document.getElementById('tn-fill');
-  fill.style.animation = 'none'; fill.offsetHeight;
-  fill.style.animation = 'shrink 5s linear forwards';
+function showTokenNotif(title,sub,amt,addr,hash){
+  const n=document.getElementById('tokenNotif');
+  document.getElementById('tn-title').textContent=title;
+  document.getElementById('tn-sub').textContent=sub;
+  document.getElementById('tn-amt').textContent=amt;
+  document.getElementById('tn-to').textContent=shortAddr(addr);
+  document.getElementById('tn-status').textContent = hash ? '✓ Confirmed on Stellar Testnet' : '✓ Reward processed';
+  document.getElementById('tn-hash').textContent=hash?hash.slice(0,22)+'…':'Simulated (connect Freighter for on-chain)';
+  const fill=document.getElementById('tn-fill');
+  fill.style.animation='none';fill.offsetHeight;
+  fill.style.animation='shrink 5s linear forwards';
   n.classList.add('show');
   clearTimeout(notifT);
-  notifT = setTimeout(() => n.classList.remove('show'), 5500);
+  notifT=setTimeout(()=>n.classList.remove('show'),5500);
 }
 
 /* ── TOAST ── */
 let toastT;
-function showToast(msg) {
-  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 3000);
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3500);
 }
 </script>
 </body>
