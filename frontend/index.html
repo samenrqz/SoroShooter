@@ -1,903 +1,859 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Soroban Counter dApp</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-         :root {
-            --primary: #7c3aed;
-            --primary-light: #a855f7;
-            --secondary: #06b6d4;
-            --accent: #f59e0b;
-            --bg-dark: #0a0a1a;
-            --bg-card: rgba(255, 255, 255, 0.05);
-            --text: #f1f5f9;
-            --text-muted: #94a3b8;
-            --success: #10b981;
-            --danger: #ef4444;
-            --border: rgba(255, 255, 255, 0.1);
-        }
-        
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: var(--bg-dark);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        
-        .bg-animation {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            background: radial-gradient(ellipse at 20% 50%, rgba(124, 58, 237, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, rgba(6, 182, 212, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 50% 80%, rgba(245, 158, 11, 0.1) 0%, transparent 50%);
-        }
-        
-        .stars {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-        }
-        
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle var(--duration) ease-in-out infinite;
-            opacity: 0;
-        }
-        
-        @keyframes twinkle {
-            0%,
-            100% {
-                opacity: 0;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.5);
-            }
-        }
-        
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        /* Header */
-        
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
-            animation: fadeDown 0.8s ease;
-        }
-        
-        .logo {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 0.75rem;
-        }
-        
-        .logo-text {
-            font-size: 1.4rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        header h1 {
-            font-size: clamp(1.8rem, 4vw, 3rem);
-            font-weight: 800;
-            background: linear-gradient(135deg, #fff 0%, var(--primary-light) 50%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.4rem;
-            line-height: 1.2;
-        }
-        
-        header p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-        /* Badge row */
-        
-        .badge-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 0.75rem;
-        }
-        
-        .tag {
-            padding: 0.25rem 0.85rem;
-            border-radius: 999px;
-            font-size: 0.72rem;
-            font-weight: 600;
-            letter-spacing: 0.1em;
-        }
-        
-        .tag-purple {
-            background: rgba(124, 58, 237, 0.15);
-            color: #a78bfa;
-            border: 1px solid rgba(124, 58, 237, 0.25);
-        }
-        
-        .tag-cyan {
-            background: rgba(6, 182, 212, 0.15);
-            color: #06b6d4;
-            border: 1px solid rgba(6, 182, 212, 0.25);
-        }
-        
-        .tag-green {
-            background: rgba(16, 185, 129, 0.12);
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-        /* Network badge */
-        
-        .network-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: var(--success);
-            padding: 0.3rem 1rem;
-            border-radius: 999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-top: 0.75rem;
-            letter-spacing: 0.05em;
-        }
-        
-        .network-badge::before {
-            content: '';
-            width: 7px;
-            height: 7px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%,
-            100% {
-                opacity: 1;
-                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
-            }
-            50% {
-                opacity: 0.7;
-                box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
-            }
-        }
-        /* Main two-column layout */
-        
-        .main-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            flex: 1;
-            align-items: start;
-        }
-        
-        .left-col {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-        
-        .right-col {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-        /* Contract ID */
-        
-        .config-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.25rem 1.5rem;
-            backdrop-filter: blur(10px);
-            animation: fadeUp 0.8s ease 0.1s both;
-        }
-        
-        .config-card label {
-            display: block;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 0.5rem;
-        }
-        
-        .config-card input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 0.7rem 1rem;
-            color: var(--text);
-            font-size: 0.82rem;
-            font-family: 'Courier New', monospace;
-            transition: border-color 0.2s;
-            outline: none;
-        }
-        
-        .config-card input:focus {
-            border-color: var(--primary-light);
-        }
-        
-        .config-card input::placeholder {
-            color: var(--text-muted);
-        }
-        /* Counter card */
-        
-        .counter-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 2.5rem 1.5rem;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-            animation: fadeUp 0.8s ease 0.2s both;
-        }
-        
-        .counter-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(6, 182, 212, 0.05));
-            pointer-events: none;
-        }
-        
-        .counter-label {
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            color: var(--text-muted);
-            margin-bottom: 0.75rem;
-        }
-        
-        .counter-value {
-            font-size: clamp(4rem, 10vw, 7rem);
-            font-weight: 900;
-            line-height: 1;
-            background: linear-gradient(135deg, #fff, var(--primary-light), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            transition: transform 0.15s ease;
-            display: inline-block;
-            margin-bottom: 1.5rem;
-            filter: drop-shadow(0 0 40px rgba(124, 58, 237, 0.3));
-        }
-        
-        .counter-value.bump {
-            transform: scale(1.15);
-        }
-        
-        .btn-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.75rem;
-        }
-        
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.4rem;
-            padding: 0.8rem 1rem;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-            letter-spacing: 0.02em;
-        }
-        
-        .btn::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: rgba(255, 255, 255, 0.1);
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        
-        .btn:hover::after {
-            opacity: 1;
-        }
-        
-        .btn:active {
-            transform: scale(0.96);
-        }
-        
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .btn-increment {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: white;
-            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
-        }
-        
-        .btn-increment:hover {
-            box-shadow: 0 6px 30px rgba(124, 58, 237, 0.6);
-            transform: translateY(-2px);
-        }
-        
-        .btn-decrement {
-            background: linear-gradient(135deg, #1e293b, #334155);
-            color: white;
-            border: 1px solid var(--border);
-        }
-        
-        .btn-decrement:hover {
-            border-color: var(--primary-light);
-            transform: translateY(-2px);
-        }
-        
-        .btn-init {
-            background: linear-gradient(135deg, var(--secondary), #0891b2);
-            color: white;
-            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
-        }
-        
-        .btn-init:hover {
-            box-shadow: 0 6px 30px rgba(6, 182, 212, 0.6);
-            transform: translateY(-2px);
-        }
-        
-        .btn-value {
-            background: linear-gradient(135deg, #1e293b, #334155);
-            color: var(--accent);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-        
-        .btn-value:hover {
-            border-color: var(--accent);
-            transform: translateY(-2px);
-        }
-        /* Stats */
-        
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.75rem;
-            animation: fadeUp 0.8s ease 0.3s both;
-        }
-        
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 1rem;
-            text-align: center;
-            backdrop-filter: blur(10px);
-        }
-        
-        .stat-value {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: var(--primary-light);
-        }
-        
-        .stat-label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-muted);
-            margin-top: 0.2rem;
-        }
-        /* Log */
-        
-        .log-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.25rem 1.5rem;
-            backdrop-filter: blur(10px);
-            animation: fadeUp 0.8s ease 0.4s both;
-            flex: 1;
-        }
-        
-        .log-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-        
-        .log-title {
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .log-title::before {
-            content: '';
-            width: 7px;
-            height: 7px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        
-        .clear-btn {
-            background: none;
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 0.25rem 0.7rem;
-            border-radius: 6px;
-            font-size: 0.72rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .clear-btn:hover {
-            border-color: var(--danger);
-            color: var(--danger);
-        }
-        
-        .log-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.45rem;
-            max-height: 380px;
-            overflow-y: auto;
-        }
-        
-        .log-list::-webkit-scrollbar {
-            width: 4px;
-        }
-        
-        .log-list::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        
-        .log-list::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 2px;
-        }
-        
-        .log-item {
-            display: flex;
-            align-items: center;
-            gap: 0.7rem;
-            padding: 0.6rem 0.8rem;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 0.8rem;
-            animation: slideIn 0.3s ease;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        .log-badge {
-            padding: 0.18rem 0.55rem;
-            border-radius: 6px;
-            font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            white-space: nowrap;
-        }
-        
-        .badge-increment {
-            background: rgba(124, 58, 237, 0.2);
-            color: var(--primary-light);
-        }
-        
-        .badge-decrement {
-            background: rgba(239, 68, 68, 0.2);
-            color: #f87171;
-        }
-        
-        .badge-init {
-            background: rgba(6, 182, 212, 0.15);
-            color: var(--secondary);
-        }
-        
-        .badge-value {
-            background: rgba(245, 158, 11, 0.15);
-            color: var(--accent);
-        }
-        
-        .log-msg {
-            flex: 1;
-            color: var(--text);
-        }
-        
-        .log-time {
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            white-space: nowrap;
-        }
-        /* Toast */
-        
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            backdrop-filter: blur(20px);
-            z-index: 100;
-            transition: transform 0.3s ease;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        }
-        
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
-        /* Footer */
-        
-        footer {
-            text-align: center;
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
-            color: var(--text-muted);
-            font-size: 0.78rem;
-            animation: fadeUp 0.8s ease 0.5s both;
-        }
-        
-        footer a {
-            color: var(--primary-light);
-            text-decoration: none;
-        }
-        
-        footer a:hover {
-            text-decoration: underline;
-        }
-        
-        @keyframes fadeDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        /* Responsive */
-        
-        @media (max-width: 768px) {
-            .main-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SoroQuest — Play-to-Earn on Stellar</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    :root {
+      --primary:       #7c3aed;
+      --primary-light: #a855f7;
+      --secondary:     #f59e0b;
+      --accent:        #06b6d4;
+      --success:       #10b981;
+      --danger:        #ef4444;
+      --bg:            #07070f;
+      --bg-card:       rgba(255,255,255,0.04);
+      --border:        rgba(255,255,255,0.08);
+      --text:          #f1f5f9;
+      --muted:         #64748b;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Background ── */
+    .bg-layer {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse at 10% 20%, rgba(124,58,237,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 90% 80%, rgba(245,158,11,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 50%, rgba(6,182,212,0.08) 0%, transparent 60%);
+    }
+
+    .stars { position: fixed; inset: 0; z-index: 0; }
+    .star {
+      position: absolute; width: 2px; height: 2px;
+      background: white; border-radius: 50%; opacity: 0;
+      animation: twinkle var(--d) ease-in-out infinite;
+    }
+    @keyframes twinkle {
+      0%,100% { opacity:0; transform:scale(1); }
+      50%      { opacity:1; transform:scale(1.5); }
+    }
+
+    /* ── Grid particles ── */
+    .grid-overlay {
+      position: fixed; inset: 0; z-index: 0; opacity: 0.03;
+      background-image:
+        linear-gradient(rgba(124,58,237,1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,58,237,1) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* ── Layout ── */
+    .container {
+      position: relative; z-index: 1;
+      max-width: 1280px; margin: 0 auto;
+      padding: 2rem 1.5rem;
+      display: flex; flex-direction: column; gap: 2rem;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      animation: fadeDown 0.8s ease;
+    }
+
+    .logo-row {
+      display: inline-flex; align-items: center;
+      gap: 0.75rem; margin-bottom: 0.75rem;
+    }
+
+    .logo-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      box-shadow: 0 0 30px rgba(124,58,237,0.5);
+    }
+
+    .logo-name {
+      font-size: 1.8rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    header h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      background: linear-gradient(135deg, #fff 0%, var(--primary-light) 40%, var(--secondary) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      line-height: 1.15; margin-bottom: 0.5rem;
+    }
+
+    header p { color: var(--muted); font-size: 1rem; margin-bottom: 1rem; }
+
+    .badge-row {
+      display: flex; justify-content: center;
+      gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;
+    }
+
+    .badge {
+      padding: 0.25rem 0.9rem; border-radius: 999px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+    }
+    .badge-purple { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.25); }
+    .badge-amber  { background: rgba(245,158,11,0.15);  color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
+    .badge-cyan   { background: rgba(6,182,212,0.15);   color: #22d3ee; border: 1px solid rgba(6,182,212,0.25); }
+
+    .network-pill {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3);
+      color: var(--success); padding: 0.3rem 1rem;
+      border-radius: 999px; font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+    .network-pill::before {
+      content: ''; width: 7px; height: 7px;
+      background: var(--success); border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+      50%      { opacity:.7; box-shadow: 0 0 0 6px rgba(16,185,129,0); }
+    }
+
+    /* ── Contract ID bar ── */
+    .contract-bar {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1rem 1.5rem;
+      backdrop-filter: blur(10px);
+      animation: fadeUp 0.8s ease 0.1s both;
+    }
+
+    .contract-bar label {
+      font-size: 0.72rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.12em;
+      display: block; margin-bottom: 0.4rem;
+    }
+
+    .contract-bar input {
+      width: 100%;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.65rem 1rem;
+      color: var(--text); font-size: 0.82rem;
+      font-family: 'Courier New', monospace; outline: none;
+      transition: border-color 0.2s;
+    }
+    .contract-bar input:focus { border-color: var(--primary-light); }
+    .contract-bar input::placeholder { color: var(--muted); }
+
+    /* ── Main grid ── */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .left-col  { display: flex; flex-direction: column; gap: 1.5rem; }
+    .right-col { display: flex; flex-direction: column; gap: 1.5rem; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 1.5rem;
+      backdrop-filter: blur(10px);
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .card-title {
+      font-size: 0.72rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.15em;
+      margin-bottom: 1.25rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+
+    .card-title::before {
+      content: ''; width: 3px; height: 14px;
+      background: linear-gradient(var(--primary), var(--secondary));
+      border-radius: 2px;
+    }
+
+    /* ── Stats row ── */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+      animation: fadeUp 0.8s ease 0.2s both;
+    }
+
+    .stat-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.1rem;
+      text-align: center; backdrop-filter: blur(10px);
+    }
+
+    .stat-val {
+      font-size: 1.8rem; font-weight: 900;
+      background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .stat-lbl {
+      font-size: 0.65rem; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-top: 0.2rem;
+    }
+
+    /* ── Form fields ── */
+    .field { margin-bottom: 0.85rem; }
+
+    .field label {
+      display: block; font-size: 0.72rem; font-weight: 600;
+      color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.1em; margin-bottom: 0.35rem;
+    }
+
+    .field input {
+      width: 100%;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.65rem 0.9rem;
+      color: var(--text); font-size: 0.85rem; outline: none;
+      transition: border-color 0.2s;
+    }
+    .field input:focus { border-color: var(--primary-light); }
+    .field input::placeholder { color: var(--muted); }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 0.4rem; padding: 0.8rem 1.25rem;
+      border-radius: 10px; font-size: 0.88rem; font-weight: 700;
+      border: none; cursor: pointer;
+      transition: all 0.2s ease; position: relative; overflow: hidden;
+      letter-spacing: 0.02em; width: 100%;
+    }
+    .btn::after {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(255,255,255,0.1); opacity: 0; transition: opacity 0.2s;
+    }
+    .btn:hover::after { opacity: 1; }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white; box-shadow: 0 4px 20px rgba(124,58,237,0.35);
+    }
+    .btn-primary:hover { box-shadow: 0 6px 28px rgba(124,58,237,0.55); transform: translateY(-1px); }
+
+    .btn-amber {
+      background: linear-gradient(135deg, #d97706, var(--secondary));
+      color: white; box-shadow: 0 4px 20px rgba(245,158,11,0.3);
+    }
+    .btn-amber:hover { box-shadow: 0 6px 28px rgba(245,158,11,0.5); transform: translateY(-1px); }
+
+    .btn-cyan {
+      background: linear-gradient(135deg, #0891b2, var(--accent));
+      color: white; box-shadow: 0 4px 20px rgba(6,182,212,0.3);
+    }
+    .btn-cyan:hover { box-shadow: 0 6px 28px rgba(6,182,212,0.5); transform: translateY(-1px); }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.05); color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--primary-light); transform: translateY(-1px); }
+
+    .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.5rem; }
+
+    /* ── Quest list ── */
+    .quest-list { display: flex; flex-direction: column; gap: 0.6rem; max-height: 260px; overflow-y: auto; }
+    .quest-list::-webkit-scrollbar { width: 4px; }
+    .quest-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .quest-item {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.75rem 0.9rem;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: 10px; cursor: pointer;
+      transition: all 0.2s; font-size: 0.82rem;
+      animation: slideIn 0.3s ease;
+    }
+    .quest-item:hover { border-color: var(--primary-light); background: rgba(124,58,237,0.08); }
+    .quest-item.selected { border-color: var(--secondary); background: rgba(245,158,11,0.08); }
+
+    .quest-id {
+      padding: 0.2rem 0.55rem; border-radius: 6px;
+      background: rgba(124,58,237,0.2); color: var(--primary-light);
+      font-size: 0.65rem; font-weight: 700; white-space: nowrap;
+    }
+
+    .quest-title { flex: 1; color: var(--text); font-weight: 600; }
+
+    .quest-reward {
+      color: var(--secondary); font-weight: 700; font-size: 0.78rem; white-space: nowrap;
+    }
+
+    .quest-royalty {
+      color: var(--accent); font-size: 0.72rem; white-space: nowrap;
+    }
+
+    .empty-state {
+      text-align: center; color: var(--muted);
+      padding: 2rem; font-size: 0.82rem;
+    }
+
+    /* ── Event log ── */
+    .log-header {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 1rem;
+    }
+
+    .log-live {
+      font-size: 0.72rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.15em;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+
+    .log-live::before {
+      content: ''; width: 7px; height: 7px;
+      background: var(--success); border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    .clear-btn {
+      background: none; border: 1px solid var(--border);
+      color: var(--muted); padding: 0.25rem 0.7rem;
+      border-radius: 6px; font-size: 0.72rem; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .clear-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+    .log-list {
+      display: flex; flex-direction: column; gap: 0.45rem;
+      max-height: 320px; overflow-y: auto;
+    }
+    .log-list::-webkit-scrollbar { width: 4px; }
+    .log-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .log-item {
+      display: flex; align-items: center; gap: 0.65rem;
+      padding: 0.55rem 0.8rem;
+      background: rgba(255,255,255,0.02); border: 1px solid var(--border);
+      border-radius: 8px; font-size: 0.78rem;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity:0; transform: translateX(-8px); }
+      to   { opacity:1; transform: translateX(0); }
+    }
+
+    .log-badge {
+      padding: 0.15rem 0.5rem; border-radius: 5px;
+      font-size: 0.62rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
+    }
+
+    .b-player  { background: rgba(124,58,237,0.2);  color: var(--primary-light); }
+    .b-creator { background: rgba(245,158,11,0.2);  color: #fbbf24; }
+    .b-quest   { background: rgba(6,182,212,0.2);   color: #22d3ee; }
+    .b-reward  { background: rgba(16,185,129,0.2);  color: var(--success); }
+    .b-royalty { background: rgba(239,68,68,0.2);   color: #f87171; }
+    .b-info    { background: rgba(100,116,139,0.2); color: var(--muted); }
+
+    .log-msg  { flex: 1; color: var(--text); }
+    .log-time { color: var(--muted); font-size: 0.68rem; white-space: nowrap; }
+
+    /* ── Leaderboard ── */
+    .lb-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: 10px; font-size: 0.82rem;
+      animation: slideIn 0.3s ease;
+    }
+
+    .lb-rank {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 800; flex-shrink: 0;
+    }
+
+    .rank-1 { background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #000; }
+    .rank-2 { background: linear-gradient(135deg, #94a3b8, #cbd5e1); color: #000; }
+    .rank-3 { background: linear-gradient(135deg, #b45309, #d97706); color: #fff; }
+    .rank-n { background: rgba(255,255,255,0.08); color: var(--muted); }
+
+    .lb-addr { flex: 1; font-family: 'Courier New', monospace; font-size: 0.75rem; color: var(--muted); }
+    .lb-pts  { color: var(--secondary); font-weight: 800; }
+    .lb-quests { color: var(--muted); font-size: 0.72rem; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 2rem; left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(10,10,25,0.97); border: 1px solid var(--border);
+      color: var(--text); padding: 0.8rem 1.5rem;
+      border-radius: 12px; font-size: 0.85rem;
+      backdrop-filter: blur(20px); z-index: 100;
+      transition: transform 0.3s ease;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      max-width: 400px; text-align: center;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center; padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted); font-size: 0.78rem;
+      animation: fadeUp 0.8s ease 0.5s both;
+    }
+    footer a { color: var(--primary-light); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── Animations ── */
+    @keyframes fadeDown {
+      from { opacity:0; transform: translateY(-20px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity:0; transform: translateY(20px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
 <body>
 
-    <div class="bg-animation"></div>
-    <div class="stars" id="stars"></div>
+<div class="bg-layer"></div>
+<div class="stars" id="stars"></div>
+<div class="grid-overlay"></div>
 
-    <div class="container">
+<div class="container">
 
-        <!-- Header -->
-        <header>
-            <div class="logo">
-                <svg width="44" height="44" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="110" height="110" rx="24" fill="#0f0a1e"/>
-                    <rect width="110" height="110" rx="24" fill="none" stroke="#7c3aed" stroke-width="2"/>
-                    <path d="M36 42 Q36 32 46 32 L64 32 Q74 32 74 42 Q74 50 55 53 Q36 56 36 66 Q36 76 46 76 L64 76 Q74 76 74 66"
-                          fill="none" stroke="#a78bfa" stroke-width="5" stroke-linecap="round"/>
-                    <line x1="82" y1="46" x2="92" y2="46" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
-                    <line x1="87" y1="41" x2="87" y2="51" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
-                    <rect x="80" y="58" width="14" height="14" rx="3" fill="#7c3aed"/>
-                    <text x="87" y="69" font-family="monospace" font-size="10" font-weight="500" fill="#ffffff" text-anchor="middle">1</text>
-                    <circle cx="95" cy="88" r="4" fill="#f59e0b"/>
-                </svg>
-                <span class="logo-text">SoroCount</span>
-            </div>
+  <!-- Header -->
+  <header>
+    <div class="logo-row">
+      <div class="logo-icon">⚔️</div>
+      <span class="logo-name">SoroQuest</span>
+    </div>
+    <h1>Play-to-Earn on Stellar</h1>
+    <p>Complete quests, earn rewards, creators get royalties — all on-chain.</p>
+    <div class="badge-row">
+      <span class="badge badge-purple">PLAY-TO-EARN</span>
+      <span class="badge badge-amber">ROYALTY DISTRIBUTION</span>
+      <span class="badge badge-cyan">SOROBAN</span>
+    </div>
+    <div class="network-pill">STELLAR TESTNET</div>
+  </header>
 
-            <h1>Decentralized Counter</h1>
-            <p>A smart contract running live on Stellar Testnet</p>
+  <!-- Contract ID -->
+  <div class="contract-bar">
+    <label>Contract ID</label>
+    <input type="text" id="contractId"
+      placeholder="Enter your Contract ID: CXXX..."
+      value="CAXLPNVK4FBCNWMNGNBQUJVGLZKYNDNKCOXZHTRKIFLDGZKDLSFNID4F"/>
+  </div>
 
-            <div class="badge-row">
-                <span class="tag tag-purple">SOROBAN</span>
-                <span class="tag tag-cyan">RUST</span>
-                <span class="tag tag-green">WEB3</span>
-            </div>
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-val" id="statPlayers">0</div>
+      <div class="stat-lbl">Players</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="statQuests" style="color: #fbbf24;">0</div>
+      <div class="stat-lbl">Quests</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="statRewards" style="color: #22d3ee;">0</div>
+      <div class="stat-lbl">Rewards Earned</div>
+    </div>
+  </div>
 
-            <div class="network-badge">STELLAR TESTNET</div>
-        </header>
+  <!-- Main Grid -->
+  <div class="main-grid">
 
-        <!-- Two-column layout -->
-        <div class="main-layout">
+    <!-- Left Column -->
+    <div class="left-col">
 
-            <!-- Left: Contract ID + Counter -->
-            <div class="left-col">
-
-                <div class="config-card">
-                    <label>Contract ID</label>
-                    <input type="text" id="contractId" placeholder="Enter your Contract ID: CXXX..." />
-                </div>
-
-                <div class="counter-card">
-                    <div class="counter-label">Current Value</div>
-                    <div class="counter-value" id="counterDisplay">—</div>
-                    <div class="btn-row">
-                        <button class="btn btn-init" onclick="runInit()">Init</button>
-                        <button class="btn btn-increment" onclick="runIncrement()">Increment</button>
-                        <button class="btn btn-decrement" onclick="runDecrement()">Decrement</button>
-                        <button class="btn btn-value" onclick="runValue()">Refresh</button>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Right: Stats + Event Log -->
-            <div class="right-col">
-
-                <div class="stats-row">
-                    <div class="stat-card">
-                        <div class="stat-value" id="statIncrements">0</div>
-                        <div class="stat-label">Increments</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="statDecrements" style="color: #f87171;">0</div>
-                        <div class="stat-label">Decrements</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="statTotal" style="color: var(--accent);">0</div>
-                        <div class="stat-label">Total Actions</div>
-                    </div>
-                </div>
-
-                <div class="log-card">
-                    <div class="log-header">
-                        <div class="log-title">Live Event Log</div>
-                        <button class="clear-btn" onclick="clearLog()">Clear</button>
-                    </div>
-                    <div class="log-list" id="logList">
-                        <div style="text-align:center; color: var(--text-muted); padding: 2rem; font-size:0.82rem;">
-                            No events yet. Interact with the contract above.
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+      <!-- Register Player -->
+      <div class="card" style="animation-delay:0.15s">
+        <div class="card-title">Register Player</div>
+        <div class="field">
+          <label>Player Address</label>
+          <input type="text" id="playerAddr" placeholder="G... or leave blank to auto-generate"/>
         </div>
+        <button class="btn btn-primary" onclick="registerPlayer()">Join as Player</button>
+      </div>
 
-        <!-- Footer -->
-        <footer>
-            <p>Built on <a href="https://stellar.org" target="_blank">Stellar</a> using
-                <a href="https://soroban.stellar.org" target="_blank">Soroban SDK</a> &nbsp;·&nbsp; Deployed on Testnet &nbsp;·&nbsp;
-                <a href="https://github.com/YOUR_USERNAME/soroban-counter-contract" target="_blank">View on GitHub</a>
-            </p>
-        </footer>
+      <!-- Register Creator + Create Quest -->
+      <div class="card" style="animation-delay:0.2s">
+        <div class="card-title">Creator — Register & Create Quest</div>
+        <div class="field">
+          <label>Creator Address</label>
+          <input type="text" id="creatorAddr" placeholder="G... or leave blank to auto-generate"/>
+        </div>
+        <button class="btn btn-amber" onclick="registerCreator()" style="margin-bottom:1rem;">Register as Creator</button>
+
+        <div class="field">
+          <label>Quest Title</label>
+          <input type="text" id="questTitle" placeholder="e.g. Defeat the Dragon"/>
+        </div>
+        <div class="field">
+          <label>Reward Points</label>
+          <input type="number" id="questPoints" placeholder="e.g. 100" min="1"/>
+        </div>
+        <div class="field">
+          <label>Reward Amount (stroops)</label>
+          <input type="number" id="questAmount" placeholder="e.g. 1000" min="1"/>
+        </div>
+        <div class="field">
+          <label>Royalty % (max 50%)</label>
+          <input type="number" id="questRoyalty" placeholder="e.g. 10 for 10%" min="1" max="50"/>
+        </div>
+        <button class="btn btn-cyan" onclick="createQuest()">Create Quest</button>
+      </div>
+
+      <!-- Complete Quest -->
+      <div class="card" style="animation-delay:0.25s">
+        <div class="card-title">Complete Quest</div>
+        <p style="color:var(--muted);font-size:0.82rem;margin-bottom:1rem;">
+          Click a quest from the list on the right, then complete it as a player.
+        </p>
+        <div class="field">
+          <label>Selected Quest ID</label>
+          <input type="number" id="selectedQuestId" placeholder="Click a quest to select"/>
+        </div>
+        <div class="field">
+          <label>Player Address</label>
+          <input type="text" id="completePlayerAddr" placeholder="G... player address"/>
+        </div>
+        <button class="btn btn-primary" onclick="completeQuest()">Complete Quest & Earn</button>
+      </div>
 
     </div>
 
-    <div class="toast" id="toast"></div>
+    <!-- Right Column -->
+    <div class="right-col">
 
-    <script>
-        // Stars
-        const starsContainer = document.getElementById('stars');
-        for (let i = 0; i < 120; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            star.style.cssText = `
-                left: ${Math.random() * 100}%;
-                top: ${Math.random() * 100}%;
-                --duration: ${2 + Math.random() * 4}s;
-                animation-delay: ${Math.random() * 4}s;
-            `;
-            starsContainer.appendChild(star);
-        }
+      <!-- Active Quests -->
+      <div class="card" style="animation-delay:0.3s">
+        <div class="card-title">Active Quests</div>
+        <div class="quest-list" id="questList">
+          <div class="empty-state">No quests yet. Create one to get started.</div>
+        </div>
+      </div>
 
-        // State
-        let increments = 0;
-        let decrements = 0;
-        let currentValue = null;
+      <!-- Leaderboard -->
+      <div class="card" style="animation-delay:0.35s">
+        <div class="card-title">Leaderboard</div>
+        <div id="leaderboard">
+          <div class="empty-state">No players yet. Register to appear here.</div>
+        </div>
+      </div>
 
-        function getContractId() {
-            return document.getElementById('contractId').value.trim();
-        }
+      <!-- Live Event Log -->
+      <div class="card" style="animation-delay:0.4s">
+        <div class="log-header">
+          <div class="log-live">Live Event Log</div>
+          <button class="clear-btn" onclick="clearLog()">Clear</button>
+        </div>
+        <div class="log-list" id="logList">
+          <div class="empty-state">No events yet.</div>
+        </div>
+      </div>
 
-        function simulateLocally(method) {
-            switch (method) {
-                case 'init':
-                    if (currentValue === null) currentValue = 0;
-                    return {
-                        result: currentValue
-                    };
-                case 'increment':
-                    if (currentValue === null) currentValue = 0;
-                    currentValue += 1;
-                    increments++;
-                    return {
-                        result: currentValue
-                    };
-                case 'decrement':
-                    if (currentValue === null) currentValue = 0;
-                    currentValue -= 1;
-                    decrements++;
-                    return {
-                        result: currentValue
-                    };
-                case 'value':
-                    return {
-                        result: currentValue
-                    };
-            }
-        }
+    </div>
+  </div>
 
-        async function invokeContract(method) {
-            const contractId = getContractId();
-            if (!contractId) {
-                showToast('Please enter your Contract ID first.');
-                return null;
-            }
-            return simulateLocally(method);
-        }
+  <!-- Footer -->
+  <footer>
+    <p>
+      Built on <a href="https://stellar.org" target="_blank">Stellar</a> using
+      <a href="https://soroban.stellar.org" target="_blank">Soroban SDK</a>
+      &nbsp;·&nbsp; Deployed on Testnet &nbsp;·&nbsp;
+      <a href="https://github.com/samenrqz/soroquest" target="_blank">View on GitHub</a>
+    </p>
+  </footer>
 
-        // Actions
-        async function runInit() {
-            const res = await invokeContract('init');
-            if (res === null) return;
-            updateCounter(res.result);
-            addLog('init', `Counter initialized — starting at ${res.result}`);
-            updateStats();
-            showToast('Counter initialized to 0.');
-        }
+</div>
 
-        async function runIncrement() {
-            const res = await invokeContract('increment');
-            if (res === null) return;
-            updateCounter(res.result);
-            addLog('increment', `Incremented — counter is now ${res.result}`);
-            updateStats();
-            showToast(`Counter incremented to ${res.result}.`);
-        }
+<div class="toast" id="toast"></div>
 
-        async function runDecrement() {
-            const res = await invokeContract('decrement');
-            if (res === null) return;
-            updateCounter(res.result);
-            addLog('decrement', `Decremented — counter is now ${res.result}`);
-            updateStats();
-            showToast(`Counter decremented to ${res.result}.`);
-        }
+<script>
+// ── Stars ─────────────────────────────────────────────────────────────────────
+const sc = document.getElementById('stars');
+for (let i = 0; i < 140; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*5}s;animation-delay:${Math.random()*5}s`;
+  sc.appendChild(s);
+}
 
-        async function runValue() {
-            const contractId = getContractId();
-            if (!contractId) {
-                showToast('Please enter your Contract ID first.');
-                return;
-            }
-            if (currentValue === null) {
-                showToast('Counter not initialized yet. Press Init first.');
-                addLog('value', 'Refresh attempted — counter not initialized yet.');
-                return;
-            }
-            updateCounter(currentValue);
-            addLog('value', `Counter value is ${currentValue}`);
-            showToast(`Current value: ${currentValue}`);
-        }
+// ── State ─────────────────────────────────────────────────────────────────────
+const state = {
+  players:      {},   // addr → { points, rewards, quests }
+  creators:     {},   // addr → { royalties, quests }
+  quests:       [],   // array of quest objects
+  nextQuestId:  1,
+  totalRewards: 0,
+};
 
-        // UI Helpers
-        function updateCounter(val) {
-            const el = document.getElementById('counterDisplay');
-            el.textContent = val;
-            el.classList.add('bump');
-            setTimeout(() => el.classList.remove('bump'), 200);
-        }
+let selectedQuestId = null;
 
-        function updateStats() {
-            document.getElementById('statIncrements').textContent = increments;
-            document.getElementById('statDecrements').textContent = decrements;
-            document.getElementById('statTotal').textContent = increments + decrements;
-        }
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function getContractId() {
+  return document.getElementById('contractId').value.trim();
+}
 
-        function addLog(type, message) {
-            const list = document.getElementById('logList');
-            const empty = list.querySelector('div[style]');
-            if (empty) empty.remove();
+function shortAddr(addr) {
+  if (!addr) return '???';
+  return addr.length > 12 ? addr.slice(0,6) + '...' + addr.slice(-4) : addr;
+}
 
-            const time = new Date().toLocaleTimeString('en-US', {
-                hour12: false
-            });
+function now() {
+  return new Date().toLocaleTimeString('en-US', { hour12: false });
+}
 
-            const badgeMap = {
-                increment: 'badge-increment',
-                decrement: 'badge-decrement',
-                init: 'badge-init',
-                value: 'badge-value',
-            };
+function generateAddr() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  let s = 'G';
+  for (let i = 0; i < 55; i++) s += chars[Math.floor(Math.random() * chars.length)];
+  return s;
+}
 
-            const item = document.createElement('div');
-            item.className = 'log-item';
-            item.innerHTML = `
-                <span class="log-badge ${badgeMap[type] || 'badge-init'}">${type}</span>
-                <span class="log-msg">${message}</span>
-                <span class="log-time">${time}</span>
-            `;
-            list.insertBefore(item, list.firstChild);
-        }
+// ── Toast ─────────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
 
-        function clearLog() {
-            document.getElementById('logList').innerHTML = `
-                <div style="text-align:center; color: var(--text-muted); padding: 2rem; font-size:0.82rem;">
-                    No events yet. Interact with the contract above.
-                </div>
-            `;
-        }
+// ── Log ───────────────────────────────────────────────────────────────────────
+function addLog(type, badgeClass, message) {
+  const list = document.getElementById('logList');
+  const empty = list.querySelector('.empty-state');
+  if (empty) empty.remove();
 
-        let toastTimer;
+  const item = document.createElement('div');
+  item.className = 'log-item';
+  item.innerHTML = `
+    <span class="log-badge ${badgeClass}">${type}</span>
+    <span class="log-msg">${message}</span>
+    <span class="log-time">${now()}</span>
+  `;
+  list.insertBefore(item, list.firstChild);
+}
 
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.classList.add('show');
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-    </script>
+function clearLog() {
+  document.getElementById('logList').innerHTML = '<div class="empty-state">No events yet.</div>';
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
+function updateStats() {
+  document.getElementById('statPlayers').textContent = Object.keys(state.players).length;
+  document.getElementById('statQuests').textContent  = state.quests.length;
+  document.getElementById('statRewards').textContent = state.totalRewards;
+}
+
+// ── Quest List ────────────────────────────────────────────────────────────────
+function renderQuests() {
+  const list = document.getElementById('questList');
+  if (state.quests.length === 0) {
+    list.innerHTML = '<div class="empty-state">No quests yet. Create one to get started.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  state.quests.forEach(q => {
+    const item = document.createElement('div');
+    item.className = 'quest-item' + (q.id === selectedQuestId ? ' selected' : '');
+    item.innerHTML = `
+      <span class="quest-id">Q${q.id}</span>
+      <span class="quest-title">${q.title}</span>
+      <span class="quest-reward">+${q.rewardPoints} pts</span>
+      <span class="quest-royalty">${q.royaltyPct}% royalty</span>
+    `;
+    item.onclick = () => selectQuest(q.id);
+    list.appendChild(item);
+  });
+}
+
+function selectQuest(id) {
+  selectedQuestId = id;
+  document.getElementById('selectedQuestId').value = id;
+  renderQuests();
+  showToast(`Quest Q${id} selected — fill in your player address and complete it!`);
+}
+
+// ── Leaderboard ───────────────────────────────────────────────────────────────
+function renderLeaderboard() {
+  const lb = document.getElementById('leaderboard');
+  const players = Object.entries(state.players)
+    .sort((a, b) => b[1].points - a[1].points)
+    .slice(0, 5);
+
+  if (players.length === 0) {
+    lb.innerHTML = '<div class="empty-state">No players yet.</div>';
+    return;
+  }
+
+  lb.innerHTML = '';
+  players.forEach(([addr, data], i) => {
+    const rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-n';
+    const row = document.createElement('div');
+    row.className = 'lb-row';
+    row.innerHTML = `
+      <div class="lb-rank ${rankClass}">${i+1}</div>
+      <div class="lb-addr">${shortAddr(addr)}</div>
+      <div class="lb-pts">${data.points} pts</div>
+      <div class="lb-quests">${data.quests} quests</div>
+    `;
+    lb.appendChild(row);
+  });
+}
+
+// ── Actions ───────────────────────────────────────────────────────────────────
+function registerPlayer() {
+  if (!getContractId()) { showToast('Enter your Contract ID first.'); return; }
+
+  let addr = document.getElementById('playerAddr').value.trim();
+  if (!addr) addr = generateAddr();
+
+  if (state.players[addr]) {
+    showToast('Player already registered!');
+    addLog('PLAYER', 'b-info', `Registration rejected — ${shortAddr(addr)} already exists.`);
+    return;
+  }
+
+  state.players[addr] = { points: 0, rewards: 0, quests: 0 };
+  document.getElementById('playerAddr').value = addr;
+  document.getElementById('completePlayerAddr').value = addr;
+
+  addLog('PLAYER', 'b-player', `Player registered — ${shortAddr(addr)}`);
+  showToast(`Player ${shortAddr(addr)} registered successfully!`);
+  updateStats();
+  renderLeaderboard();
+}
+
+function registerCreator() {
+  if (!getContractId()) { showToast('Enter your Contract ID first.'); return; }
+
+  let addr = document.getElementById('creatorAddr').value.trim();
+  if (!addr) addr = generateAddr();
+
+  if (state.creators[addr]) {
+    showToast('Creator already registered!');
+    addLog('CREATOR', 'b-info', `Registration rejected — ${shortAddr(addr)} already exists.`);
+    return;
+  }
+
+  state.creators[addr] = { royalties: 0, quests: 0 };
+  document.getElementById('creatorAddr').value = addr;
+
+  addLog('CREATOR', 'b-creator', `Creator registered — ${shortAddr(addr)}`);
+  showToast(`Creator ${shortAddr(addr)} registered successfully!`);
+}
+
+function createQuest() {
+  if (!getContractId()) { showToast('Enter your Contract ID first.'); return; }
+
+  const creatorAddr = document.getElementById('creatorAddr').value.trim();
+  const title       = document.getElementById('questTitle').value.trim();
+  const points      = parseInt(document.getElementById('questPoints').value);
+  const amount      = parseInt(document.getElementById('questAmount').value);
+  const royaltyPct  = parseInt(document.getElementById('questRoyalty').value);
+
+  if (!creatorAddr || !state.creators[creatorAddr]) {
+    showToast('Register as a creator first!'); return;
+  }
+  if (!title)              { showToast('Enter a quest title.'); return; }
+  if (!points || points < 1) { showToast('Enter valid reward points.'); return; }
+  if (!amount || amount < 1) { showToast('Enter valid reward amount.'); return; }
+  if (!royaltyPct || royaltyPct < 1 || royaltyPct > 50) {
+    showToast('Royalty must be between 1% and 50%.'); return;
+  }
+
+  const quest = {
+    id: state.nextQuestId++,
+    creator: creatorAddr,
+    title,
+    rewardPoints: points,
+    rewardAmount: amount,
+    royaltyPct,
+    active: true,
+  };
+
+  state.quests.push(quest);
+  state.creators[creatorAddr].quests++;
+
+  addLog('QUEST', 'b-quest', `Quest created — "${title}" | ${points} pts | ${royaltyPct}% royalty`);
+  showToast(`Quest "${title}" created successfully!`);
+  updateStats();
+  renderQuests();
+
+  // Clear form
+  document.getElementById('questTitle').value   = '';
+  document.getElementById('questPoints').value  = '';
+  document.getElementById('questAmount').value  = '';
+  document.getElementById('questRoyalty').value = '';
+}
+
+function completeQuest() {
+  if (!getContractId()) { showToast('Enter your Contract ID first.'); return; }
+
+  const questId    = parseInt(document.getElementById('selectedQuestId').value);
+  const playerAddr = document.getElementById('completePlayerAddr').value.trim();
+
+  if (!playerAddr || !state.players[playerAddr]) {
+    showToast('Register as a player first!'); return;
+  }
+
+  const quest = state.quests.find(q => q.id === questId);
+  if (!quest) { showToast('Select a valid quest first!'); return; }
+  if (!quest.active) { showToast('This quest is no longer active.'); return; }
+
+  // Calculate reward and royalty
+  const royaltyBps   = quest.royaltyPct * 100;
+  const royaltyAmt   = Math.floor((quest.rewardAmount * royaltyBps) / 10000);
+  const playerReward = quest.rewardAmount - royaltyAmt;
+
+  // Update player
+  state.players[playerAddr].points  += quest.rewardPoints;
+  state.players[playerAddr].rewards += playerReward;
+  state.players[playerAddr].quests  += 1;
+
+  // Update creator royalty
+  state.creators[quest.creator].royalties += royaltyAmt;
+
+  // Update total rewards
+  state.totalRewards += playerReward;
+
+  addLog('REWARD',  'b-reward',  `${shortAddr(playerAddr)} completed "${quest.title}" — earned ${playerReward} stroops + ${quest.rewardPoints} pts`);
+  addLog('ROYALTY', 'b-royalty', `Creator ${shortAddr(quest.creator)} received ${royaltyAmt} stroops royalty (${quest.royaltyPct}%)`);
+
+  showToast(`Quest completed! Earned ${playerReward} stroops. Creator got ${royaltyAmt} royalty.`);
+
+  updateStats();
+  renderQuests();
+  renderLeaderboard();
+}
+</script>
 </body>
-
 </html>
