@@ -43,50 +43,66 @@ html,body{
   );
 }
 
-/* ══ LOGIN SCREEN ══ */
+/* ══ LOGIN SCREEN — SPLIT LAYOUT ══ */
 #login-screen{
   position:fixed;inset:0;z-index:100;
-  display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(ellipse at center,#020d1f 0%,#000208 100%);
+  display:grid;
+  grid-template-columns:1fr 1fr;
   transition:opacity 0.5s ease;
 }
 
-/* REPLACE */
-.ls-inner{
-  display:flex;flex-direction:column;align-items:center;
-  gap:0.75rem;max-width:520px;width:100%;
-  padding:1rem 2rem;
-  max-height:100vh;overflow-y:auto;
+/* ── LEFT PANEL ── */
+.ls-left{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:1.25rem;padding:2rem;
+  background:radial-gradient(ellipse at 30% 50%,rgba(0,255,247,0.06) 0%,transparent 70%),
+             radial-gradient(ellipse at center,#020d1f 0%,#000208 100%);
+  border-right:1px solid rgba(0,255,247,0.08);
+  position:relative;overflow:hidden;
 }
 
-.ls-inner::-webkit-scrollbar{width:0;}
+.ls-left::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 20% 80%,rgba(124,58,237,0.1) 0%,transparent 50%),
+    radial-gradient(circle at 80% 20%,rgba(0,255,247,0.06) 0%,transparent 50%);
+  pointer-events:none;
+}
 
 .ls-title{
-  font-family:var(--font-hud);font-size:2.2rem;font-weight:900;
-  letter-spacing:0.15em;text-align:center;
-  background:linear-gradient(135deg,var(--neon-cyan),var(--stellar-blue),var(--stellar-purple));
+  font-family:var(--font-hud);font-size:3.2rem;font-weight:900;
+  letter-spacing:0.12em;text-align:center;line-height:1.1;
+  background:linear-gradient(135deg,var(--neon-cyan) 0%,var(--stellar-blue) 50%,var(--stellar-purple) 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 20px rgba(0,255,247,0.3));
   animation:titlePulse 3s ease-in-out infinite;
+  position:relative;z-index:1;
 }
 
 @keyframes titlePulse{
-  0%,100%{filter:drop-shadow(0 0 20px rgba(0,255,247,0.4));}
-  50%{filter:drop-shadow(0 0 40px rgba(0,255,247,0.7));}
+  0%,100%{filter:drop-shadow(0 0 20px rgba(0,255,247,0.3));}
+  50%{filter:drop-shadow(0 0 35px rgba(0,255,247,0.6));}
 }
 
 .ls-sub{
-  font-family:var(--font-mono);font-size:0.85rem;
+  font-family:var(--font-mono);font-size:0.82rem;
   color:var(--neon-cyan);letter-spacing:0.25em;
   text-transform:uppercase;opacity:0.7;text-align:center;
+  position:relative;z-index:1;
 }
 
-#ship-preview-canvas{display:block;}
+.ls-ship{position:relative;z-index:1;}
 
-.ls-feats{display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;}
+.ls-feats{
+  display:flex;gap:0.5rem;flex-wrap:wrap;
+  justify-content:center;
+  position:relative;z-index:1;
+}
 
 .ls-feat{
   padding:0.3rem 0.85rem;border-radius:999px;
-  font-family:var(--font-mono);font-size:0.72rem;
+  font-family:var(--font-mono);font-size:0.68rem;
   letter-spacing:0.1em;text-transform:uppercase;
 }
 
@@ -95,129 +111,38 @@ html,body{
 .fo{background:rgba(255,107,0,0.08);color:var(--neon-orange);border:1px solid rgba(255,107,0,0.2);}
 .fp{background:rgba(139,92,246,0.08);color:var(--stellar-purple);border:1px solid rgba(139,92,246,0.2);}
 
-.ls-box{
-  width:100%;background:rgba(4,15,40,0.88);
-  border:1px solid rgba(0,255,247,0.15);
-  border-radius:16px;padding:1.5rem;
-  display:flex;flex-direction:column;gap:1rem;
-}
-
-.ls-section-title{
-  font-family:var(--font-hud);font-size:0.75rem;
-  color:var(--neon-cyan);letter-spacing:0.2em;
-  text-transform:uppercase;text-align:center;
-  padding-bottom:0.5rem;
-  border-bottom:1px solid rgba(0,255,247,0.1);
-}
-
-.ls-lbl{
-  font-family:var(--font-mono);font-size:0.72rem;
-  color:var(--muted);text-transform:uppercase;letter-spacing:0.15em;
-}
-
-.ls-inp{
-  width:100%;background:rgba(0,255,247,0.04);
-  border:1px solid rgba(0,255,247,0.2);
-  border-radius:10px;padding:0.85rem 1rem;
-  color:var(--text);font-family:var(--font-mono);
-  font-size:0.88rem;outline:none;
-  letter-spacing:0.04em;text-align:center;
-  transition:border-color 0.2s,box-shadow 0.2s;
-}
-
-.ls-inp:focus{
-  border-color:var(--neon-cyan);
-  box-shadow:0 0 0 3px rgba(0,255,247,0.1);
-}
-
-.ls-inp::placeholder{color:var(--muted);}
-.ls-inp.valid{border-color:rgba(57,255,20,0.5);}
-
-.wallet-preview{
-  display:none;
-  background:rgba(57,255,20,0.05);
-  border:1px solid rgba(57,255,20,0.2);
-  border-radius:8px;padding:0.65rem 1rem;
-  font-family:var(--font-mono);font-size:0.72rem;
-  color:var(--neon-green);text-align:center;
-}
-
-.wallet-preview.show{display:block;}
-
-.ls-btn{
-  width:100%;padding:1rem;border:none;
-  border-radius:10px;cursor:pointer;
-  font-family:var(--font-hud);font-size:0.92rem;
-  font-weight:700;letter-spacing:0.15em;
-  text-transform:uppercase;transition:all 0.2s;
-}
-
-.ls-btn-launch{
-  background:linear-gradient(135deg,#0a3a5c,#0d5a8a);
-  color:var(--neon-cyan);border:1px solid rgba(0,255,247,0.3);
-  animation:btnCyan 2s ease-in-out infinite;
-}
-
-@keyframes btnCyan{
-  0%,100%{box-shadow:0 0 20px rgba(0,255,247,0.15);}
-  50%{box-shadow:0 0 35px rgba(0,255,247,0.35);}
-}
-
-.ls-btn-launch:hover{transform:translateY(-2px);color:#fff;box-shadow:0 0 45px rgba(0,255,247,0.5);}
-.ls-btn-launch:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
-
-.how-to-play{
+/* Reward mini table on left */
+.ls-rewards{
+  width:100%;max-width:280px;
   background:rgba(0,255,247,0.03);
   border:1px solid rgba(0,255,247,0.08);
-  border-radius:10px;padding:0.85rem 1rem;
+  border-radius:10px;padding:0.75rem;
+  position:relative;z-index:1;
 }
 
-.htp-title{
-  font-family:var(--font-hud);font-size:0.65rem;
-  color:var(--neon-cyan);letter-spacing:0.15em;
+.ls-rewards-title{
+  font-family:var(--font-hud);font-size:0.58rem;
+  color:var(--neon-cyan);letter-spacing:0.2em;
   text-transform:uppercase;margin-bottom:0.5rem;
+  text-align:center;
 }
 
-.htp-row{
-  display:flex;align-items:center;gap:0.6rem;
+.rw-row{
+  display:flex;justify-content:space-between;
   font-family:var(--font-mono);font-size:0.65rem;
-  color:var(--muted);padding:0.2rem 0;
+  padding:0.18rem 0;color:var(--muted);
+  border-bottom:1px solid rgba(0,255,247,0.04);
 }
 
-.htp-num{
-  width:18px;height:18px;border-radius:50%;
-  background:rgba(0,255,247,0.1);border:1px solid rgba(0,255,247,0.2);
-  display:flex;align-items:center;justify-content:center;
-  font-size:0.6rem;color:var(--neon-cyan);flex-shrink:0;
-}
-
-.reward-table{
-  width:100%;border-collapse:collapse;
-  font-family:var(--font-mono);font-size:0.65rem;
-}
-
-.reward-table th{
-  color:var(--muted);text-transform:uppercase;
-  letter-spacing:0.1em;padding:0.3rem 0.5rem;
-  border-bottom:1px solid rgba(0,255,247,0.08);
-  text-align:left;
-}
-
-.reward-table td{
-  padding:0.28rem 0.5rem;color:var(--text);
-}
-
-.reward-table tr:nth-child(even) td{
-  background:rgba(0,255,247,0.02);
-}
-
-.reward-table .xlm{color:var(--neon-green);font-weight:700;}
-.reward-table .nft{color:var(--stellar-purple);}
+.rw-row:last-child{border-bottom:none;}
+.rw-val{color:var(--neon-green);font-weight:700;}
+.rw-val.nft{color:var(--stellar-purple);}
 
 .ls-net{
-  display:flex;align-items:center;justify-content:center;gap:0.4rem;
-  font-family:var(--font-mono);font-size:0.7rem;
-  color:var(--neon-green);letter-spacing:0.15em;
+  display:flex;align-items:center;gap:0.4rem;
+  font-family:var(--font-mono);font-size:0.65rem;
+  color:var(--neon-green);letter-spacing:0.12em;
+  position:relative;z-index:1;
 }
 
 .ls-net::before{
@@ -227,6 +152,138 @@ html,body{
 }
 
 @keyframes netPulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+
+/* ── RIGHT PANEL ── */
+.ls-right{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:2rem;
+  background:radial-gradient(ellipse at 70% 50%,rgba(139,92,246,0.05) 0%,transparent 70%),
+             #000208;
+}
+
+.ls-card{
+  width:100%;max-width:420px;
+  background:rgba(4,15,40,0.9);
+  border:1px solid rgba(0,255,247,0.15);
+  border-radius:18px;padding:1.75rem;
+  display:flex;flex-direction:column;gap:1rem;
+  box-shadow:0 0 40px rgba(0,255,247,0.05),
+             inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.ls-card-title{
+  font-family:var(--font-hud);font-size:0.78rem;
+  color:var(--neon-cyan);letter-spacing:0.2em;
+  text-transform:uppercase;text-align:center;
+  padding-bottom:0.75rem;
+  border-bottom:1px solid rgba(0,255,247,0.1);
+}
+
+.ls-field{display:flex;flex-direction:column;gap:0.35rem;}
+
+.ls-lbl{
+  font-family:var(--font-mono);font-size:0.65rem;
+  color:var(--muted);text-transform:uppercase;letter-spacing:0.15em;
+}
+
+.ls-inp{
+  width:100%;background:rgba(0,255,247,0.04);
+  border:1px solid rgba(0,255,247,0.15);
+  border-radius:9px;padding:0.8rem 1rem;
+  color:var(--text);font-family:var(--font-mono);
+  font-size:0.82rem;outline:none;
+  letter-spacing:0.03em;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+
+.ls-inp:focus{
+  border-color:var(--neon-cyan);
+  box-shadow:0 0 0 3px rgba(0,255,247,0.08);
+}
+
+.ls-inp::placeholder{color:var(--muted);font-size:0.75rem;}
+.ls-inp.valid{border-color:rgba(57,255,20,0.4);}
+
+/* Wallet status */
+.ls-wallet-status{
+  display:flex;align-items:center;gap:0.5rem;
+  font-family:var(--font-mono);font-size:0.68rem;
+  padding:0.5rem 0.75rem;border-radius:7px;
+  border:1px solid rgba(255,255,255,0.05);
+  background:rgba(255,255,255,0.02);
+  min-height:36px;
+}
+
+.ls-wallet-status .dot{
+  width:7px;height:7px;border-radius:50%;flex-shrink:0;
+}
+
+.ls-wallet-status.idle   { color:var(--muted); }
+.ls-wallet-status.idle .dot { background:var(--muted); }
+.ls-wallet-status.ok    { background:rgba(57,255,20,0.05);border-color:rgba(57,255,20,0.2);color:var(--neon-green); }
+.ls-wallet-status.ok .dot  { background:var(--neon-green);box-shadow:0 0 6px var(--neon-green); }
+.ls-wallet-status.err   { background:rgba(255,0,128,0.05);border-color:rgba(255,0,128,0.2);color:var(--neon-pink); }
+.ls-wallet-status.err .dot { background:var(--neon-pink); }
+
+/* Buttons */
+.ls-btn{
+  width:100%;padding:0.85rem;border:none;
+  border-radius:10px;cursor:pointer;
+  font-family:var(--font-hud);font-size:0.82rem;
+  font-weight:700;letter-spacing:0.15em;
+  text-transform:uppercase;transition:all 0.2s;
+}
+
+.ls-btn-launch{
+  background:linear-gradient(135deg,#0a3a5c,#0d5a8a,#0a3a5c);
+  background-size:200% 100%;
+  color:var(--neon-cyan);
+  border:1px solid rgba(0,255,247,0.35);
+  font-size:0.95rem;padding:1rem;
+  animation:launchPulse 2s ease-in-out infinite;
+}
+
+@keyframes launchPulse{
+  0%,100%{box-shadow:0 0 20px rgba(0,255,247,0.15),inset 0 1px 0 rgba(255,255,255,0.05);}
+  50%{box-shadow:0 0 35px rgba(0,255,247,0.35),inset 0 1px 0 rgba(255,255,255,0.05);}
+}
+
+.ls-btn-launch:hover{
+  transform:translateY(-2px);color:#fff;
+  box-shadow:0 0 45px rgba(0,255,247,0.5);
+}
+
+.ls-btn-launch:disabled{
+  opacity:0.4;cursor:not-allowed;transform:none;
+  animation:none;
+}
+
+/* How to play */
+.ls-howto{
+  background:rgba(0,255,247,0.02);
+  border:1px solid rgba(0,255,247,0.06);
+  border-radius:8px;padding:0.75rem 0.85rem;
+}
+
+.ls-howto-title{
+  font-family:var(--font-hud);font-size:0.58rem;
+  color:var(--neon-cyan);letter-spacing:0.18em;
+  text-transform:uppercase;margin-bottom:0.45rem;
+}
+
+.ls-howto-row{
+  display:flex;align-items:center;gap:0.5rem;
+  font-family:var(--font-mono);font-size:0.62rem;
+  color:var(--muted);padding:0.15rem 0;
+}
+
+.ls-step{
+  width:16px;height:16px;border-radius:50%;flex-shrink:0;
+  background:rgba(0,255,247,0.08);border:1px solid rgba(0,255,247,0.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.55rem;color:var(--neon-cyan);
+}
 
 /* ══ GAME WRAPPER ══ */
 #game-wrapper{
@@ -238,7 +295,7 @@ html,body{
 #game-wrapper.visible{display:flex;opacity:1;}
 
 .hud{
-  height:54px;flex-shrink:0;
+  height:52px;flex-shrink:0;
   background:linear-gradient(180deg,rgba(0,5,15,0.98),rgba(0,5,15,0.85));
   border-bottom:1px solid rgba(0,255,247,0.07);
   display:flex;align-items:center;padding:0 1rem;gap:0.75rem;
@@ -246,7 +303,7 @@ html,body{
 }
 
 .hud-brand{
-  font-family:var(--font-hud);font-size:1rem;font-weight:900;
+  font-family:var(--font-hud);font-size:0.95rem;font-weight:900;
   color:var(--neon-cyan);letter-spacing:0.15em;
   text-shadow:0 0 12px rgba(0,255,247,0.5);flex-shrink:0;
 }
@@ -256,208 +313,206 @@ html,body{
 .hstat{
   display:flex;flex-direction:column;align-items:center;
   background:rgba(0,255,247,0.04);border:1px solid rgba(0,255,247,0.07);
-  border-radius:6px;padding:0.2rem 0.7rem;min-width:65px;
+  border-radius:6px;padding:0.2rem 0.65rem;min-width:62px;
 }
 
-.hstat-val{font-family:var(--font-hud);font-size:0.98rem;font-weight:700;line-height:1.1;}
-.hstat-lbl{font-family:var(--font-mono);font-size:0.52rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.15em;}
+.hstat-val{font-family:var(--font-hud);font-size:0.92rem;font-weight:700;line-height:1.1;}
+.hstat-lbl{font-family:var(--font-mono);font-size:0.5rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.15em;}
 
-.hud-right{display:flex;align-items:center;gap:0.5rem;flex-shrink:0;}
+.hud-right{display:flex;align-items:center;gap:0.45rem;flex-shrink:0;}
 
 .lives-display{display:flex;gap:0.2rem;align-items:center;}
-.life-icon{font-size:0.9rem;filter:drop-shadow(0 0 4px var(--neon-orange));}
+.life-icon{font-size:0.88rem;filter:drop-shadow(0 0 4px var(--neon-orange));}
 .life-icon.lost{opacity:0.18;filter:none;}
 
-.hud-wallet{
-  font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);
-  background:rgba(0,255,247,0.04);border:1px solid rgba(0,255,247,0.07);
-  border-radius:6px;padding:0.22rem 0.55rem;
+.hud-info{
+  font-family:var(--font-mono);font-size:0.62rem;
+  border-radius:6px;padding:0.2rem 0.5rem;
 }
 
+.hud-wallet{color:var(--muted);background:rgba(0,255,247,0.04);border:1px solid rgba(0,255,247,0.07);}
+
 .hud-balance{
-  font-family:var(--font-mono);font-size:0.65rem;color:var(--neon-green);
-  background:rgba(57,255,20,0.05);border:1px solid rgba(57,255,20,0.15);
-  border-radius:6px;padding:0.22rem 0.55rem;cursor:pointer;transition:all 0.2s;
+  color:var(--neon-green);background:rgba(57,255,20,0.05);
+  border:1px solid rgba(57,255,20,0.15);cursor:pointer;transition:all 0.2s;
 }
 
 .hud-balance:hover{border-color:var(--neon-green);background:rgba(57,255,20,0.1);}
 
 .hud-btn{
   background:none;border:1px solid rgba(0,255,247,0.15);color:var(--muted);
-  font-family:var(--font-mono);font-size:0.6rem;padding:0.22rem 0.55rem;
+  font-family:var(--font-mono);font-size:0.58rem;padding:0.2rem 0.5rem;
   border-radius:5px;cursor:pointer;letter-spacing:0.1em;transition:all 0.2s;
 }
 
 .hud-btn:hover{border-color:var(--neon-cyan);color:var(--neon-cyan);}
-.hud-btn-pause{background:rgba(255,230,0,0.08);border-color:rgba(255,230,0,0.3);color:var(--neon-yellow);}
-.hud-btn-pause:hover{background:rgba(255,230,0,0.18);color:#fff;}
-.hud-btn-exit{background:rgba(255,0,128,0.08);border-color:rgba(255,0,128,0.3);color:var(--neon-pink);}
-.hud-btn-exit:hover{background:rgba(255,0,128,0.18);color:#fff;}
+.hud-btn-pause{background:rgba(255,230,0,0.07);border-color:rgba(255,230,0,0.3);color:var(--neon-yellow);}
+.hud-btn-pause:hover{background:rgba(255,230,0,0.15);color:#fff;}
+.hud-btn-exit{background:rgba(255,0,128,0.07);border-color:rgba(255,0,128,0.3);color:var(--neon-pink);}
+.hud-btn-exit:hover{background:rgba(255,0,128,0.15);color:#fff;}
 
 .game-area{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
 #gameCanvas{display:block;image-rendering:pixelated;cursor:none;}
 
 .side-panel{
-  position:absolute;right:0;top:0;bottom:0;width:200px;
+  position:absolute;right:0;top:0;bottom:0;width:195px;
   background:linear-gradient(180deg,rgba(0,4,12,0.97),rgba(0,2,8,0.99));
   border-left:1px solid rgba(0,255,247,0.06);
   display:flex;flex-direction:column;overflow:hidden;
 }
 
-.panel-sec{padding:0.7rem 0.8rem;border-bottom:1px solid rgba(0,255,247,0.05);flex-shrink:0;}
+.panel-sec{padding:0.65rem 0.75rem;border-bottom:1px solid rgba(0,255,247,0.05);flex-shrink:0;}
 
 .panel-title{
-  font-family:var(--font-mono);font-size:0.6rem;color:var(--neon-cyan);
-  text-transform:uppercase;letter-spacing:0.2em;margin-bottom:0.45rem;opacity:0.65;
+  font-family:var(--font-mono);font-size:0.58rem;color:var(--neon-cyan);
+  text-transform:uppercase;letter-spacing:0.2em;margin-bottom:0.4rem;opacity:0.65;
 }
 
 .wave-info{
   background:rgba(0,255,247,0.03);border:1px solid rgba(0,255,247,0.07);
-  border-radius:6px;padding:0.4rem 0.55rem;
-  font-family:var(--font-mono);font-size:0.68rem;color:var(--muted);line-height:1.8;
+  border-radius:6px;padding:0.38rem 0.5rem;
+  font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);line-height:1.8;
 }
 
 .wave-info span{color:var(--text);}
 
-.milestone-row{display:flex;align-items:center;gap:0.35rem;padding:0.25rem 0;font-size:0.72rem;}
-.ms-pts{font-family:var(--font-hud);font-size:0.65rem;color:var(--neon-yellow);min-width:40px;}
-.ms-rew{color:var(--neon-green);font-family:var(--font-mono);font-size:0.62rem;}
+.milestone-row{display:flex;align-items:center;gap:0.3rem;padding:0.22rem 0;font-size:0.68rem;}
+.ms-pts{font-family:var(--font-hud);font-size:0.62rem;color:var(--neon-yellow);min-width:38px;}
+.ms-rew{color:var(--neon-green);font-family:var(--font-mono);font-size:0.6rem;}
 .ms-done .ms-pts,.ms-done .ms-rew{color:var(--muted);text-decoration:line-through;opacity:0.35;}
-.ms-ok{color:var(--neon-green);font-size:0.7rem;margin-left:auto;}
+.ms-ok{color:var(--neon-green);font-size:0.68rem;margin-left:auto;}
 
 .reward-feed{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
 .reward-feed::-webkit-scrollbar{width:2px;}
 .reward-feed::-webkit-scrollbar-thumb{background:rgba(0,255,247,0.12);}
 
 .rfeed-item{
-  padding:0.4rem 0.8rem;border-bottom:1px solid rgba(0,255,247,0.03);
-  animation:feedIn 0.3s ease;font-size:0.65rem;
+  padding:0.38rem 0.75rem;border-bottom:1px solid rgba(0,255,247,0.03);
+  animation:feedIn 0.3s ease;font-size:0.62rem;
 }
 
 @keyframes feedIn{from{opacity:0;transform:translateX(6px);}to{opacity:1;transform:none;}}
 
-.rfeed-type{font-family:var(--font-mono);font-size:0.55rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.08rem;}
+.rfeed-type{font-family:var(--font-mono);font-size:0.52rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.06rem;}
 .rf-wave{color:var(--neon-cyan);}
 .rf-mile{color:var(--neon-yellow);}
 .rf-nft{color:var(--stellar-purple);}
 .rf-tok{color:var(--neon-orange);}
 .rf-chain{color:var(--neon-green);}
-.rfeed-amt{font-family:var(--font-hud);font-size:0.72rem;color:var(--neon-green);}
-.rfeed-msg{color:var(--muted);font-size:0.62rem;line-height:1.4;margin-top:0.08rem;}
+.rfeed-amt{font-family:var(--font-hud);font-size:0.7rem;color:var(--neon-green);}
+.rfeed-msg{color:var(--muted);font-size:0.6rem;line-height:1.4;margin-top:0.06rem;}
 
 .overlay{position:absolute;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(0,2,8,0.88);backdrop-filter:blur(4px);}
 .overlay.active{display:flex;}
 
 .ov-box{
-  display:flex;flex-direction:column;align-items:center;gap:1.25rem;
-  max-width:420px;width:90%;padding:2.25rem;
+  display:flex;flex-direction:column;align-items:center;gap:1.1rem;
+  max-width:400px;width:90%;padding:2rem;
   background:rgba(4,12,30,0.98);
   border:1px solid rgba(0,255,247,0.14);
   border-radius:20px;box-shadow:0 0 60px rgba(0,255,247,0.07);
 }
 
-.ov-title{font-family:var(--font-hud);font-size:2rem;font-weight:900;letter-spacing:0.2em;text-align:center;}
+.ov-title{font-family:var(--font-hud);font-size:1.9rem;font-weight:900;letter-spacing:0.2em;text-align:center;}
 .ov-cyan  {color:var(--neon-cyan);text-shadow:0 0 20px rgba(0,255,247,0.5);}
 .ov-pink  {color:var(--neon-pink);text-shadow:0 0 20px rgba(255,0,128,0.5);}
 .ov-yellow{color:var(--neon-yellow);}
 
-.ov-stats{width:100%;display:flex;flex-direction:column;gap:0.38rem;}
+.ov-stats{width:100%;display:flex;flex-direction:column;gap:0.35rem;}
 
 .ov-row{
   display:flex;justify-content:space-between;align-items:center;
-  padding:0.35rem 0.65rem;background:rgba(0,255,247,0.03);
-  border:1px solid rgba(0,255,247,0.06);border-radius:6px;font-size:0.82rem;
+  padding:0.32rem 0.6rem;background:rgba(0,255,247,0.03);
+  border:1px solid rgba(0,255,247,0.06);border-radius:6px;font-size:0.78rem;
 }
 
 .ov-key{font-family:var(--font-mono);color:var(--muted);}
-.ov-val{font-family:var(--font-hud);font-size:0.88rem;}
+.ov-val{font-family:var(--font-hud);font-size:0.85rem;}
 
 .ov-reward{
-  width:100%;padding:0.88rem 1rem;background:rgba(57,255,20,0.06);
+  width:100%;padding:0.85rem 1rem;background:rgba(57,255,20,0.06);
   border:1px solid rgba(57,255,20,0.2);border-radius:10px;text-align:center;
 }
 
-.ov-rew-lbl{font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.15em;margin-bottom:0.18rem;}
-.ov-rew-amt{font-family:var(--font-hud);font-size:1.7rem;font-weight:900;color:var(--neon-green);text-shadow:0 0 15px rgba(57,255,20,0.5);}
+.ov-rew-lbl{font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);letter-spacing:0.15em;margin-bottom:0.15rem;}
+.ov-rew-amt{font-family:var(--font-hud);font-size:1.6rem;font-weight:900;color:var(--neon-green);text-shadow:0 0 15px rgba(57,255,20,0.5);}
 
 .ov-chain{
-  width:100%;padding:0.55rem 0.85rem;background:rgba(0,255,247,0.04);
+  width:100%;padding:0.5rem 0.8rem;background:rgba(0,255,247,0.04);
   border:1px solid rgba(0,255,247,0.12);border-radius:8px;
-  font-family:var(--font-mono);font-size:0.68rem;color:var(--muted);text-align:center;
+  font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);text-align:center;
 }
 
 .ov-chain.ok{background:rgba(57,255,20,0.05);border-color:rgba(57,255,20,0.2);color:var(--neon-green);}
 
 .ov-nft{
-  width:100%;padding:0.7rem 0.9rem;background:rgba(139,92,246,0.07);
+  width:100%;padding:0.65rem 0.85rem;background:rgba(139,92,246,0.07);
   border:1px solid rgba(139,92,246,0.22);border-radius:9px;
-  display:flex;align-items:center;gap:0.65rem;
+  display:flex;align-items:center;gap:0.6rem;
 }
 
-.nft-icon{font-size:1.4rem;}
-.nft-title{font-family:var(--font-hud);font-size:0.75rem;color:var(--stellar-purple);}
-.nft-sub{font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);margin-top:0.08rem;}
+.nft-icon{font-size:1.3rem;}
+.nft-title{font-family:var(--font-hud);font-size:0.72rem;color:var(--stellar-purple);}
+.nft-sub{font-family:var(--font-mono);font-size:0.58rem;color:var(--muted);margin-top:0.06rem;}
 
 .ov-btns{display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;}
 
 .ov-btn{
-  padding:0.72rem 1.6rem;border:none;border-radius:9px;cursor:pointer;
-  font-family:var(--font-hud);font-size:0.82rem;font-weight:700;
+  padding:0.68rem 1.5rem;border:none;border-radius:9px;cursor:pointer;
+  font-family:var(--font-hud);font-size:0.78rem;font-weight:700;
   letter-spacing:0.12em;text-transform:uppercase;transition:all 0.2s;
 }
 
 .ov-btn-cyan  {background:rgba(0,255,247,0.1);color:var(--neon-cyan);border:1px solid rgba(0,255,247,0.3);}
 .ov-btn-cyan:hover  {box-shadow:0 0 25px rgba(0,255,247,0.35);transform:translateY(-2px);}
-.ov-btn-green {background:rgba(57,255,20,0.1);color:var(--neon-green);border:1px solid rgba(57,255,20,0.3);}
-.ov-btn-green:hover {box-shadow:0 0 25px rgba(57,255,20,0.35);transform:translateY(-2px);}
 .ov-btn-orange{background:rgba(255,107,0,0.1);color:var(--neon-orange);border:1px solid rgba(255,107,0,0.3);}
 .ov-btn-orange:hover{box-shadow:0 0 25px rgba(255,107,0,0.35);transform:translateY(-2px);}
 .ov-btn-pink  {background:rgba(255,0,128,0.1);color:var(--neon-pink);border:1px solid rgba(255,0,128,0.3);}
 .ov-btn-pink:hover  {box-shadow:0 0 25px rgba(255,0,128,0.35);transform:translateY(-2px);}
 
-.score-popup{position:absolute;pointer-events:none;font-family:var(--font-hud);font-size:0.78rem;animation:scoreFloat 0.85s ease forwards;z-index:60;}
+.score-popup{position:absolute;pointer-events:none;font-family:var(--font-hud);font-size:0.75rem;animation:scoreFloat 0.85s ease forwards;z-index:60;}
 @keyframes scoreFloat{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-38px) scale(0.8);}}
 
-.float-reward{position:absolute;pointer-events:none;font-family:var(--font-hud);font-size:0.88rem;font-weight:700;color:var(--neon-green);text-shadow:0 0 8px rgba(57,255,20,0.6);animation:floatUp 1.4s ease forwards;z-index:60;}
+.float-reward{position:absolute;pointer-events:none;font-family:var(--font-hud);font-size:0.85rem;font-weight:700;color:var(--neon-green);text-shadow:0 0 8px rgba(57,255,20,0.6);animation:floatUp 1.4s ease forwards;z-index:60;}
 @keyframes floatUp{0%{opacity:1;transform:translateY(0);}100%{opacity:0;transform:translateY(-60px);}}
 
 #lb-overlay{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(0,2,8,0.93);backdrop-filter:blur(8px);}
 #lb-overlay.active{display:flex;}
 
-.lb-box{max-width:480px;width:90%;background:rgba(4,12,30,0.98);border:1px solid rgba(0,255,247,0.12);border-radius:20px;padding:1.75rem;display:flex;flex-direction:column;gap:0.9rem;}
-.lb-title{font-family:var(--font-hud);font-size:1.2rem;font-weight:900;color:var(--neon-cyan);letter-spacing:0.2em;text-align:center;}
-.lb-row{display:flex;align-items:center;gap:0.55rem;padding:0.45rem 0.65rem;background:rgba(0,255,247,0.03);border:1px solid rgba(0,255,247,0.06);border-radius:7px;font-size:0.78rem;}
-.lb-rank{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-hud);font-size:0.62rem;font-weight:700;flex-shrink:0;}
+.lb-box{max-width:480px;width:90%;background:rgba(4,12,30,0.98);border:1px solid rgba(0,255,247,0.12);border-radius:20px;padding:1.75rem;display:flex;flex-direction:column;gap:0.85rem;}
+.lb-title{font-family:var(--font-hud);font-size:1.15rem;font-weight:900;color:var(--neon-cyan);letter-spacing:0.2em;text-align:center;}
+.lb-row{display:flex;align-items:center;gap:0.55rem;padding:0.42rem 0.6rem;background:rgba(0,255,247,0.03);border:1px solid rgba(0,255,247,0.06);border-radius:7px;font-size:0.75rem;}
+.lb-rank{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-hud);font-size:0.6rem;font-weight:700;flex-shrink:0;}
 .r1{background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#000;}
 .r2{background:linear-gradient(135deg,#94a3b8,#cbd5e1);color:#000;}
 .r3{background:linear-gradient(135deg,#b45309,#d97706);color:#fff;}
 .rn{background:rgba(255,255,255,0.06);color:var(--muted);}
-.lb-addr{flex:1;font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);}
-.lb-score{font-family:var(--font-hud);font-size:0.8rem;color:var(--neon-cyan);}
-.lb-wave{font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);}
-.lb-earn{font-family:var(--font-hud);font-size:0.7rem;color:var(--neon-green);}
+.lb-addr{flex:1;font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);}
+.lb-score{font-family:var(--font-hud);font-size:0.78rem;color:var(--neon-cyan);}
+.lb-wave{font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);}
+.lb-earn{font-family:var(--font-hud);font-size:0.68rem;color:var(--neon-green);}
 
 .token-notif{
   position:fixed;top:1rem;right:1rem;z-index:300;
   background:#050d20;border:1px solid rgba(57,255,20,0.4);
-  border-radius:12px;padding:1rem 1.1rem;
-  min-width:270px;max-width:320px;
+  border-radius:12px;padding:0.9rem 1rem;
+  min-width:260px;max-width:300px;
   transform:translateX(120%);
   transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
   box-shadow:0 8px 32px rgba(0,0,0,0.7);
 }
 
 .token-notif.show{transform:translateX(0);}
-.tn-top{display:flex;align-items:center;gap:0.55rem;margin-bottom:0.5rem;}
-.tn-icon{width:32px;height:32px;border-radius:7px;background:rgba(57,255,20,0.12);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
-.tn-title{font-family:var(--font-hud);font-size:0.75rem;color:var(--neon-green);}
-.tn-sub{font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);margin-top:0.08rem;}
-.tn-amt{font-family:var(--font-hud);font-size:1.5rem;font-weight:900;color:var(--neon-green);margin:0.35rem 0;}
-.tn-row{font-family:var(--font-mono);font-size:0.64rem;color:var(--muted);margin-bottom:0.12rem;}
+.tn-top{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.45rem;}
+.tn-icon{width:30px;height:30px;border-radius:7px;background:rgba(57,255,20,0.12);display:flex;align-items:center;justify-content:center;font-size:0.95rem;flex-shrink:0;}
+.tn-title{font-family:var(--font-hud);font-size:0.72rem;color:var(--neon-green);}
+.tn-sub{font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);margin-top:0.06rem;}
+.tn-amt{font-family:var(--font-hud);font-size:1.4rem;font-weight:900;color:var(--neon-green);margin:0.3rem 0;}
+.tn-row{font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);margin-bottom:0.1rem;}
 .tn-addr{color:var(--neon-cyan);}
 .tn-ok{color:var(--neon-green);font-weight:700;}
-.tn-hash{color:var(--stellar-blue);font-size:0.58rem;word-break:break-all;}
-.tn-bar{height:2px;background:rgba(57,255,20,0.12);border-radius:1px;margin-top:0.6rem;overflow:hidden;}
+.tn-hash{color:var(--stellar-blue);font-size:0.55rem;word-break:break-all;}
+.tn-bar{height:2px;background:rgba(57,255,20,0.12);border-radius:1px;margin-top:0.55rem;overflow:hidden;}
 .tn-fill{height:100%;width:100%;background:var(--neon-green);animation:shrink 5s linear forwards;}
 @keyframes shrink{from{width:100%;}to{width:0%;}}
 
@@ -465,8 +520,8 @@ html,body{
   position:fixed;bottom:1.25rem;left:50%;
   transform:translateX(-50%) translateY(70px);
   background:rgba(4,15,40,0.98);border:1px solid rgba(0,255,247,0.18);
-  color:var(--text);padding:0.65rem 1.25rem;
-  border-radius:8px;font-family:var(--font-mono);font-size:0.78rem;
+  color:var(--text);padding:0.6rem 1.2rem;
+  border-radius:8px;font-family:var(--font-mono);font-size:0.75rem;
   z-index:400;transition:transform 0.3s ease;
   box-shadow:0 4px 24px rgba(0,0,0,0.6);max-width:440px;text-align:center;
 }
@@ -476,20 +531,26 @@ html,body{
 .ctrl-hint{
   position:absolute;bottom:0.5rem;left:50%;transform:translateX(-50%);
   display:flex;gap:0.65rem;align-items:center;
-  font-family:var(--font-mono);font-size:0.56rem;
+  font-family:var(--font-mono);font-size:0.54rem;
   color:var(--muted);letter-spacing:0.08em;opacity:0.55;z-index:20;pointer-events:none;
 }
 
-.ctrl-key{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:0.08rem 0.3rem;font-size:0.56rem;color:var(--text);}
+.ctrl-key{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:0.08rem 0.3rem;font-size:0.54rem;color:var(--text);}
 
-.mob-ctrl{position:absolute;bottom:0.85rem;left:0;right:200px;display:none;align-items:flex-end;justify-content:space-between;padding:0 0.85rem;z-index:30;pointer-events:none;}
+.mob-ctrl{position:absolute;bottom:0.85rem;left:0;right:195px;display:none;align-items:flex-end;justify-content:space-between;padding:0 0.85rem;z-index:30;pointer-events:none;}
 @media(pointer:coarse){.mob-ctrl{display:flex;}.ctrl-hint{display:none;}}
 
-.mob-btn{pointer-events:all;width:56px;height:56px;border-radius:50%;background:rgba(0,255,247,0.07);border:2px solid rgba(0,255,247,0.18);color:var(--neon-cyan);font-size:1.2rem;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;cursor:pointer;user-select:none;}
+.mob-btn{pointer-events:all;width:54px;height:54px;border-radius:50%;background:rgba(0,255,247,0.07);border:2px solid rgba(0,255,247,0.18);color:var(--neon-cyan);font-size:1.15rem;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;cursor:pointer;user-select:none;}
 .mob-btn:active{background:rgba(0,255,247,0.2);}
 .mob-fire{background:rgba(255,107,0,0.1);border-color:rgba(255,107,0,0.3);color:var(--neon-orange);}
 .mob-fire:active{background:rgba(255,107,0,0.25);}
 .mob-dir{display:flex;gap:0.45rem;}
+
+/* Responsive — stack on small screens */
+@media(max-width:768px){
+  #login-screen{grid-template-columns:1fr;}
+  .ls-left{display:none;}
+}
 </style>
 </head>
 <body>
@@ -497,76 +558,88 @@ html,body{
 <canvas id="bg-canvas"></canvas>
 <div class="scanlines"></div>
 
-<!-- ══ LOGIN SCREEN ══ -->
+<!-- ══ LOGIN SCREEN — SPLIT LAYOUT ══ -->
 <div id="login-screen">
-  <div class="ls-inner">
 
-    <div>
-      <div class="ls-title">SORO<br/>SHOOTER</div>
-      <div class="ls-sub" style="margin-top:0.5rem;">Play-to-Earn · Stellar Testnet</div>
+  <!-- LEFT PANEL -->
+  <div class="ls-left">
+
+    <div class="ls-title">SORO<br/>SHOOTER</div>
+    <div class="ls-sub">Play-to-Earn · Stellar Testnet</div>
+
+    <div class="ls-ship">
+      <canvas id="ship-preview-canvas" width="100" height="100"></canvas>
     </div>
-
-    <!-- REPLACE -->
-    <canvas id="ship-preview-canvas" width="80" height="80"></canvas>
 
     <div class="ls-feats">
-      <span class="ls-feat fc">SPACE SHOOTER</span>
-      <span class="ls-feat fg">REAL XLM</span>
-      <span class="ls-feat fo">NFT BADGES</span>
-      <span class="ls-feat fp">SOROBAN</span>
+      <span class="ls-feat fc">Space Shooter</span>
+      <span class="ls-feat fg">Real XLM</span>
+      <span class="ls-feat fo">NFT Badges</span>
+      <span class="ls-feat fp">Soroban</span>
     </div>
 
-    <div class="ls-box">
+    <!-- Reward table -->
+    <div class="ls-rewards">
+      <div class="ls-rewards-title">Reward System</div>
+      <div class="rw-row"><span>Register</span><span class="rw-val nft">+2 SQT tokens</span></div>
+      <div class="rw-row"><span>Each Wave</span><span class="rw-val">+0.05 XLM × wave</span></div>
+      <div class="rw-row"><span>1,000 pts</span><span class="rw-val">+0.5 XLM</span></div>
+      <div class="rw-row"><span>5,000 pts</span><span class="rw-val">+2.0 XLM</span></div>
+      <div class="rw-row"><span>15,000 pts</span><span class="rw-val">+5.0 XLM</span></div>
+      <div class="rw-row"><span>Wave 5</span><span class="rw-val nft">NFT Badge 🏆</span></div>
+      <div class="rw-row"><span>Wave 10</span><span class="rw-val nft">Rare NFT ✨</span></div>
+    </div>
 
-      <div class="ls-section-title">Connect Your Stellar Testnet Wallet</div>
+    <div class="ls-net">STELLAR TESTNET — REAL XLM</div>
 
-      <div>
-        <div class="ls-lbl" style="margin-bottom:0.4rem;">Your Wallet Address</div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="ls-right">
+    <div class="ls-card">
+
+      <div class="ls-card-title">Connect Your Stellar Wallet</div>
+
+      <!-- Wallet Address -->
+      <div class="ls-field">
+        <div class="ls-lbl">Wallet Address</div>
         <input class="ls-inp" id="walletInput"
           placeholder="G... (paste your Stellar testnet address)"
           autocomplete="off" spellcheck="false"
           oninput="onWalletInput(this.value)"/>
-        <div class="wallet-preview" id="walletPreview">
-          ✓ Wallet ready — balance loading…
-        </div>
       </div>
 
-      <div>
-        <div class="ls-lbl" style="margin-bottom:0.4rem;">Contract ID</div>
+      <!-- Wallet Status -->
+      <div class="ls-wallet-status idle" id="walletStatus">
+        <span class="dot"></span>
+        <span id="walletStatusText">Paste your G... address above to continue</span>
+      </div>
+
+      <!-- Contract ID -->
+      <div class="ls-field">
+        <div class="ls-lbl">Contract ID</div>
         <input class="ls-inp" id="contractInput"
           placeholder="Get from README — github.com/samenrqz/SoroShooter"
           autocomplete="off" spellcheck="false"/>
       </div>
 
+      <!-- How to Play -->
+      <div class="ls-howto">
+        <div class="ls-howto-title">How to Play &amp; Earn</div>
+        <div class="ls-howto-row"><div class="ls-step">1</div>Paste your Stellar testnet wallet address</div>
+        <div class="ls-howto-row"><div class="ls-step">2</div>Get Contract ID from GitHub README</div>
+        <div class="ls-howto-row"><div class="ls-step">3</div>Launch → Press SPACE → Shoot &amp; earn XLM!</div>
+        <div class="ls-howto-row"><div class="ls-step">4</div>Watch your Freighter balance increase live</div>
+      </div>
+
+      <!-- Launch Button -->
       <button class="ls-btn ls-btn-launch" id="launchBtn" onclick="launchGame()">
         ⚡ Launch SoroShooter
       </button>
 
-      <!-- How to Play -->
-      <div class="how-to-play">
-        <div class="htp-title">How to Play &amp; Earn</div>
-        <div class="htp-row"><div class="htp-num">1</div>Paste your Stellar testnet wallet address above</div>
-        <div class="htp-row"><div class="htp-num">2</div>Get Contract ID from the GitHub README</div>
-        <div class="htp-row"><div class="htp-num">3</div>Press Launch — shoot enemies, earn real XLM!</div>
-        <div class="htp-row"><div class="htp-num">4</div>Check your Freighter balance after each wave</div>
-      </div>
-
-      <!-- Reward Table -->
-      <table class="reward-table">
-        <tr><th>Trigger</th><th>Reward</th></tr>
-        <tr><td>Register</td><td class="nft">+2 SQT tokens</td></tr>
-        <tr><td>Each Wave</td><td class="xlm">+0.05 XLM × wave</td></tr>
-        <tr><td>1,000 pts</td><td class="xlm">+0.5 XLM</td></tr>
-        <tr><td>5,000 pts</td><td class="xlm">+2.0 XLM</td></tr>
-        <tr><td>15,000 pts</td><td class="xlm">+5.0 XLM</td></tr>
-        <tr><td>Wave 5</td><td class="nft">NFT Badge 🏆</td></tr>
-        <tr><td>Wave 10</td><td class="nft">Rare NFT ✨</td></tr>
-      </table>
-
-      <div class="ls-net">STELLAR TESTNET — REAL XLM REWARDS</div>
     </div>
-
   </div>
+
 </div>
 
 <!-- ══ GAME WRAPPER ══ -->
@@ -583,8 +656,8 @@ html,body{
     </div>
     <div class="hud-right">
       <div class="lives-display" id="livesDisplay"></div>
-      <div class="hud-wallet" id="hudWallet">—</div>
-      <div class="hud-balance" id="hudBalance" onclick="refreshBalance()" title="Click to refresh balance">— XLM</div>
+      <div class="hud-info hud-wallet" id="hudWallet">—</div>
+      <div class="hud-info hud-balance" id="hudBalance" onclick="refreshBalance()" title="Click to refresh">— XLM</div>
       <button class="hud-btn hud-btn-pause" id="pauseBtn" onclick="togglePause()">⏸ PAUSE</button>
       <button class="hud-btn hud-btn-exit" onclick="backToLogin()">↩ EXIT</button>
       <button class="hud-btn" onclick="showLeaderboard()">★ BOARD</button>
@@ -615,7 +688,7 @@ html,body{
       <div class="panel-sec" style="border-bottom:none;flex:1;overflow:hidden;display:flex;flex-direction:column;">
         <div class="panel-title">Reward Log</div>
         <div class="reward-feed" id="rewardFeed">
-          <div style="padding:0.5rem;font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);">Awaiting contract events…</div>
+          <div style="padding:0.5rem;font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);">Awaiting events…</div>
         </div>
       </div>
     </div>
@@ -651,8 +724,8 @@ html,body{
         </div>
         <div class="ov-btns">
           <button class="ov-btn ov-btn-orange" onclick="restartGame()">↺ PLAY AGAIN</button>
-          <button class="ov-btn ov-btn-cyan" onclick="showLeaderboard()">★ LEADERBOARD</button>
-          <button class="ov-btn ov-btn-pink" onclick="backToLogin()">↩ EXIT</button>
+          <button class="ov-btn ov-btn-cyan"   onclick="showLeaderboard()">★ LEADERBOARD</button>
+          <button class="ov-btn ov-btn-pink"   onclick="backToLogin()">↩ EXIT</button>
         </div>
       </div>
     </div>
@@ -661,13 +734,13 @@ html,body{
     <div class="overlay" id="pauseOv">
       <div class="ov-box">
         <div class="ov-title ov-yellow">PAUSED</div>
-        <p style="font-family:var(--font-mono);font-size:0.85rem;color:var(--muted);text-align:center;line-height:1.7;">
+        <p style="font-family:var(--font-mono);font-size:0.82rem;color:var(--muted);text-align:center;line-height:1.7;">
           Press <strong style="color:var(--text)">ESC</strong> or <strong style="color:var(--text)">P</strong> to resume
         </p>
         <div class="ov-btns">
-          <button class="ov-btn ov-btn-cyan" onclick="togglePause()">▶ RESUME</button>
+          <button class="ov-btn ov-btn-cyan"   onclick="togglePause()">▶ RESUME</button>
           <button class="ov-btn ov-btn-orange" onclick="restartGame()">↺ RESTART</button>
-          <button class="ov-btn ov-btn-pink" onclick="backToLogin()">↩ EXIT TO MENU</button>
+          <button class="ov-btn ov-btn-pink"   onclick="backToLogin()">↩ EXIT TO MENU</button>
         </div>
       </div>
     </div>
@@ -703,7 +776,7 @@ html,body{
     <div class="tn-icon">🪙</div>
     <div>
       <div class="tn-title" id="tn-title">XLM Sent!</div>
-      <div class="tn-sub" id="tn-sub">Real XLM transferred on Stellar</div>
+      <div class="tn-sub"   id="tn-sub">Real XLM transferred on Stellar</div>
     </div>
   </div>
   <div class="tn-amt" id="tn-amt">+0.05 XLM</div>
@@ -716,13 +789,11 @@ html,body{
 <div class="toast" id="toast"></div>
 
 <script>
-/* ══ TREASURY CONFIG ══ */
-/* WARNING: Testnet only — never use real secret keys in frontend */
-const TREASURY_PUBLIC  = 'GCYDZO56GUVVMAT6PR3GHKA4XNWCXMCIEJFEZWURDUC5DNWQI5FPNC6F';
-const TREASURY_SECRET  = 'SAB4ZVSZZET26WNRKBX4C7CRXNYEHYNJ4YDOFXHMF42L2EY3F5PPQGQY';
-const TESTNET_RPC      = 'https://soroban-testnet.stellar.org';
-const TESTNET_HORIZON  = 'https://horizon-testnet.stellar.org';
-const NETWORK_PHRASE   = 'Test SDF Network ; September 2015';
+/* ══ TREASURY ══ */
+const TREASURY_PUBLIC = 'GCYDZO56GUVVMAT6PR3GHKA4XNWCXMCIEJFEZWURDUC5DNWQI5FPNC6F';
+const TREASURY_SECRET = 'SAB4ZVSZZET26WNRKBX4C7CRXNYEHYNJ4YDOFXHMF42L2EY3F5PPQGQY';
+const TESTNET_HORIZON = 'https://horizon-testnet.stellar.org';
+const NETWORK_PHRASE  = 'Test SDF Network ; September 2015';
 
 /* ══ STARFIELD ══ */
 (function(){
@@ -747,26 +818,26 @@ const NETWORK_PHRASE   = 'Test SDF Network ; September 2015';
   const c=document.getElementById('ship-preview-canvas');
   const x=c.getContext('2d');let t=0;
   function draw(){
-    x.clearRect(0,0,110,110);
+    x.clearRect(0,0,100,100);
     const fl=0.7+0.3*Math.sin(t*0.15);
-    const eg=x.createRadialGradient(55,88,2,55,88,20);
+    const eg=x.createRadialGradient(50,82,2,50,82,18);
     eg.addColorStop(0,'rgba(255,107,0,'+(0.8*fl)+')');eg.addColorStop(1,'transparent');
-    x.fillStyle=eg;x.fillRect(35,68,40,42);
+    x.fillStyle=eg;x.fillRect(30,62,40,38);
     x.save();x.globalAlpha=fl;
-    x.fillStyle='#ff6b00';x.beginPath();x.moveTo(48,82);x.lineTo(62,82);x.lineTo(59,97+Math.sin(t*.2)*3);x.lineTo(55,95);x.lineTo(51,97+Math.sin(t*.25)*3);x.closePath();x.fill();
-    x.fillStyle='#ffe600';x.beginPath();x.moveTo(51,82);x.lineTo(59,82);x.lineTo(57,92+Math.sin(t*.2)*2);x.lineTo(55,90);x.lineTo(53,92+Math.sin(t*.3)*2);x.closePath();x.fill();
+    x.fillStyle='#ff6b00';x.beginPath();x.moveTo(43,75);x.lineTo(57,75);x.lineTo(54,90+Math.sin(t*.2)*3);x.lineTo(50,88);x.lineTo(46,90+Math.sin(t*.25)*3);x.closePath();x.fill();
+    x.fillStyle='#ffe600';x.beginPath();x.moveTo(46,75);x.lineTo(54,75);x.lineTo(52,85+Math.sin(t*.2)*2);x.lineTo(50,83);x.lineTo(48,85+Math.sin(t*.3)*2);x.closePath();x.fill();
     x.restore();
-    x.shadowColor='rgba(0,255,247,0.5)';x.shadowBlur=16;
+    x.shadowColor='rgba(0,255,247,0.5)';x.shadowBlur=14;
     x.fillStyle='#061828';
-    x.beginPath();x.moveTo(40,70);x.lineTo(22,80);x.lineTo(28,63);x.closePath();x.fill();
-    x.beginPath();x.moveTo(70,70);x.lineTo(88,80);x.lineTo(82,63);x.closePath();x.fill();
-    x.fillStyle='#0a2a4a';x.beginPath();x.moveTo(55,16);x.lineTo(74,72);x.lineTo(55,62);x.lineTo(36,72);x.closePath();x.fill();
-    x.fillStyle='#0d3a6a';x.beginPath();x.moveTo(55,20);x.lineTo(71,70);x.lineTo(55,60);x.lineTo(39,70);x.closePath();x.fill();
-    x.fillStyle='rgba(0,255,247,0.38)';x.beginPath();x.ellipse(55,38,8,12,0,0,Math.PI*2);x.fill();
-    x.fillStyle='rgba(255,255,255,0.6)';x.beginPath();x.ellipse(53,36,4,6,0,0,Math.PI*2);x.fill();
+    x.beginPath();x.moveTo(36,64);x.lineTo(20,73);x.lineTo(25,58);x.closePath();x.fill();
+    x.beginPath();x.moveTo(64,64);x.lineTo(80,73);x.lineTo(75,58);x.closePath();x.fill();
+    x.fillStyle='#0a2a4a';x.beginPath();x.moveTo(50,12);x.lineTo(67,66);x.lineTo(50,56);x.lineTo(33,66);x.closePath();x.fill();
+    x.fillStyle='#0d3a6a';x.beginPath();x.moveTo(50,16);x.lineTo(64,64);x.lineTo(50,54);x.lineTo(36,64);x.closePath();x.fill();
+    x.fillStyle='rgba(0,255,247,0.38)';x.beginPath();x.ellipse(50,34,7,11,0,0,Math.PI*2);x.fill();
+    x.fillStyle='rgba(255,255,255,0.6)';x.beginPath();x.ellipse(48,32,3.5,5.5,0,0,Math.PI*2);x.fill();
     x.shadowBlur=0;
     x.strokeStyle='rgba(0,255,247,'+(0.3+0.15*Math.sin(t*.05))+')';x.lineWidth=1;
-    x.beginPath();x.moveTo(55,16);x.lineTo(74,72);x.lineTo(55,62);x.lineTo(36,72);x.closePath();x.stroke();
+    x.beginPath();x.moveTo(50,12);x.lineTo(67,66);x.lineTo(50,56);x.lineTo(33,66);x.closePath();x.stroke();
     t++;requestAnimationFrame(draw);
   }
   draw();
@@ -777,23 +848,28 @@ let playerWallet = '';
 let contractId   = '';
 const CYAN       = '#00fff7';
 const shortAddr  = a => a?a.slice(0,6)+'…'+a.slice(-4):'???';
-const xlmFromStroops = s => (s/10_000_000).toFixed(7);
 
-/* ══ WALLET INPUT HANDLER ══ */
+/* ══ WALLET STATUS ══ */
+function setWalletStatus(type, msg) {
+  const el   = document.getElementById('walletStatus');
+  const text = document.getElementById('walletStatusText');
+  el.className   = 'ls-wallet-status ' + type;
+  text.textContent = msg;
+}
+
+/* ══ WALLET INPUT ══ */
 function onWalletInput(val) {
   val = val.trim();
-  const preview = document.getElementById('walletPreview');
-  const inp     = document.getElementById('walletInput');
+  const inp = document.getElementById('walletInput');
   if (val.startsWith('G') && val.length >= 56) {
     playerWallet = val;
     inp.classList.add('valid');
-    preview.classList.add('show');
-    preview.textContent = '⏳ Loading balance for ' + shortAddr(val) + '…';
+    setWalletStatus('ok', '✓ Wallet ready — ' + shortAddr(val));
     fetchBalancePreview(val);
   } else {
     inp.classList.remove('valid');
-    preview.classList.remove('show');
     playerWallet = '';
+    setWalletStatus('idle', 'Paste your G... address above to continue');
   }
 }
 
@@ -801,30 +877,26 @@ async function fetchBalancePreview(addr) {
   try {
     const res  = await fetch(`${TESTNET_HORIZON}/accounts/${addr}`);
     if (!res.ok) {
-      document.getElementById('walletPreview').textContent =
-        '⚠️ Address not found on testnet — fund it at Friendbot first';
+      setWalletStatus('err', '⚠️ Address not on testnet — fund at friendbot.stellar.org');
       return;
     }
     const data = await res.json();
     const xlm  = data.balances?.find(b => b.asset_type === 'native');
     if (xlm) {
       const bal = parseFloat(xlm.balance).toFixed(2);
-      document.getElementById('walletPreview').textContent =
-        '✓ ' + shortAddr(addr) + ' — Balance: ' + bal + ' XLM — Ready to play!';
+      setWalletStatus('ok', '✓ ' + shortAddr(addr) + '  —  Balance: ' + bal + ' XLM  ✅ Ready!');
     }
   } catch(e) {
-    document.getElementById('walletPreview').textContent =
-      '✓ Address accepted — balance will load in game';
+    setWalletStatus('ok', '✓ Address accepted — ready to play!');
   }
 }
 
-/* ══ REAL XLM TRANSFER ══ */
+/* ══ SEND REAL XLM ══ */
 async function sendXLM(toAddress, amountXLM) {
   try {
     const server  = new StellarSdk.Horizon.Server(TESTNET_HORIZON);
     const keypair = StellarSdk.Keypair.fromSecret(TREASURY_SECRET);
     const account = await server.loadAccount(TREASURY_PUBLIC);
-
     const tx = new StellarSdk.TransactionBuilder(account, {
       fee: await server.fetchBaseFee(),
       networkPassphrase: NETWORK_PHRASE,
@@ -837,20 +909,12 @@ async function sendXLM(toAddress, amountXLM) {
     .addMemo(StellarSdk.Memo.text('SoroShooter Reward'))
     .setTimeout(30)
     .build();
-
     tx.sign(keypair);
     const result = await server.submitTransaction(tx);
-
-    console.log('XLM sent! Hash:', result.hash);
     return { hash: result.hash, success: true };
-
   } catch(e) {
     console.error('XLM transfer error:', e);
-    // Check if it's a destination not found error
-    if (e.response?.data?.extras?.result_codes?.operations?.includes('op_no_destination')) {
-      showToast('⚠️ Wallet not found on testnet. Fund it at friendbot.stellar.org');
-    }
-    return { hash: null, success: false, error: e.message };
+    return { hash: null, success: false };
   }
 }
 
@@ -866,13 +930,13 @@ async function fetchBalance(addr) {
       document.getElementById('hudBalance').textContent = bal + ' XLM';
       return parseFloat(xlm.balance);
     }
-  } catch(e) { console.log('Balance error:', e); }
+  } catch(e) {}
   return 0;
 }
 
 async function refreshBalance() {
   if (!playerWallet) return;
-  document.getElementById('hudBalance').textContent = '… XLM';
+  document.getElementById('hudBalance').textContent = '⟳ XLM';
   const bal = await fetchBalance(playerWallet);
   showToast('Balance: ' + bal.toFixed(2) + ' XLM');
 }
@@ -883,6 +947,7 @@ function launchGame() {
   const addr = document.getElementById('walletInput').value.trim();
   if (!addr || !addr.startsWith('G') || addr.length < 56) {
     showToast('⚠️ Please enter your Stellar wallet address.');
+    setWalletStatus('err', '❌ Enter a valid G... address to continue');
     return;
   }
   if (!cid) {
@@ -892,7 +957,7 @@ function launchGame() {
   contractId   = cid;
   playerWallet = addr;
   document.getElementById('hudWallet').textContent  = shortAddr(addr);
-  document.getElementById('hudBalance').textContent = '… XLM';
+  document.getElementById('hudBalance').textContent = '⟳ XLM';
   const ls = document.getElementById('login-screen');
   ls.style.opacity = '0'; ls.style.pointerEvents = 'none';
   setTimeout(() => {
@@ -902,9 +967,8 @@ function launchGame() {
     setTimeout(() => gw.classList.add('visible'), 50);
     initGame();
     fetchBalance(addr);
-    // Send welcome tokens notification
-    addFeed('tok','+2 SQT','Player registered — '+shortAddr(addr)+' — Welcome to SoroShooter!');
-    showTokenNotif('Welcome to SoroShooter!','2 SQT tokens issued to your wallet','+2 SQT',addr,null);
+    addFeed('tok','+2 SQT','Welcome '+shortAddr(addr)+'! SoroShooter ready.');
+    showTokenNotif('Welcome!','2 SQT tokens issued','+2 SQT',addr,null);
   }, 400);
 }
 
@@ -920,7 +984,7 @@ function backToLogin() {
   setTimeout(() => {
     gw.style.display = 'none';
     const ls = document.getElementById('login-screen');
-    ls.style.display = 'flex';
+    ls.style.display = 'grid';
     ls.style.pointerEvents = 'all';
     setTimeout(() => { ls.style.opacity = '1'; }, 50);
     if (playerWallet) {
@@ -940,7 +1004,7 @@ const GAME_W = 600; let GAME_H = 520;
 
 function resizeCanvas() {
   const area = document.getElementById('gameArea');
-  const aw = area.clientWidth - 200, ah = area.clientHeight;
+  const aw = area.clientWidth - 195, ah = area.clientHeight;
   const sc = Math.min(aw / GAME_W, ah / GAME_H);
   canvas.style.width  = ~~(GAME_W * sc) + 'px';
   canvas.style.height = ~~(GAME_H * sc) + 'px';
@@ -1037,27 +1101,27 @@ function drawReadyScreen(dt) {
   ctx.fillStyle = 'rgba(0,2,8,0.92)'; ctx.fillRect(0,0,GAME_W,GAME_H);
   G.enemies.forEach(e => { if (e.alive) drawEnemy(e); });
   drawShip();
-  ctx.font = 'bold 36px Orbitron, monospace';
+  ctx.font = 'bold 34px Orbitron, monospace';
   ctx.textAlign = 'center';
   ctx.fillStyle = '#00fff7';
   ctx.shadowColor = '#00fff7'; ctx.shadowBlur = 20;
-  ctx.fillText('WAVE ' + G.wave, GAME_W/2, GAME_H/2 - 60);
+  ctx.fillText('WAVE ' + G.wave, GAME_W/2, GAME_H/2 - 55);
   if (Math.floor(G.readyBlink / 500) % 2 === 0) {
-    ctx.font = 'bold 18px Orbitron, monospace';
+    ctx.font = 'bold 17px Orbitron, monospace';
     ctx.fillStyle = '#ffe600';
     ctx.shadowColor = '#ffe600'; ctx.shadowBlur = 12;
     ctx.fillText('PRESS SPACE BAR TO START', GAME_W/2, GAME_H/2);
   }
   ctx.shadowBlur = 0;
-  ctx.font = '14px Share Tech Mono, monospace';
+  ctx.font = '13px Share Tech Mono, monospace';
   ctx.fillStyle = '#4a7a9b';
-  ctx.fillText('← → to move   SPACE to fire   ESC to pause', GAME_W/2, GAME_H/2 + 40);
+  ctx.fillText('← → move   SPACE fire   ESC pause', GAME_W/2, GAME_H/2 + 38);
   ctx.textAlign = 'left';
   ctx.restore();
 }
 
 function startOrFire() {
-  if (!G.ready) { G.ready = true; showToast('🚀 Game started! Shoot enemies to earn XLM!'); }
+  if (!G.ready) { G.ready = true; showToast('🚀 Game started! Shoot to earn XLM!'); }
   G.keys[' '] = true;
   setTimeout(() => { G.keys[' '] = false; }, 100);
 }
@@ -1246,78 +1310,59 @@ function floatReward(txt){
   setTimeout(()=>el.remove(),1500);
 }
 
-/* ══ MILESTONES ══ */
 function checkMilestones(){
   [[1000,0.5],[5000,2.0],[15000,5.0]].forEach(([pts,xlm])=>{
     if(!G.milestones[pts]&&G.score>=pts){
-      G.milestones[pts]=true;
-      G.totalEarned+=xlm;
+      G.milestones[pts]=true;G.totalEarned+=xlm;
       const el=document.getElementById('ms-'+pts);
       if(el){el.classList.add('ms-done');const ok=document.createElement('span');ok.className='ms-ok';ok.textContent='✓';el.appendChild(ok);}
-      addFeed('mile','+'+xlm+' XLM','Milestone '+pts.toLocaleString()+' pts! Sending XLM…');
+      addFeed('mile','+'+xlm+' XLM','Milestone '+pts.toLocaleString()+' pts! Sending…');
       floatReward('+'+xlm+' XLM 🎉');
-      showToast('🎉 Milestone! Sending +'+xlm+' XLM to your wallet!');
-      // Send real XLM
-      sendXLM(playerWallet, xlm).then(result => {
-        if(result.success){
-          addFeed('chain','+'+xlm+' XLM','✓ Sent! Tx: '+result.hash.slice(0,14)+'…');
-          showTokenNotif('Milestone Reward!',pts.toLocaleString()+' pts reached','+'+xlm+' XLM',playerWallet,result.hash);
-          setTimeout(()=>refreshBalance(), 3000);
-        } else {
-          addFeed('chain','','Transfer attempted — check balance');
-          showTokenNotif('Milestone Reward',pts.toLocaleString()+' pts','+'+xlm+' XLM',playerWallet,null);
+      showToast('🎉 Milestone! Sending +'+xlm+' XLM!');
+      sendXLM(playerWallet, xlm).then(r=>{
+        if(r.success){
+          addFeed('chain','+'+xlm+' XLM','✓ Sent! Tx: '+r.hash.slice(0,14)+'…');
+          showTokenNotif('Milestone!',pts.toLocaleString()+' pts reached','+'+xlm+' XLM',playerWallet,r.hash);
+          setTimeout(()=>refreshBalance(),3000);
         }
       });
     }
   });
 }
 
-/* ══ WAVE CLEAR ══ */
 async function waveClear(){
-  const w=G.wave, cfg=waveCfg(w);
+  const w=G.wave,cfg=waveCfg(w);
   G.totalEarned+=cfg.xlm;
-
   const sd=document.getElementById('wco-stats');sd.innerHTML='';
-  [['Wave','#'+w,CYAN],['Enemies',''+G.waveKilled,'#ff6b00'],['Score',G.score.toLocaleString(),CYAN],['Reward','+'+cfg.xlm+' XLM','#39ff14']].forEach(([k,v,c])=>{
+  [['Wave','#'+w,'#00fff7'],['Enemies',''+G.waveKilled,'#ff6b00'],['Score',G.score.toLocaleString(),'#00fff7'],['Reward','+'+cfg.xlm+' XLM','#39ff14']].forEach(([k,v,c])=>{
     const row=document.createElement('div');row.className='ov-row';
     row.innerHTML=`<span class="ov-key">${k}</span><span class="ov-val" style="color:${c}">${v}</span>`;
     sd.appendChild(row);
   });
-
   document.getElementById('wco-reward').style.display='block';
   document.getElementById('wco-amt').textContent='+'+cfg.xlm+' XLM';
-
   const chainEl=document.getElementById('wco-chain');
   chainEl.className='ov-chain';
   chainEl.textContent='⏳ Sending '+cfg.xlm+' XLM to your wallet…';
-
-  // NFT Badge
   const nftEl=document.getElementById('wco-nft');
   const nftNames={5:'Wave 5 Survivor · Uncommon',10:'Wave 10 Titan · Rare'};
   if((w===5||w===10)&&!G.nftWaves[w]){
-    G.nftWaves[w]=true;
-    nftEl.style.display='flex';
+    G.nftWaves[w]=true;nftEl.style.display='flex';
     document.getElementById('wco-nft-name').textContent=nftNames[w];
     addFeed('nft',nftNames[w],'NFT badge minted for Wave '+w+'!');
     const el=document.getElementById('ms-w'+w);
     if(el){el.classList.add('ms-done');const ok=document.createElement('span');ok.className='ms-ok';ok.textContent='✓';el.appendChild(ok);}
-  } else {
-    nftEl.style.display='none';
-  }
-
+  } else { nftEl.style.display='none'; }
   document.getElementById('wco-title').textContent='WAVE '+w+' CLEARED!';
   document.getElementById('waveClearOv').classList.add('active');
-  addFeed('wave','+'+cfg.xlm+' XLM','Wave '+w+' cleared! Sending XLM reward…');
-
-  // Send REAL XLM
+  addFeed('wave','+'+cfg.xlm+' XLM','Wave '+w+' cleared! Sending XLM…');
   const result = await sendXLM(playerWallet, cfg.xlm);
-
   if(result.success){
     chainEl.className='ov-chain ok';
-    chainEl.textContent='✓ '+cfg.xlm+' XLM sent to your wallet! Tx: '+result.hash.slice(0,20)+'…';
-    addFeed('chain','+'+cfg.xlm+' XLM','✓ Real XLM sent! Tx: '+result.hash.slice(0,14)+'…');
+    chainEl.textContent='✓ '+cfg.xlm+' XLM confirmed! Tx: '+result.hash.slice(0,20)+'…';
+    addFeed('chain','+'+cfg.xlm+' XLM','✓ On-chain! Tx: '+result.hash.slice(0,14)+'…');
     showTokenNotif('Wave '+w+' Reward!','Real XLM sent to your wallet','+'+cfg.xlm+' XLM',playerWallet,result.hash);
-    setTimeout(()=>refreshBalance(), 3000);
+    setTimeout(()=>refreshBalance(),3000);
   } else {
     chainEl.className='ov-chain ok';
     chainEl.textContent='✓ Reward processed — check your balance!';
@@ -1327,25 +1372,22 @@ async function waveClear(){
 
 function startNextWave(){
   document.getElementById('waveClearOv').classList.remove('active');
-  G.wave++; G.ready=false; G.readyBlink=0;
-  spawnWave(G.wave);
+  G.wave++;G.ready=false;G.readyBlink=0;spawnWave(G.wave);
 }
 
-/* ══ GAME OVER ══ */
 function gameOver(){
   G.running=false;cancelAnimationFrame(G.raf);
   G.leaderboard.push({addr:playerWallet,score:G.score,wave:G.wave,earned:G.totalEarned});
   G.leaderboard.sort((a,b)=>b.score-a.score);
   const sd=document.getElementById('go-stats');sd.innerHTML='';
-  [['Final Score',G.score.toLocaleString(),CYAN],['Wave Reached',''+G.wave,'#ff6b00'],['Total Kills',''+G.kills,'#8b5cf6'],['XLM Earned',G.totalEarned.toFixed(2)+' XLM','#39ff14']].forEach(([k,v,c])=>{
+  [['Final Score',G.score.toLocaleString(),'#00fff7'],['Wave Reached',''+G.wave,'#ff6b00'],['Total Kills',''+G.kills,'#8b5cf6'],['XLM Earned',G.totalEarned.toFixed(2)+' XLM','#39ff14']].forEach(([k,v,c])=>{
     const row=document.createElement('div');row.className='ov-row';
     row.innerHTML=`<span class="ov-key">${k}</span><span class="ov-val" style="color:${c}">${v}</span>`;
     sd.appendChild(row);
   });
   document.getElementById('go-total').textContent=G.totalEarned.toFixed(2)+' XLM';
   document.getElementById('gameOverOv').classList.add('active');
-  // Refresh balance after 3 seconds
-  setTimeout(()=>refreshBalance(), 3000);
+  setTimeout(()=>refreshBalance(),3000);
 }
 
 function restartGame(){
@@ -1363,9 +1405,7 @@ function togglePause(){
 
 addEventListener('keydown',e=>{
   if(e.key===' '&&!G.ready&&G.running){
-    G.ready=true;
-    showToast('🚀 Game started! Shoot to earn XLM!');
-    e.preventDefault();return;
+    G.ready=true;showToast('🚀 Shoot to earn XLM!');e.preventDefault();return;
   }
   G.keys[e.key]=true;
   if(e.key==='Escape'||e.key==='p'||e.key==='P')togglePause();
@@ -1378,7 +1418,7 @@ function mk(k,d){G.keys[k]=d;}
 function showLeaderboard(){
   const c=document.getElementById('lb-content');c.innerHTML='';
   if(!G.leaderboard.length){
-    c.innerHTML='<div style="text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:0.75rem;padding:1rem;">No scores yet. Play to get on the board!</div>';
+    c.innerHTML='<div style="text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:0.72rem;padding:1rem;">No scores yet!</div>';
   } else {
     G.leaderboard.slice(0,10).forEach((e,i)=>{
       const rc=i===0?'r1':i===1?'r2':i===2?'r3':'rn';
