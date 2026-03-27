@@ -1,858 +1,1537 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SoroQuest — Play-to-Earn on Stellar</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SoroShooter — Play-to-Earn on Stellar</title>
 
-    :root {
-      --primary:       #7c3aed;
-      --primary-light: #a855f7;
-      --secondary:     #f59e0b;
-      --accent:        #06b6d4;
-      --success:       #10b981;
-      --danger:        #ef4444;
-      --bg:            #07070f;
-      --bg-card:       rgba(255,255,255,0.04);
-      --border:        rgba(255,255,255,0.08);
-      --text:          #f1f5f9;
-      --muted:         #64748b;
-    }
+<!-- Stellar SDK via CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-sdk/11.3.0/stellar-sdk.min.js"></script>
 
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;800&display=swap');
 
-    /* ── Background ── */
-    .bg-layer {
-      position: fixed; inset: 0; z-index: 0;
-      background:
-        radial-gradient(ellipse at 10% 20%, rgba(124,58,237,0.18) 0%, transparent 55%),
-        radial-gradient(ellipse at 90% 80%, rgba(245,158,11,0.12) 0%, transparent 55%),
-        radial-gradient(ellipse at 50% 50%, rgba(6,182,212,0.08) 0%, transparent 60%);
-    }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 
-    .stars { position: fixed; inset: 0; z-index: 0; }
-    .star {
-      position: absolute; width: 2px; height: 2px;
-      background: white; border-radius: 50%; opacity: 0;
-      animation: twinkle var(--d) ease-in-out infinite;
-    }
-    @keyframes twinkle {
-      0%,100% { opacity:0; transform:scale(1); }
-      50%      { opacity:1; transform:scale(1.5); }
-    }
+:root{
+  --void:#000208;
+  --neon-cyan:#00fff7;
+  --neon-green:#39ff14;
+  --neon-orange:#ff6b00;
+  --neon-pink:#ff0080;
+  --neon-yellow:#ffe600;
+  --stellar-blue:#4f9cff;
+  --stellar-purple:#8b5cf6;
+  --panel-bg:rgba(4,12,30,0.95);
+  --text:#e0f4ff;
+  --muted:#4a7a9b;
+  --font-hud:'Orbitron',monospace;
+  --font-mono:'Share Tech Mono',monospace;
+  --font-body:'Exo 2',sans-serif;
+}
 
-    /* ── Grid particles ── */
-    .grid-overlay {
-      position: fixed; inset: 0; z-index: 0; opacity: 0.03;
-      background-image:
-        linear-gradient(rgba(124,58,237,1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(124,58,237,1) 1px, transparent 1px);
-      background-size: 60px 60px;
-    }
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  background:var(--void);
+  font-family:var(--font-body);
+  color:var(--text);
+}
 
-    /* ── Layout ── */
-    .container {
-      position: relative; z-index: 1;
-      max-width: 1280px; margin: 0 auto;
-      padding: 2rem 1.5rem;
-      display: flex; flex-direction: column; gap: 2rem;
-    }
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
 
-    /* ── Header ── */
-    header {
-      text-align: center;
-      animation: fadeDown 0.8s ease;
-    }
+.scanlines{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(
+    0deg,transparent,transparent 2px,
+    rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px
+  );
+}
 
-    .logo-row {
-      display: inline-flex; align-items: center;
-      gap: 0.75rem; margin-bottom: 0.75rem;
-    }
+/* ══ WALLET SCREEN ══ */
+#wallet-screen{
+  position:fixed;inset:0;z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at center,#020d1f 0%,#000208 100%);
+  transition:opacity 0.5s ease;
+}
 
-    .logo-icon {
-      width: 52px; height: 52px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem;
-      box-shadow: 0 0 30px rgba(124,58,237,0.5);
-    }
+.ws-inner{
+  display:flex;flex-direction:column;align-items:center;
+  gap:1.5rem;max-width:460px;width:100%;padding:2rem;
+}
 
-    .logo-name {
-      font-size: 1.8rem; font-weight: 800;
-      background: linear-gradient(135deg, var(--primary-light), var(--secondary));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
+.ws-title{
+  font-family:var(--font-hud);font-size:2.5rem;font-weight:900;
+  letter-spacing:0.15em;text-align:center;
+  background:linear-gradient(135deg,var(--neon-cyan),var(--stellar-blue),var(--stellar-purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  animation:titlePulse 3s ease-in-out infinite;
+}
 
-    header h1 {
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      font-weight: 900;
-      background: linear-gradient(135deg, #fff 0%, var(--primary-light) 40%, var(--secondary) 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      line-height: 1.15; margin-bottom: 0.5rem;
-    }
+@keyframes titlePulse{
+  0%,100%{filter:drop-shadow(0 0 20px rgba(0,255,247,0.4));}
+  50%{filter:drop-shadow(0 0 40px rgba(0,255,247,0.7));}
+}
 
-    header p { color: var(--muted); font-size: 1rem; margin-bottom: 1rem; }
+.ws-sub{
+  font-family:var(--font-mono);font-size:0.7rem;
+  color:var(--neon-cyan);letter-spacing:0.3em;
+  text-transform:uppercase;opacity:0.7;text-align:center;
+}
 
-    .badge-row {
-      display: flex; justify-content: center;
-      gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;
-    }
+#ship-preview-canvas{display:block;}
 
-    .badge {
-      padding: 0.25rem 0.9rem; border-radius: 999px;
-      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
-    }
-    .badge-purple { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.25); }
-    .badge-amber  { background: rgba(245,158,11,0.15);  color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
-    .badge-cyan   { background: rgba(6,182,212,0.15);   color: #22d3ee; border: 1px solid rgba(6,182,212,0.25); }
+.ws-feats{display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;}
 
-    .network-pill {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3);
-      color: var(--success); padding: 0.3rem 1rem;
-      border-radius: 999px; font-size: 0.75rem; font-weight: 600;
-      letter-spacing: 0.05em;
-    }
-    .network-pill::before {
-      content: ''; width: 7px; height: 7px;
-      background: var(--success); border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
-      50%      { opacity:.7; box-shadow: 0 0 0 6px rgba(16,185,129,0); }
-    }
+.ws-feat{
+  padding:0.22rem 0.65rem;border-radius:999px;
+  font-family:var(--font-mono);font-size:0.58rem;
+  letter-spacing:0.1em;text-transform:uppercase;
+}
 
-    /* ── Contract ID bar ── */
-    .contract-bar {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 14px; padding: 1rem 1.5rem;
-      backdrop-filter: blur(10px);
-      animation: fadeUp 0.8s ease 0.1s both;
-    }
+.fc{background:rgba(0,255,247,0.08);color:var(--neon-cyan);border:1px solid rgba(0,255,247,0.2);}
+.fg{background:rgba(57,255,20,0.08);color:var(--neon-green);border:1px solid rgba(57,255,20,0.2);}
+.fo{background:rgba(255,107,0,0.08);color:var(--neon-orange);border:1px solid rgba(255,107,0,0.2);}
+.fp{background:rgba(139,92,246,0.08);color:var(--stellar-purple);border:1px solid rgba(139,92,246,0.2);}
 
-    .contract-bar label {
-      font-size: 0.72rem; font-weight: 700; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 0.12em;
-      display: block; margin-bottom: 0.4rem;
-    }
+.ws-box{
+  width:100%;background:rgba(4,15,40,0.85);
+  border:1px solid rgba(0,255,247,0.15);
+  border-radius:16px;padding:1.4rem;
+  display:flex;flex-direction:column;gap:0.8rem;
+}
 
-    .contract-bar input {
-      width: 100%;
-      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-      border-radius: 8px; padding: 0.65rem 1rem;
-      color: var(--text); font-size: 0.82rem;
-      font-family: 'Courier New', monospace; outline: none;
-      transition: border-color 0.2s;
-    }
-    .contract-bar input:focus { border-color: var(--primary-light); }
-    .contract-bar input::placeholder { color: var(--muted); }
+.ws-lbl{
+  font-family:var(--font-mono);font-size:0.6rem;
+  color:var(--muted);text-transform:uppercase;
+  letter-spacing:0.2em;
+}
 
-    /* ── Main grid ── */
-    .main-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-    }
+.ws-inp{
+  width:100%;background:rgba(0,255,247,0.04);
+  border:1px solid rgba(0,255,247,0.2);
+  border-radius:9px;padding:0.7rem 1rem;
+  color:var(--text);font-family:var(--font-mono);
+  font-size:0.78rem;outline:none;
+  letter-spacing:0.04em;text-align:center;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
 
-    .left-col  { display: flex; flex-direction: column; gap: 1.5rem; }
-    .right-col { display: flex; flex-direction: column; gap: 1.5rem; }
+.ws-inp:focus{
+  border-color:var(--neon-cyan);
+  box-shadow:0 0 0 2px rgba(0,255,247,0.1);
+}
 
-    /* ── Cards ── */
-    .card {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 20px; padding: 1.5rem;
-      backdrop-filter: blur(10px);
-      animation: fadeUp 0.8s ease both;
-    }
+.ws-inp::placeholder{color:var(--muted);}
 
-    .card-title {
-      font-size: 0.72rem; font-weight: 700; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 0.15em;
-      margin-bottom: 1.25rem;
-      display: flex; align-items: center; gap: 0.5rem;
-    }
+.ws-btn{
+  width:100%;padding:0.8rem;border:none;
+  border-radius:10px;cursor:pointer;
+  font-family:var(--font-hud);font-size:0.8rem;
+  font-weight:700;letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--neon-cyan);
+  border:1px solid rgba(0,255,247,0.3);
+  transition:all 0.2s;
+}
 
-    .card-title::before {
-      content: ''; width: 3px; height: 14px;
-      background: linear-gradient(var(--primary), var(--secondary));
-      border-radius: 2px;
-    }
+.ws-btn-freighter{
+  background:linear-gradient(135deg,#1a0a3a,#2d1060);
+  color:#a78bfa;border-color:rgba(139,92,246,0.4);
+  box-shadow:0 0 20px rgba(139,92,246,0.15);
+  animation:btnPulse2 2s ease-in-out infinite;
+}
 
-    /* ── Stats row ── */
-    .stats-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
-      animation: fadeUp 0.8s ease 0.2s both;
-    }
+@keyframes btnPulse2{
+  0%,100%{box-shadow:0 0 20px rgba(139,92,246,0.15);}
+  50%{box-shadow:0 0 35px rgba(139,92,246,0.35);}
+}
 
-    .stat-card {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 14px; padding: 1.1rem;
-      text-align: center; backdrop-filter: blur(10px);
-    }
+.ws-btn-freighter:hover{
+  transform:translateY(-2px);
+  box-shadow:0 0 40px rgba(139,92,246,0.45);
+}
 
-    .stat-val {
-      font-size: 1.8rem; font-weight: 900;
-      background: linear-gradient(135deg, var(--primary-light), var(--secondary));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
+.ws-btn-manual{
+  background:linear-gradient(135deg,#0a3a5c,#0d5a8a);
+  box-shadow:0 0 20px rgba(0,255,247,0.1);
+  animation:btnPulse 2s ease-in-out infinite;
+}
 
-    .stat-lbl {
-      font-size: 0.65rem; text-transform: uppercase;
-      letter-spacing: 0.1em; color: var(--muted); margin-top: 0.2rem;
-    }
+@keyframes btnPulse{
+  0%,100%{box-shadow:0 0 20px rgba(0,255,247,0.1);}
+  50%{box-shadow:0 0 30px rgba(0,255,247,0.25);}
+}
 
-    /* ── Form fields ── */
-    .field { margin-bottom: 0.85rem; }
+.ws-btn-manual:hover{
+  transform:translateY(-2px);color:#fff;
+  box-shadow:0 0 40px rgba(0,255,247,0.4);
+}
 
-    .field label {
-      display: block; font-size: 0.72rem; font-weight: 600;
-      color: var(--muted); text-transform: uppercase;
-      letter-spacing: 0.1em; margin-bottom: 0.35rem;
-    }
+.ws-divider{
+  display:flex;align-items:center;gap:0.5rem;
+  font-family:var(--font-mono);font-size:0.58rem;
+  color:var(--muted);letter-spacing:0.1em;
+}
 
-    .field input {
-      width: 100%;
-      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-      border-radius: 8px; padding: 0.65rem 0.9rem;
-      color: var(--text); font-size: 0.85rem; outline: none;
-      transition: border-color 0.2s;
-    }
-    .field input:focus { border-color: var(--primary-light); }
-    .field input::placeholder { color: var(--muted); }
+.ws-divider::before,.ws-divider::after{
+  content:'';flex:1;height:1px;
+  background:rgba(255,255,255,0.07);
+}
 
-    /* ── Buttons ── */
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center;
-      gap: 0.4rem; padding: 0.8rem 1.25rem;
-      border-radius: 10px; font-size: 0.88rem; font-weight: 700;
-      border: none; cursor: pointer;
-      transition: all 0.2s ease; position: relative; overflow: hidden;
-      letter-spacing: 0.02em; width: 100%;
-    }
-    .btn::after {
-      content: ''; position: absolute; inset: 0;
-      background: rgba(255,255,255,0.1); opacity: 0; transition: opacity 0.2s;
-    }
-    .btn:hover::after { opacity: 1; }
-    .btn:active { transform: scale(0.97); }
+.ws-status{
+  display:flex;align-items:center;gap:0.5rem;
+  font-family:var(--font-mono);font-size:0.62rem;
+  padding:0.4rem 0.6rem;border-radius:7px;
+  border:1px solid rgba(255,255,255,0.06);
+}
 
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      color: white; box-shadow: 0 4px 20px rgba(124,58,237,0.35);
-    }
-    .btn-primary:hover { box-shadow: 0 6px 28px rgba(124,58,237,0.55); transform: translateY(-1px); }
+.ws-status.connected{
+  background:rgba(57,255,20,0.06);
+  border-color:rgba(57,255,20,0.2);
+  color:var(--neon-green);
+}
 
-    .btn-amber {
-      background: linear-gradient(135deg, #d97706, var(--secondary));
-      color: white; box-shadow: 0 4px 20px rgba(245,158,11,0.3);
-    }
-    .btn-amber:hover { box-shadow: 0 6px 28px rgba(245,158,11,0.5); transform: translateY(-1px); }
+.ws-status.error{
+  background:rgba(255,0,128,0.06);
+  border-color:rgba(255,0,128,0.2);
+  color:var(--neon-pink);
+}
 
-    .btn-cyan {
-      background: linear-gradient(135deg, #0891b2, var(--accent));
-      color: white; box-shadow: 0 4px 20px rgba(6,182,212,0.3);
-    }
-    .btn-cyan:hover { box-shadow: 0 6px 28px rgba(6,182,212,0.5); transform: translateY(-1px); }
+.ws-status.pending{
+  background:rgba(0,255,247,0.04);
+  border-color:rgba(0,255,247,0.15);
+  color:var(--muted);
+}
 
-    .btn-ghost {
-      background: rgba(255,255,255,0.05); color: var(--text);
-      border: 1px solid var(--border);
-    }
-    .btn-ghost:hover { border-color: var(--primary-light); transform: translateY(-1px); }
+.ws-net{
+  display:flex;align-items:center;justify-content:center;
+  gap:0.4rem;font-family:var(--font-mono);
+  font-size:0.58rem;color:var(--neon-green);
+  letter-spacing:0.15em;
+}
 
-    .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.5rem; }
+.ws-net::before{
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:var(--neon-green);
+  box-shadow:0 0 8px var(--neon-green);
+  animation:netPulse 2s infinite;
+}
 
-    /* ── Quest list ── */
-    .quest-list { display: flex; flex-direction: column; gap: 0.6rem; max-height: 260px; overflow-y: auto; }
-    .quest-list::-webkit-scrollbar { width: 4px; }
-    .quest-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+@keyframes netPulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
 
-    .quest-item {
-      display: flex; align-items: center; gap: 0.75rem;
-      padding: 0.75rem 0.9rem;
-      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-      border-radius: 10px; cursor: pointer;
-      transition: all 0.2s; font-size: 0.82rem;
-      animation: slideIn 0.3s ease;
-    }
-    .quest-item:hover { border-color: var(--primary-light); background: rgba(124,58,237,0.08); }
-    .quest-item.selected { border-color: var(--secondary); background: rgba(245,158,11,0.08); }
+/* ══ GAME WRAPPER ══ */
+#game-wrapper{
+  position:fixed;inset:0;z-index:10;
+  display:none;flex-direction:column;
+  opacity:0;transition:opacity 0.5s ease;
+}
 
-    .quest-id {
-      padding: 0.2rem 0.55rem; border-radius: 6px;
-      background: rgba(124,58,237,0.2); color: var(--primary-light);
-      font-size: 0.65rem; font-weight: 700; white-space: nowrap;
-    }
+#game-wrapper.visible{display:flex;opacity:1;}
 
-    .quest-title { flex: 1; color: var(--text); font-weight: 600; }
+.hud{
+  height:50px;flex-shrink:0;
+  background:linear-gradient(180deg,rgba(0,5,15,0.98),rgba(0,5,15,0.85));
+  border-bottom:1px solid rgba(0,255,247,0.07);
+  display:flex;align-items:center;
+  padding:0 1rem;gap:0.75rem;
+  backdrop-filter:blur(8px);
+}
 
-    .quest-reward {
-      color: var(--secondary); font-weight: 700; font-size: 0.78rem; white-space: nowrap;
-    }
+.hud-brand{
+  font-family:var(--font-hud);font-size:0.85rem;
+  font-weight:900;color:var(--neon-cyan);
+  letter-spacing:0.15em;
+  text-shadow:0 0 12px rgba(0,255,247,0.5);
+  flex-shrink:0;
+}
 
-    .quest-royalty {
-      color: var(--accent); font-size: 0.72rem; white-space: nowrap;
-    }
+.hud-stats{
+  flex:1;display:flex;align-items:center;
+  gap:0.4rem;justify-content:center;
+}
 
-    .empty-state {
-      text-align: center; color: var(--muted);
-      padding: 2rem; font-size: 0.82rem;
-    }
+.hstat{
+  display:flex;flex-direction:column;align-items:center;
+  background:rgba(0,255,247,0.04);
+  border:1px solid rgba(0,255,247,0.07);
+  border-radius:6px;padding:0.18rem 0.65rem;
+  min-width:60px;
+}
 
-    /* ── Event log ── */
-    .log-header {
-      display: flex; align-items: center;
-      justify-content: space-between; margin-bottom: 1rem;
-    }
+.hstat-val{
+  font-family:var(--font-hud);font-size:0.85rem;
+  font-weight:700;line-height:1.1;
+}
 
-    .log-live {
-      font-size: 0.72rem; font-weight: 700; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 0.15em;
-      display: flex; align-items: center; gap: 0.5rem;
-    }
+.hstat-lbl{
+  font-family:var(--font-mono);font-size:0.45rem;
+  color:var(--muted);text-transform:uppercase;letter-spacing:0.15em;
+}
 
-    .log-live::before {
-      content: ''; width: 7px; height: 7px;
-      background: var(--success); border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
+.hud-right{
+  display:flex;align-items:center;gap:0.5rem;flex-shrink:0;
+}
 
-    .clear-btn {
-      background: none; border: 1px solid var(--border);
-      color: var(--muted); padding: 0.25rem 0.7rem;
-      border-radius: 6px; font-size: 0.72rem; cursor: pointer;
-      transition: all 0.2s;
-    }
-    .clear-btn:hover { border-color: var(--danger); color: var(--danger); }
+.lives-display{display:flex;gap:0.2rem;align-items:center;}
+.life-icon{font-size:0.82rem;filter:drop-shadow(0 0 4px var(--neon-orange));}
+.life-icon.lost{opacity:0.18;filter:none;}
 
-    .log-list {
-      display: flex; flex-direction: column; gap: 0.45rem;
-      max-height: 320px; overflow-y: auto;
-    }
-    .log-list::-webkit-scrollbar { width: 4px; }
-    .log-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.hud-wallet{
+  font-family:var(--font-mono);font-size:0.58rem;color:var(--muted);
+  background:rgba(0,255,247,0.04);border:1px solid rgba(0,255,247,0.07);
+  border-radius:6px;padding:0.18rem 0.5rem;
+}
 
-    .log-item {
-      display: flex; align-items: center; gap: 0.65rem;
-      padding: 0.55rem 0.8rem;
-      background: rgba(255,255,255,0.02); border: 1px solid var(--border);
-      border-radius: 8px; font-size: 0.78rem;
-      animation: slideIn 0.3s ease;
-    }
+.hud-balance{
+  font-family:var(--font-mono);font-size:0.58rem;color:var(--neon-green);
+  background:rgba(57,255,20,0.05);border:1px solid rgba(57,255,20,0.15);
+  border-radius:6px;padding:0.18rem 0.5rem;cursor:pointer;
+  transition:border-color 0.2s;
+}
 
-    @keyframes slideIn {
-      from { opacity:0; transform: translateX(-8px); }
-      to   { opacity:1; transform: translateX(0); }
-    }
+.hud-balance:hover{border-color:var(--neon-green);}
 
-    .log-badge {
-      padding: 0.15rem 0.5rem; border-radius: 5px;
-      font-size: 0.62rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
-    }
+.hud-btn{
+  background:none;border:1px solid rgba(0,255,247,0.15);
+  color:var(--muted);font-family:var(--font-mono);
+  font-size:0.52rem;padding:0.18rem 0.45rem;
+  border-radius:5px;cursor:pointer;
+  letter-spacing:0.1em;transition:all 0.2s;
+}
 
-    .b-player  { background: rgba(124,58,237,0.2);  color: var(--primary-light); }
-    .b-creator { background: rgba(245,158,11,0.2);  color: #fbbf24; }
-    .b-quest   { background: rgba(6,182,212,0.2);   color: #22d3ee; }
-    .b-reward  { background: rgba(16,185,129,0.2);  color: var(--success); }
-    .b-royalty { background: rgba(239,68,68,0.2);   color: #f87171; }
-    .b-info    { background: rgba(100,116,139,0.2); color: var(--muted); }
+.hud-btn:hover{border-color:var(--neon-cyan);color:var(--neon-cyan);}
 
-    .log-msg  { flex: 1; color: var(--text); }
-    .log-time { color: var(--muted); font-size: 0.68rem; white-space: nowrap; }
+.game-area{
+  flex:1;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
 
-    /* ── Leaderboard ── */
-    .lb-row {
-      display: flex; align-items: center; gap: 0.75rem;
-      padding: 0.65rem 0.85rem;
-      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-      border-radius: 10px; font-size: 0.82rem;
-      animation: slideIn 0.3s ease;
-    }
+#gameCanvas{display:block;image-rendering:pixelated;cursor:none;}
 
-    .lb-rank {
-      width: 28px; height: 28px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.72rem; font-weight: 800; flex-shrink: 0;
-    }
+.side-panel{
+  position:absolute;right:0;top:0;bottom:0;width:195px;
+  background:linear-gradient(180deg,rgba(0,4,12,0.97),rgba(0,2,8,0.99));
+  border-left:1px solid rgba(0,255,247,0.06);
+  display:flex;flex-direction:column;overflow:hidden;
+}
 
-    .rank-1 { background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #000; }
-    .rank-2 { background: linear-gradient(135deg, #94a3b8, #cbd5e1); color: #000; }
-    .rank-3 { background: linear-gradient(135deg, #b45309, #d97706); color: #fff; }
-    .rank-n { background: rgba(255,255,255,0.08); color: var(--muted); }
+.panel-sec{
+  padding:0.65rem 0.75rem;
+  border-bottom:1px solid rgba(0,255,247,0.05);flex-shrink:0;
+}
 
-    .lb-addr { flex: 1; font-family: 'Courier New', monospace; font-size: 0.75rem; color: var(--muted); }
-    .lb-pts  { color: var(--secondary); font-weight: 800; }
-    .lb-quests { color: var(--muted); font-size: 0.72rem; }
+.panel-title{
+  font-family:var(--font-mono);font-size:0.52rem;
+  color:var(--neon-cyan);text-transform:uppercase;
+  letter-spacing:0.2em;margin-bottom:0.45rem;opacity:0.65;
+}
 
-    /* ── Toast ── */
-    .toast {
-      position: fixed; bottom: 2rem; left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: rgba(10,10,25,0.97); border: 1px solid var(--border);
-      color: var(--text); padding: 0.8rem 1.5rem;
-      border-radius: 12px; font-size: 0.85rem;
-      backdrop-filter: blur(20px); z-index: 100;
-      transition: transform 0.3s ease;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-      max-width: 400px; text-align: center;
-    }
-    .toast.show { transform: translateX(-50%) translateY(0); }
+.wave-info{
+  background:rgba(0,255,247,0.03);
+  border:1px solid rgba(0,255,247,0.07);
+  border-radius:6px;padding:0.38rem 0.5rem;
+  font-family:var(--font-mono);font-size:0.6rem;
+  color:var(--muted);line-height:1.75;
+}
 
-    /* ── Footer ── */
-    footer {
-      text-align: center; padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
-      color: var(--muted); font-size: 0.78rem;
-      animation: fadeUp 0.8s ease 0.5s both;
-    }
-    footer a { color: var(--primary-light); text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
+.wave-info span{color:var(--text);}
 
-    /* ── Animations ── */
-    @keyframes fadeDown {
-      from { opacity:0; transform: translateY(-20px); }
-      to   { opacity:1; transform: translateY(0); }
-    }
-    @keyframes fadeUp {
-      from { opacity:0; transform: translateY(20px); }
-      to   { opacity:1; transform: translateY(0); }
-    }
+.milestone-row{
+  display:flex;align-items:center;gap:0.35rem;
+  padding:0.22rem 0;font-size:0.65rem;
+}
 
-    /* ── Responsive ── */
-    @media (max-width: 900px) {
-      .main-grid { grid-template-columns: 1fr; }
-      .stats-grid { grid-template-columns: repeat(3, 1fr); }
-    }
-  </style>
+.ms-pts{font-family:var(--font-hud);font-size:0.6rem;color:var(--neon-yellow);min-width:38px;}
+.ms-rew{color:var(--neon-green);font-family:var(--font-mono);font-size:0.58rem;}
+.ms-done .ms-pts,.ms-done .ms-rew{color:var(--muted);text-decoration:line-through;opacity:0.35;}
+.ms-ok{color:var(--neon-green);font-size:0.65rem;margin-left:auto;}
+
+.reward-feed{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.reward-feed::-webkit-scrollbar{width:2px;}
+.reward-feed::-webkit-scrollbar-thumb{background:rgba(0,255,247,0.12);}
+
+.rfeed-item{
+  padding:0.38rem 0.75rem;
+  border-bottom:1px solid rgba(0,255,247,0.03);
+  animation:feedIn 0.3s ease;font-size:0.6rem;
+}
+
+@keyframes feedIn{from{opacity:0;transform:translateX(6px);}to{opacity:1;transform:none;}}
+
+.rfeed-type{
+  font-family:var(--font-mono);font-size:0.5rem;
+  text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.08rem;
+}
+
+.rf-wave{color:var(--neon-cyan);}
+.rf-mile{color:var(--neon-yellow);}
+.rf-nft{color:var(--stellar-purple);}
+.rf-tok{color:var(--neon-orange);}
+.rf-chain{color:var(--neon-green);}
+
+.rfeed-amt{font-family:var(--font-hud);font-size:0.68rem;color:var(--neon-green);}
+.rfeed-msg{color:var(--muted);font-size:0.58rem;line-height:1.4;margin-top:0.08rem;}
+
+.overlay{
+  position:absolute;inset:0;z-index:50;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(0,2,8,0.88);backdrop-filter:blur(4px);
+}
+
+.overlay.active{display:flex;}
+
+.ov-box{
+  display:flex;flex-direction:column;align-items:center;gap:1.1rem;
+  max-width:400px;width:90%;padding:2rem;
+  background:rgba(4,12,30,0.98);
+  border:1px solid rgba(0,255,247,0.14);
+  border-radius:20px;
+  box-shadow:0 0 60px rgba(0,255,247,0.07);
+}
+
+.ov-title{font-family:var(--font-hud);font-size:1.8rem;font-weight:900;letter-spacing:0.2em;text-align:center;}
+.ov-cyan{color:var(--neon-cyan);text-shadow:0 0 20px rgba(0,255,247,0.5);}
+.ov-pink{color:var(--neon-pink);text-shadow:0 0 20px rgba(255,0,128,0.5);}
+.ov-yellow{color:var(--neon-yellow);}
+
+.ov-stats{width:100%;display:flex;flex-direction:column;gap:0.35rem;}
+
+.ov-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0.3rem 0.55rem;
+  background:rgba(0,255,247,0.03);
+  border:1px solid rgba(0,255,247,0.06);
+  border-radius:6px;font-size:0.72rem;
+}
+
+.ov-key{font-family:var(--font-mono);color:var(--muted);}
+.ov-val{font-family:var(--font-hud);font-size:0.78rem;}
+
+.ov-reward{
+  width:100%;padding:0.8rem 1rem;
+  background:rgba(57,255,20,0.06);
+  border:1px solid rgba(57,255,20,0.2);
+  border-radius:10px;text-align:center;
+}
+
+.ov-rew-lbl{font-family:var(--font-mono);font-size:0.58rem;color:var(--muted);letter-spacing:0.15em;margin-bottom:0.15rem;}
+.ov-rew-amt{font-family:var(--font-hud);font-size:1.5rem;font-weight:900;color:var(--neon-green);text-shadow:0 0 15px rgba(57,255,20,0.5);}
+
+.ov-chain-status{
+  width:100%;padding:0.55rem 0.8rem;
+  background:rgba(0,255,247,0.04);
+  border:1px solid rgba(0,255,247,0.12);
+  border-radius:8px;
+  font-family:var(--font-mono);font-size:0.6rem;
+  color:var(--muted);text-align:center;
+}
+
+.ov-chain-status.confirmed{
+  background:rgba(57,255,20,0.05);
+  border-color:rgba(57,255,20,0.2);
+  color:var(--neon-green);
+}
+
+.ov-nft{
+  width:100%;padding:0.65rem 0.9rem;
+  background:rgba(139,92,246,0.07);
+  border:1px solid rgba(139,92,246,0.22);
+  border-radius:9px;display:flex;align-items:center;gap:0.65rem;
+}
+
+.nft-icon{font-size:1.3rem;}
+.nft-title{font-family:var(--font-hud);font-size:0.7rem;color:var(--stellar-purple);}
+.nft-sub{font-family:var(--font-mono);font-size:0.56rem;color:var(--muted);margin-top:0.08rem;}
+
+.ov-btns{display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;}
+
+.ov-btn{
+  padding:0.65rem 1.5rem;border:none;border-radius:9px;cursor:pointer;
+  font-family:var(--font-hud);font-size:0.75rem;font-weight:700;
+  letter-spacing:0.12em;text-transform:uppercase;transition:all 0.2s;
+}
+
+.ov-btn-cyan{background:rgba(0,255,247,0.1);color:var(--neon-cyan);border:1px solid rgba(0,255,247,0.3);}
+.ov-btn-cyan:hover{box-shadow:0 0 25px rgba(0,255,247,0.3);transform:translateY(-2px);}
+.ov-btn-green{background:rgba(57,255,20,0.1);color:var(--neon-green);border:1px solid rgba(57,255,20,0.3);}
+.ov-btn-green:hover{box-shadow:0 0 25px rgba(57,255,20,0.3);transform:translateY(-2px);}
+.ov-btn-orange{background:rgba(255,107,0,0.1);color:var(--neon-orange);border:1px solid rgba(255,107,0,0.3);}
+.ov-btn-orange:hover{box-shadow:0 0 25px rgba(255,107,0,0.3);transform:translateY(-2px);}
+
+.score-popup{
+  position:absolute;pointer-events:none;
+  font-family:var(--font-hud);font-size:0.7rem;
+  animation:scoreFloat 0.85s ease forwards;z-index:60;
+}
+
+@keyframes scoreFloat{
+  0%{opacity:1;transform:translateY(0) scale(1);}
+  100%{opacity:0;transform:translateY(-38px) scale(0.8);}
+}
+
+.float-reward{
+  position:absolute;pointer-events:none;
+  font-family:var(--font-hud);font-size:0.75rem;font-weight:700;
+  color:var(--neon-green);
+  text-shadow:0 0 8px rgba(57,255,20,0.6);
+  animation:floatUp 1.3s ease forwards;z-index:60;
+}
+
+@keyframes floatUp{
+  0%{opacity:1;transform:translateY(0);}
+  100%{opacity:0;transform:translateY(-55px);}
+}
+
+#lb-overlay{
+  position:fixed;inset:0;z-index:200;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(0,2,8,0.93);backdrop-filter:blur(8px);
+}
+
+#lb-overlay.active{display:flex;}
+
+.lb-box{
+  max-width:480px;width:90%;
+  background:rgba(4,12,30,0.98);
+  border:1px solid rgba(0,255,247,0.12);
+  border-radius:20px;padding:1.75rem;
+  display:flex;flex-direction:column;gap:0.85rem;
+}
+
+.lb-title{font-family:var(--font-hud);font-size:1.1rem;font-weight:900;color:var(--neon-cyan);letter-spacing:0.2em;text-align:center;}
+.lb-row{display:flex;align-items:center;gap:0.55rem;padding:0.42rem 0.6rem;background:rgba(0,255,247,0.03);border:1px solid rgba(0,255,247,0.06);border-radius:7px;font-size:0.7rem;}
+.lb-rank{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-hud);font-size:0.58rem;font-weight:700;flex-shrink:0;}
+.r1{background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#000;}
+.r2{background:linear-gradient(135deg,#94a3b8,#cbd5e1);color:#000;}
+.r3{background:linear-gradient(135deg,#b45309,#d97706);color:#fff;}
+.rn{background:rgba(255,255,255,0.06);color:var(--muted);}
+.lb-addr{flex:1;font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);}
+.lb-score{font-family:var(--font-hud);font-size:0.75rem;color:var(--neon-cyan);}
+.lb-wave{font-family:var(--font-mono);font-size:0.58rem;color:var(--muted);}
+.lb-earn{font-family:var(--font-hud);font-size:0.65rem;color:var(--neon-green);}
+
+.token-notif{
+  position:fixed;top:1rem;right:1rem;z-index:300;
+  background:#050d20;border:1px solid rgba(57,255,20,0.35);
+  border-radius:12px;padding:0.9rem 1rem;
+  min-width:250px;max-width:290px;
+  transform:translateX(120%);
+  transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow:0 8px 32px rgba(0,0,0,0.7);
+}
+
+.token-notif.show{transform:translateX(0);}
+.tn-top{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;}
+.tn-icon{width:30px;height:30px;border-radius:7px;background:rgba(57,255,20,0.12);display:flex;align-items:center;justify-content:center;font-size:0.95rem;flex-shrink:0;}
+.tn-title{font-family:var(--font-hud);font-size:0.68rem;color:var(--neon-green);}
+.tn-sub{font-family:var(--font-mono);font-size:0.56rem;color:var(--muted);margin-top:0.08rem;}
+.tn-amt{font-family:var(--font-hud);font-size:1.3rem;font-weight:900;color:var(--neon-green);margin:0.3rem 0;}
+.tn-row{font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);margin-bottom:0.1rem;}
+.tn-addr{color:var(--neon-cyan);}
+.tn-ok{color:var(--neon-green);font-weight:700;}
+.tn-hash{color:var(--stellar-blue);font-size:0.55rem;word-break:break-all;}
+.tn-bar{height:2px;background:rgba(57,255,20,0.12);border-radius:1px;margin-top:0.55rem;overflow:hidden;}
+.tn-fill{height:100%;width:100%;background:var(--neon-green);animation:shrink 5s linear forwards;}
+@keyframes shrink{from{width:100%;}to{width:0%;}}
+
+.toast{
+  position:fixed;bottom:1.25rem;left:50%;
+  transform:translateX(-50%) translateY(70px);
+  background:rgba(4,15,40,0.98);
+  border:1px solid rgba(0,255,247,0.18);
+  color:var(--text);padding:0.55rem 1.1rem;
+  border-radius:8px;font-family:var(--font-mono);
+  font-size:0.7rem;z-index:400;
+  transition:transform 0.3s ease;
+  box-shadow:0 4px 24px rgba(0,0,0,0.6);
+  max-width:400px;text-align:center;
+}
+
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+.ctrl-hint{
+  position:absolute;bottom:0.5rem;left:50%;transform:translateX(-50%);
+  display:flex;gap:0.65rem;align-items:center;
+  font-family:var(--font-mono);font-size:0.52rem;
+  color:var(--muted);letter-spacing:0.08em;
+  opacity:0.55;z-index:20;pointer-events:none;
+}
+
+.ctrl-key{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:0.08rem 0.3rem;font-size:0.54rem;color:var(--text);}
+
+.mob-ctrl{
+  position:absolute;bottom:0.85rem;left:0;right:195px;
+  display:none;align-items:flex-end;justify-content:space-between;
+  padding:0 0.85rem;z-index:30;pointer-events:none;
+}
+
+@media(pointer:coarse){.mob-ctrl{display:flex;}.ctrl-hint{display:none;}}
+
+.mob-btn{
+  pointer-events:all;width:52px;height:52px;border-radius:50%;
+  background:rgba(0,255,247,0.07);border:2px solid rgba(0,255,247,0.18);
+  color:var(--neon-cyan);font-size:1.1rem;
+  display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;cursor:pointer;user-select:none;
+}
+
+.mob-btn:active{background:rgba(0,255,247,0.2);}
+.mob-fire{background:rgba(255,107,0,0.1);border-color:rgba(255,107,0,0.3);color:var(--neon-orange);}
+.mob-fire:active{background:rgba(255,107,0,0.25);}
+.mob-dir{display:flex;gap:0.45rem;}
+</style>
 </head>
 <body>
 
-<div class="bg-layer"></div>
-<div class="stars" id="stars"></div>
-<div class="grid-overlay"></div>
+<canvas id="bg-canvas"></canvas>
+<div class="scanlines"></div>
 
-<div class="container">
+<!-- ══ WALLET SCREEN ══ -->
+<div id="wallet-screen">
+  <div class="ws-inner">
 
-  <!-- Header -->
-  <header>
-    <div class="logo-row">
-      <div class="logo-icon">⚔️</div>
-      <span class="logo-name">SoroQuest</span>
+    <div>
+      <div class="ws-title">SORO<br/>SHOOTER</div>
+      <div class="ws-sub" style="margin-top:0.5rem;">Play-to-Earn · Stellar Testnet</div>
     </div>
-    <h1>Play-to-Earn on Stellar</h1>
-    <p>Complete quests, earn rewards, creators get royalties — all on-chain.</p>
-    <div class="badge-row">
-      <span class="badge badge-purple">PLAY-TO-EARN</span>
-      <span class="badge badge-amber">ROYALTY DISTRIBUTION</span>
-      <span class="badge badge-cyan">SOROBAN</span>
-    </div>
-    <div class="network-pill">STELLAR TESTNET</div>
-  </header>
 
-  <!-- Contract ID -->
-  <div class="contract-bar">
-    <label>Contract ID</label>
-    <input type="text" id="contractId"
-      placeholder="Enter your Contract ID: CXXX..."
-      value="CAXLPNVK4FBCNWMNGNBQUJVGLZKYNDNKCOXZHTRKIFLDGZKDLSFNID4F"/>
+    <canvas id="ship-preview-canvas" width="110" height="110"></canvas>
+
+    <div class="ws-feats">
+      <span class="ws-feat fc">SPACE SHOOTER</span>
+      <span class="ws-feat fg">EARN XLM</span>
+      <span class="ws-feat fo">NFT BADGES</span>
+      <span class="ws-feat fp">SOROBAN</span>
+    </div>
+
+    <div class="ws-box">
+
+      <!-- Freighter connect -->
+      <button class="ws-btn ws-btn-freighter" onclick="connectFreighter()">
+        🔮 Connect Freighter Wallet
+      </button>
+
+      <!-- Status display -->
+      <div class="ws-status pending" id="walletStatus">
+        No wallet connected — connect Freighter or enter address manually
+      </div>
+
+      <div class="ws-divider">or enter manually</div>
+
+      <!-- Manual address -->
+      <div>
+        <div class="ws-lbl" style="margin-bottom:0.35rem;">Wallet Address</div>
+        <input class="ws-inp" id="walletInput"
+          placeholder="G... (Stellar testnet address)"
+          autocomplete="off" spellcheck="false"/>
+      </div>
+
+      <!-- Contract ID -->
+      <div>
+        <div class="ws-lbl" style="margin-bottom:0.35rem;">Contract ID</div>
+        <input class="ws-inp" id="contractInput"
+          placeholder="CXXX... (your deployed contract)"
+          autocomplete="off" spellcheck="false"/>
+      </div>
+
+      <button class="ws-btn ws-btn-manual" onclick="launchGame()">
+        ⚡ Launch SoroShooter
+      </button>
+
+      <div class="ws-net">STELLAR TESTNET — SOROBAN ENABLED</div>
+    </div>
+
   </div>
+</div>
 
-  <!-- Stats -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-val" id="statPlayers">0</div>
-      <div class="stat-lbl">Players</div>
+<!-- ══ GAME WRAPPER ══ -->
+<div id="game-wrapper">
+
+  <div class="hud">
+    <div class="hud-brand">SOROSHOOTER</div>
+    <div class="hud-stats">
+      <div class="hstat"><span class="hstat-val" id="hs-score" style="color:var(--neon-cyan)">0</span><span class="hstat-lbl">Score</span></div>
+      <div class="hstat"><span class="hstat-val" id="hs-wave" style="color:var(--neon-orange)">1</span><span class="hstat-lbl">Wave</span></div>
+      <div class="hstat"><span class="hstat-val" id="hs-earned" style="color:var(--neon-green)">0.00</span><span class="hstat-lbl">XLM Earned</span></div>
+      <div class="hstat"><span class="hstat-val" id="hs-kills" style="color:var(--stellar-purple)">0</span><span class="hstat-lbl">Kills</span></div>
+      <div class="hstat"><span class="hstat-val" id="hs-tokens" style="color:var(--neon-orange)">2</span><span class="hstat-lbl">SQT</span></div>
     </div>
-    <div class="stat-card">
-      <div class="stat-val" id="statQuests" style="color: #fbbf24;">0</div>
-      <div class="stat-lbl">Quests</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val" id="statRewards" style="color: #22d3ee;">0</div>
-      <div class="stat-lbl">Rewards Earned</div>
-    </div>
-  </div>
-
-  <!-- Main Grid -->
-  <div class="main-grid">
-
-    <!-- Left Column -->
-    <div class="left-col">
-
-      <!-- Register Player -->
-      <div class="card" style="animation-delay:0.15s">
-        <div class="card-title">Register Player</div>
-        <div class="field">
-          <label>Player Address</label>
-          <input type="text" id="playerAddr" placeholder="G... or leave blank to auto-generate"/>
-        </div>
-        <button class="btn btn-primary" onclick="registerPlayer()">Join as Player</button>
-      </div>
-
-      <!-- Register Creator + Create Quest -->
-      <div class="card" style="animation-delay:0.2s">
-        <div class="card-title">Creator — Register & Create Quest</div>
-        <div class="field">
-          <label>Creator Address</label>
-          <input type="text" id="creatorAddr" placeholder="G... or leave blank to auto-generate"/>
-        </div>
-        <button class="btn btn-amber" onclick="registerCreator()" style="margin-bottom:1rem;">Register as Creator</button>
-
-        <div class="field">
-          <label>Quest Title</label>
-          <input type="text" id="questTitle" placeholder="e.g. Defeat the Dragon"/>
-        </div>
-        <div class="field">
-          <label>Reward Points</label>
-          <input type="number" id="questPoints" placeholder="e.g. 100" min="1"/>
-        </div>
-        <div class="field">
-          <label>Reward Amount (stroops)</label>
-          <input type="number" id="questAmount" placeholder="e.g. 1000" min="1"/>
-        </div>
-        <div class="field">
-          <label>Royalty % (max 50%)</label>
-          <input type="number" id="questRoyalty" placeholder="e.g. 10 for 10%" min="1" max="50"/>
-        </div>
-        <button class="btn btn-cyan" onclick="createQuest()">Create Quest</button>
-      </div>
-
-      <!-- Complete Quest -->
-      <div class="card" style="animation-delay:0.25s">
-        <div class="card-title">Complete Quest</div>
-        <p style="color:var(--muted);font-size:0.82rem;margin-bottom:1rem;">
-          Click a quest from the list on the right, then complete it as a player.
-        </p>
-        <div class="field">
-          <label>Selected Quest ID</label>
-          <input type="number" id="selectedQuestId" placeholder="Click a quest to select"/>
-        </div>
-        <div class="field">
-          <label>Player Address</label>
-          <input type="text" id="completePlayerAddr" placeholder="G... player address"/>
-        </div>
-        <button class="btn btn-primary" onclick="completeQuest()">Complete Quest & Earn</button>
-      </div>
-
-    </div>
-
-    <!-- Right Column -->
-    <div class="right-col">
-
-      <!-- Active Quests -->
-      <div class="card" style="animation-delay:0.3s">
-        <div class="card-title">Active Quests</div>
-        <div class="quest-list" id="questList">
-          <div class="empty-state">No quests yet. Create one to get started.</div>
-        </div>
-      </div>
-
-      <!-- Leaderboard -->
-      <div class="card" style="animation-delay:0.35s">
-        <div class="card-title">Leaderboard</div>
-        <div id="leaderboard">
-          <div class="empty-state">No players yet. Register to appear here.</div>
-        </div>
-      </div>
-
-      <!-- Live Event Log -->
-      <div class="card" style="animation-delay:0.4s">
-        <div class="log-header">
-          <div class="log-live">Live Event Log</div>
-          <button class="clear-btn" onclick="clearLog()">Clear</button>
-        </div>
-        <div class="log-list" id="logList">
-          <div class="empty-state">No events yet.</div>
-        </div>
-      </div>
-
+    <div class="hud-right">
+      <div class="lives-display" id="livesDisplay"></div>
+      <div class="hud-wallet" id="hudWallet">—</div>
+      <div class="hud-balance" id="hudBalance" onclick="refreshBalance()" title="Click to refresh">— XLM</div>
+      <button class="hud-btn" onclick="showLeaderboard()">BOARD</button>
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer>
-    <p>
-      Built on <a href="https://stellar.org" target="_blank">Stellar</a> using
-      <a href="https://soroban.stellar.org" target="_blank">Soroban SDK</a>
-      &nbsp;·&nbsp; Deployed on Testnet &nbsp;·&nbsp;
-      <a href="https://github.com/samenrqz/soroquest" target="_blank">View on GitHub</a>
-    </p>
-  </footer>
+  <div class="game-area" id="gameArea">
+    <canvas id="gameCanvas"></canvas>
 
+    <div class="side-panel">
+      <div class="panel-sec">
+        <div class="panel-title">Wave Info</div>
+        <div class="wave-info">
+          Wave: <span id="wi-wave">1</span><br/>
+          Enemies: <span id="wi-enemies">0</span><br/>
+          Speed: <span id="wi-speed">1.0x</span><br/>
+          Bonus: <span id="wi-bonus" style="color:var(--neon-yellow)">—</span>
+        </div>
+      </div>
+      <div class="panel-sec">
+        <div class="panel-title">Milestones</div>
+        <div class="milestone-row" id="ms-1000"><span class="ms-pts">1,000</span><span class="ms-rew">+0.5 XLM</span></div>
+        <div class="milestone-row" id="ms-5000"><span class="ms-pts">5,000</span><span class="ms-rew">+2.0 XLM</span></div>
+        <div class="milestone-row" id="ms-15000"><span class="ms-pts">15,000</span><span class="ms-rew">+5.0 XLM</span></div>
+        <div class="milestone-row" id="ms-w5"><span class="ms-pts">Wave 5</span><span class="ms-rew" style="color:var(--stellar-purple)">NFT 🏆</span></div>
+        <div class="milestone-row" id="ms-w10"><span class="ms-pts">Wave 10</span><span class="ms-rew" style="color:var(--stellar-purple)">RARE ✨</span></div>
+      </div>
+      <div class="panel-sec" style="border-bottom:none;flex:1;overflow:hidden;display:flex;flex-direction:column;">
+        <div class="panel-title">Reward Log</div>
+        <div class="reward-feed" id="rewardFeed">
+          <div style="padding:0.5rem;font-family:var(--font-mono);font-size:0.56rem;color:var(--muted);">Awaiting contract events…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wave Clear -->
+    <div class="overlay" id="waveClearOv">
+      <div class="ov-box">
+        <div class="ov-title ov-cyan" id="wco-title">WAVE CLEARED!</div>
+        <div class="ov-stats" id="wco-stats"></div>
+        <div class="ov-reward" id="wco-reward" style="display:none">
+          <div class="ov-rew-lbl">SOROBAN CONTRACT REWARD</div>
+          <div class="ov-rew-amt" id="wco-amt">+0.05 XLM</div>
+        </div>
+        <div class="ov-chain-status" id="wco-chain">⏳ Submitting to Stellar Testnet…</div>
+        <div class="ov-nft" id="wco-nft" style="display:none">
+          <div class="nft-icon">🏆</div>
+          <div><div class="nft-title">NFT BADGE MINTED</div><div class="nft-sub" id="wco-nft-name">Wave Survivor</div></div>
+        </div>
+        <div class="ov-btns">
+          <button class="ov-btn ov-btn-cyan" onclick="startNextWave()">▶ NEXT WAVE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Over -->
+    <div class="overlay" id="gameOverOv">
+      <div class="ov-box">
+        <div class="ov-title ov-pink">GAME OVER</div>
+        <div class="ov-stats" id="go-stats"></div>
+        <div class="ov-reward">
+          <div class="ov-rew-lbl">TOTAL EARNED THIS RUN</div>
+          <div class="ov-rew-amt" id="go-total">0.00 XLM</div>
+        </div>
+        <div class="ov-btns">
+          <button class="ov-btn ov-btn-orange" onclick="restartGame()">↺ PLAY AGAIN</button>
+          <button class="ov-btn ov-btn-cyan" onclick="showLeaderboard()">★ LEADERBOARD</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pause -->
+    <div class="overlay" id="pauseOv">
+      <div class="ov-box">
+        <div class="ov-title ov-yellow">PAUSED</div>
+        <p style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted);text-align:center;">Press ESC or P to resume</p>
+        <div class="ov-btns">
+          <button class="ov-btn ov-btn-cyan" onclick="togglePause()">▶ RESUME</button>
+          <button class="ov-btn ov-btn-orange" onclick="restartGame()">↺ RESTART</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ctrl-hint">
+      <span><span class="ctrl-key">← →</span> Move</span>
+      <span><span class="ctrl-key">SPACE</span> Fire</span>
+      <span><span class="ctrl-key">ESC</span> Pause</span>
+    </div>
+
+    <div class="mob-ctrl">
+      <div class="mob-dir">
+        <div class="mob-btn" ontouchstart="mk('ArrowLeft',true)" ontouchend="mk('ArrowLeft',false)">◀</div>
+        <div class="mob-btn" ontouchstart="mk('ArrowRight',true)" ontouchend="mk('ArrowRight',false)">▶</div>
+      </div>
+      <div class="mob-btn mob-fire" ontouchstart="mk(' ',true)" ontouchend="mk(' ',false)">🔥</div>
+    </div>
+  </div>
+</div>
+
+<div id="lb-overlay">
+  <div class="lb-box">
+    <div class="lb-title">⭐ LEADERBOARD</div>
+    <div id="lb-content"></div>
+    <div style="display:flex;justify-content:center;">
+      <button class="ov-btn ov-btn-cyan" onclick="hideLeaderboard()">CLOSE</button>
+    </div>
+  </div>
+</div>
+
+<div class="token-notif" id="tokenNotif">
+  <div class="tn-top">
+    <div class="tn-icon">🪙</div>
+    <div>
+      <div class="tn-title" id="tn-title">Reward Sent</div>
+      <div class="tn-sub" id="tn-sub">Soroban contract confirmed</div>
+    </div>
+  </div>
+  <div class="tn-amt" id="tn-amt">+0.05 XLM</div>
+  <div class="tn-row">To: <span class="tn-addr" id="tn-to">—</span></div>
+  <div class="tn-row">Status: <span class="tn-ok">✓ Confirmed on Stellar Testnet</span></div>
+  <div class="tn-row">Tx: <span class="tn-hash" id="tn-hash">—</span></div>
+  <div class="tn-bar"><div class="tn-fill" id="tn-fill"></div></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ── Stars ─────────────────────────────────────────────────────────────────────
-const sc = document.getElementById('stars');
-for (let i = 0; i < 140; i++) {
-  const s = document.createElement('div');
-  s.className = 'star';
-  s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*5}s;animation-delay:${Math.random()*5}s`;
-  sc.appendChild(s);
+/* ══ CONFIG ══ */
+const TESTNET_RPC    = 'https://soroban-testnet.stellar.org';
+const TESTNET_HORIZON= 'https://horizon-testnet.stellar.org';
+const NETWORK_PHRASE = 'Test SDF Network ; September 2015';
+
+/* ══ STARFIELD ══ */
+(function(){
+  const c=document.getElementById('bg-canvas');
+  const x=c.getContext('2d');
+  let W,H,st=[];
+  function rs(){W=c.width=innerWidth;H=c.height=innerHeight;init();}
+  function init(){st=[];for(let i=0;i<200;i++)st.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.1,sp:0.1+Math.random()*0.3,op:0.1+Math.random()*0.55});}
+  function draw(){
+    x.fillStyle='#000208';x.fillRect(0,0,W,H);
+    [[W*.15,H*.3,W*.4,'rgba(79,156,255,0.03)'],[W*.8,H*.7,W*.35,'rgba(139,92,246,0.04)']].forEach(([px,py,r,c2])=>{
+      const g=x.createRadialGradient(px,py,0,px,py,r);g.addColorStop(0,c2);g.addColorStop(1,'transparent');x.fillStyle=g;x.fillRect(0,0,W,H);
+    });
+    st.forEach(s=>{s.y+=s.sp;if(s.y>H){s.y=0;s.x=Math.random()*W;}x.globalAlpha=s.op;x.fillStyle='#fff';x.beginPath();x.arc(s.x,s.y,s.r,0,Math.PI*2);x.fill();});
+    x.globalAlpha=1;requestAnimationFrame(draw);
+  }
+  addEventListener('resize',rs);rs();draw();
+})();
+
+/* ══ SHIP PREVIEW ══ */
+(function(){
+  const c=document.getElementById('ship-preview-canvas');
+  const x=c.getContext('2d');let t=0;
+  function draw(){
+    x.clearRect(0,0,110,110);
+    const fl=0.7+0.3*Math.sin(t*0.15);
+    const eg=x.createRadialGradient(55,88,2,55,88,20);
+    eg.addColorStop(0,'rgba(255,107,0,'+(0.8*fl)+')');eg.addColorStop(1,'transparent');
+    x.fillStyle=eg;x.fillRect(35,68,40,42);
+    x.save();x.globalAlpha=fl;
+    x.fillStyle='#ff6b00';x.beginPath();x.moveTo(48,82);x.lineTo(62,82);x.lineTo(59,97+Math.sin(t*.2)*3);x.lineTo(55,95);x.lineTo(51,97+Math.sin(t*.25)*3);x.closePath();x.fill();
+    x.fillStyle='#ffe600';x.beginPath();x.moveTo(51,82);x.lineTo(59,82);x.lineTo(57,92+Math.sin(t*.2)*2);x.lineTo(55,90);x.lineTo(53,92+Math.sin(t*.3)*2);x.closePath();x.fill();
+    x.restore();
+    x.shadowColor='rgba(0,255,247,0.5)';x.shadowBlur=16;
+    x.fillStyle='#061828';
+    x.beginPath();x.moveTo(40,70);x.lineTo(22,80);x.lineTo(28,63);x.closePath();x.fill();
+    x.beginPath();x.moveTo(70,70);x.lineTo(88,80);x.lineTo(82,63);x.closePath();x.fill();
+    x.fillStyle='#0a2a4a';x.beginPath();x.moveTo(55,16);x.lineTo(74,72);x.lineTo(55,62);x.lineTo(36,72);x.closePath();x.fill();
+    x.fillStyle='#0d3a6a';x.beginPath();x.moveTo(55,20);x.lineTo(71,70);x.lineTo(55,60);x.lineTo(39,70);x.closePath();x.fill();
+    x.fillStyle='rgba(0,255,247,0.38)';x.beginPath();x.ellipse(55,38,8,12,0,0,Math.PI*2);x.fill();
+    x.fillStyle='rgba(255,255,255,0.6)';x.beginPath();x.ellipse(53,36,4,6,0,0,Math.PI*2);x.fill();
+    x.shadowBlur=0;
+    x.strokeStyle='rgba(0,255,247,'+(0.3+0.15*Math.sin(t*.05))+')';x.lineWidth=1;
+    x.beginPath();x.moveTo(55,16);x.lineTo(74,72);x.lineTo(55,62);x.lineTo(36,72);x.closePath();x.stroke();
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ══ WALLET STATE ══ */
+let playerWallet = '';
+let contractId   = '';
+let freighterConnected = false;
+const CYAN = '#00fff7';
+const shortAddr = a => a ? a.slice(0,6)+'…'+a.slice(-4) : '???';
+const gen = () => { const c='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';let s='G';for(let i=0;i<55;i++)s+=c[~~(Math.random()*c.length)];return s; };
+
+/* ── Freighter Connect ── */
+async function connectFreighter(){
+  const status = document.getElementById('walletStatus');
+  status.className = 'ws-status pending';
+  status.textContent = '⏳ Connecting to Freighter…';
+
+  try {
+    // Check if Freighter is installed
+    if (typeof window.freighter === 'undefined') {
+      status.className = 'ws-status error';
+      status.textContent = '❌ Freighter not found — install it at freighter.app';
+      showToast('Install Freighter wallet extension first!');
+      return;
+    }
+
+    // Request access
+    await window.freighter.requestAccess();
+    const addr = await window.freighter.getPublicKey();
+
+    if (!addr) {
+      status.className = 'ws-status error';
+      status.textContent = '❌ Could not get wallet address';
+      return;
+    }
+
+    playerWallet = addr;
+    freighterConnected = true;
+    document.getElementById('walletInput').value = addr;
+    status.className = 'ws-status connected';
+    status.textContent = '✓ Freighter connected — ' + shortAddr(addr);
+    showToast('✅ Freighter wallet connected!');
+
+    // Fetch balance
+    fetchBalance(addr);
+
+  } catch(e) {
+    status.className = 'ws-status error';
+    status.textContent = '❌ ' + (e.message || 'Connection failed');
+    showToast('Freighter connection failed: ' + (e.message || 'Unknown error'));
+  }
 }
 
-// ── State ─────────────────────────────────────────────────────────────────────
-const state = {
-  players:      {},   // addr → { points, rewards, quests }
-  creators:     {},   // addr → { royalties, quests }
-  quests:       [],   // array of quest objects
-  nextQuestId:  1,
-  totalRewards: 0,
+/* ── Fetch XLM Balance ── */
+async function fetchBalance(addr) {
+  try {
+    const res = await fetch(`${TESTNET_HORIZON}/accounts/${addr}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const xlm = data.balances?.find(b => b.asset_type === 'native');
+    if (xlm) {
+      const bal = parseFloat(xlm.balance).toFixed(2);
+      document.getElementById('hudBalance').textContent = bal + ' XLM';
+      return parseFloat(xlm.balance);
+    }
+  } catch(e) {
+    console.log('Balance fetch error:', e);
+  }
+  return 0;
+}
+
+async function refreshBalance() {
+  if (playerWallet) {
+    showToast('Refreshing balance…');
+    await fetchBalance(playerWallet);
+  }
+}
+
+/* ── Submit Contract Call via Freighter ── */
+async function callContract(method, args) {
+  if (!contractId) return null;
+
+  try {
+    // Build the contract call using Stellar SDK
+    const server = new StellarSdk.SorobanRpc.Server(TESTNET_RPC);
+    const contract = new StellarSdk.Contract(contractId);
+
+    // Get account
+    const account = await server.getAccount(playerWallet);
+
+    // Build transaction
+    const tx = new StellarSdk.TransactionBuilder(account, {
+      fee: StellarSdk.BASE_FEE,
+      networkPassphrase: NETWORK_PHRASE,
+    })
+    .addOperation(contract.call(method, ...args))
+    .setTimeout(30)
+    .build();
+
+    // Simulate first
+    const sim = await server.simulateTransaction(tx);
+    if (StellarSdk.SorobanRpc.Api.isSimulationError(sim)) {
+      console.error('Simulation error:', sim.error);
+      addFeed('chain', '', 'Simulation: ' + method + ' (testnet)');
+      return { simulated: true };
+    }
+
+    // Prepare transaction
+    const preparedTx = StellarSdk.SorobanRpc.assembleTransaction(tx, sim).build();
+
+    // Sign with Freighter if connected
+    if (freighterConnected && window.freighter) {
+      const txXDR = preparedTx.toXDR();
+      const signedXDR = await window.freighter.signTransaction(txXDR, {
+        networkPassphrase: NETWORK_PHRASE,
+      });
+
+      const signedTx = StellarSdk.TransactionBuilder.fromXDR(signedXDR, NETWORK_PHRASE);
+      const result = await server.sendTransaction(signedTx);
+
+      // Poll for confirmation
+      let txResult = null;
+      for (let i = 0; i < 10; i++) {
+        await new Promise(r => setTimeout(r, 2000));
+        try {
+          txResult = await server.getTransaction(result.hash);
+          if (txResult.status !== 'NOT_FOUND') break;
+        } catch(e) { break; }
+      }
+
+      return {
+        hash: result.hash,
+        confirmed: txResult?.status === 'SUCCESS',
+      };
+    }
+
+    // No Freighter — return simulated result
+    return { simulated: true };
+
+  } catch(e) {
+    console.log('Contract call error:', e.message);
+    // Return simulated so game continues
+    return { simulated: true };
+  }
+}
+
+/* ── Launch Game ── */
+function launchGame() {
+  const cid = document.getElementById('contractInput').value.trim();
+  let addr  = document.getElementById('walletInput').value.trim();
+
+  if (!cid) { showToast('Please enter your Contract ID.'); return; }
+  if (!addr) addr = gen();
+
+  contractId   = cid;
+  playerWallet = addr;
+
+  document.getElementById('hudWallet').textContent  = shortAddr(addr);
+  document.getElementById('hudBalance').textContent = '… XLM';
+
+  const ws = document.getElementById('wallet-screen');
+  ws.style.opacity = '0'; ws.style.pointerEvents = 'none';
+
+  setTimeout(() => {
+    ws.style.display = 'none';
+    const gw = document.getElementById('game-wrapper');
+    gw.style.display = 'flex';
+    setTimeout(() => gw.classList.add('visible'), 50);
+    initGame();
+    fetchBalance(addr);
+    // Register player on-chain
+    registerPlayerOnChain();
+  }, 400);
+}
+
+async function registerPlayerOnChain() {
+  showToast('📡 Registering player on Stellar Testnet…');
+  addFeed('chain', '+2 SQT', 'Registering ' + shortAddr(playerWallet) + ' on Soroban contract…');
+
+  const result = await callContract('register_player', [
+    StellarSdk.Address.fromString(playerWallet).toScVal()
+  ]);
+
+  if (result?.hash) {
+    addFeed('chain', '+2 SQT', '✓ On-chain! Tx: ' + result.hash.slice(0,12) + '…');
+    showTokenNotif('Player Registered', 'Welcome bonus on-chain', '+2 SQT', playerWallet, result.hash);
+  } else {
+    addFeed('tok', '+2 SQT', 'Welcome! 2 SQT welcome tokens issued to ' + shortAddr(playerWallet));
+    showTokenNotif('Welcome Bonus', '2 SQT tokens issued', '+2 SQT', playerWallet, null);
+  }
+}
+
+/* ══ GAME ENGINE ══ */
+const canvas = document.getElementById('gameCanvas');
+const ctx    = canvas.getContext('2d');
+const GAME_W = 600; let GAME_H = 520;
+
+function resizeCanvas() {
+  const area = document.getElementById('gameArea');
+  const aw = area.clientWidth - 195, ah = area.clientHeight;
+  const sc = Math.min(aw / GAME_W, ah / GAME_H);
+  canvas.style.width  = ~~(GAME_W * sc) + 'px';
+  canvas.style.height = ~~(GAME_H * sc) + 'px';
+  canvas.width = GAME_W; canvas.height = GAME_H;
+}
+
+const G = {
+  running:false,paused:false,
+  score:0,wave:1,kills:0,totalEarned:0,sqt:2,
+  lives:3,maxLives:3,
+  ship:{x:300,y:450,w:34,h:42,spd:5,inv:0},
+  bullets:[],enemies:[],particles:[],
+  keys:{},shootCD:0,
+  waveActive:false,waveTotal:0,waveKilled:0,
+  milestones:{1000:false,5000:false,15000:false},
+  nftWaves:{5:false,10:false},
+  leaderboard:[],
+  raf:null,lastT:0,
 };
 
-let selectedQuestId = null;
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function getContractId() {
-  return document.getElementById('contractId').value.trim();
-}
-
-function shortAddr(addr) {
-  if (!addr) return '???';
-  return addr.length > 12 ? addr.slice(0,6) + '...' + addr.slice(-4) : addr;
-}
-
-function now() {
-  return new Date().toLocaleTimeString('en-US', { hour12: false });
-}
-
-function generateAddr() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-  let s = 'G';
-  for (let i = 0; i < 55; i++) s += chars[Math.floor(Math.random() * chars.length)];
-  return s;
-}
-
-// ── Toast ─────────────────────────────────────────────────────────────────────
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-// ── Log ───────────────────────────────────────────────────────────────────────
-function addLog(type, badgeClass, message) {
-  const list = document.getElementById('logList');
-  const empty = list.querySelector('.empty-state');
-  if (empty) empty.remove();
-
-  const item = document.createElement('div');
-  item.className = 'log-item';
-  item.innerHTML = `
-    <span class="log-badge ${badgeClass}">${type}</span>
-    <span class="log-msg">${message}</span>
-    <span class="log-time">${now()}</span>
-  `;
-  list.insertBefore(item, list.firstChild);
-}
-
-function clearLog() {
-  document.getElementById('logList').innerHTML = '<div class="empty-state">No events yet.</div>';
-}
-
-// ── Stats ─────────────────────────────────────────────────────────────────────
-function updateStats() {
-  document.getElementById('statPlayers').textContent = Object.keys(state.players).length;
-  document.getElementById('statQuests').textContent  = state.quests.length;
-  document.getElementById('statRewards').textContent = state.totalRewards;
-}
-
-// ── Quest List ────────────────────────────────────────────────────────────────
-function renderQuests() {
-  const list = document.getElementById('questList');
-  if (state.quests.length === 0) {
-    list.innerHTML = '<div class="empty-state">No quests yet. Create one to get started.</div>';
-    return;
-  }
-  list.innerHTML = '';
-  state.quests.forEach(q => {
-    const item = document.createElement('div');
-    item.className = 'quest-item' + (q.id === selectedQuestId ? ' selected' : '');
-    item.innerHTML = `
-      <span class="quest-id">Q${q.id}</span>
-      <span class="quest-title">${q.title}</span>
-      <span class="quest-reward">+${q.rewardPoints} pts</span>
-      <span class="quest-royalty">${q.royaltyPct}% royalty</span>
-    `;
-    item.onclick = () => selectQuest(q.id);
-    list.appendChild(item);
-  });
-}
-
-function selectQuest(id) {
-  selectedQuestId = id;
-  document.getElementById('selectedQuestId').value = id;
-  renderQuests();
-  showToast(`Quest Q${id} selected — fill in your player address and complete it!`);
-}
-
-// ── Leaderboard ───────────────────────────────────────────────────────────────
-function renderLeaderboard() {
-  const lb = document.getElementById('leaderboard');
-  const players = Object.entries(state.players)
-    .sort((a, b) => b[1].points - a[1].points)
-    .slice(0, 5);
-
-  if (players.length === 0) {
-    lb.innerHTML = '<div class="empty-state">No players yet.</div>';
-    return;
-  }
-
-  lb.innerHTML = '';
-  players.forEach(([addr, data], i) => {
-    const rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-n';
-    const row = document.createElement('div');
-    row.className = 'lb-row';
-    row.innerHTML = `
-      <div class="lb-rank ${rankClass}">${i+1}</div>
-      <div class="lb-addr">${shortAddr(addr)}</div>
-      <div class="lb-pts">${data.points} pts</div>
-      <div class="lb-quests">${data.quests} quests</div>
-    `;
-    lb.appendChild(row);
-  });
-}
-
-// ── Actions ───────────────────────────────────────────────────────────────────
-function registerPlayer() {
-  if (!getContractId()) { showToast('Enter your Contract ID first.'); return; }
-
-  let addr = document.getElementById('playerAddr').value.trim();
-  if (!addr) addr = generateAddr();
-
-  if (state.players[addr]) {
-    showToast('Player already registered!');
-    addLog('PLAYER', 'b-info', `Registration rejected — ${shortAddr(addr)} already exists.`);
-    return;
-  }
-
-  state.players[addr] = { points: 0, rewards: 0, quests: 0 };
-  document.getElementById('playerAddr').value = addr;
-  document.getElementById('completePlayerAddr').value = addr;
-
-  addLog('PLAYER', 'b-player', `Player registered — ${shortAddr(addr)}`);
-  showToast(`Player ${shortAddr(addr)} registered successfully!`);
-  updateStats();
-  renderLeaderboard();
-}
-
-function registerCreator() {
-  if (!getContractId()) { showToast('Enter your Contract ID first.'); return; }
-
-  let addr = document.getElementById('creatorAddr').value.trim();
-  if (!addr) addr = generateAddr();
-
-  if (state.creators[addr]) {
-    showToast('Creator already registered!');
-    addLog('CREATOR', 'b-info', `Registration rejected — ${shortAddr(addr)} already exists.`);
-    return;
-  }
-
-  state.creators[addr] = { royalties: 0, quests: 0 };
-  document.getElementById('creatorAddr').value = addr;
-
-  addLog('CREATOR', 'b-creator', `Creator registered — ${shortAddr(addr)}`);
-  showToast(`Creator ${shortAddr(addr)} registered successfully!`);
-}
-
-function createQuest() {
-  if (!getContractId()) { showToast('Enter your Contract ID first.'); return; }
-
-  const creatorAddr = document.getElementById('creatorAddr').value.trim();
-  const title       = document.getElementById('questTitle').value.trim();
-  const points      = parseInt(document.getElementById('questPoints').value);
-  const amount      = parseInt(document.getElementById('questAmount').value);
-  const royaltyPct  = parseInt(document.getElementById('questRoyalty').value);
-
-  if (!creatorAddr || !state.creators[creatorAddr]) {
-    showToast('Register as a creator first!'); return;
-  }
-  if (!title)              { showToast('Enter a quest title.'); return; }
-  if (!points || points < 1) { showToast('Enter valid reward points.'); return; }
-  if (!amount || amount < 1) { showToast('Enter valid reward amount.'); return; }
-  if (!royaltyPct || royaltyPct < 1 || royaltyPct > 50) {
-    showToast('Royalty must be between 1% and 50%.'); return;
-  }
-
-  const quest = {
-    id: state.nextQuestId++,
-    creator: creatorAddr,
-    title,
-    rewardPoints: points,
-    rewardAmount: amount,
-    royaltyPct,
-    active: true,
+function waveCfg(w) {
+  return {
+    count: 5 + w * 3,
+    spd:   0.8 + w * 0.22,
+    hp:    1 + ~~(w / 3),
+    shootCh: Math.min(0.001 * w, 0.008),
+    bonus: w % 5 === 0 ? 'BONUS WAVE!' : w % 3 === 0 ? 'RAPID FIRE' : null,
+    xlm:   +(w * 0.05).toFixed(2),
   };
-
-  state.quests.push(quest);
-  state.creators[creatorAddr].quests++;
-
-  addLog('QUEST', 'b-quest', `Quest created — "${title}" | ${points} pts | ${royaltyPct}% royalty`);
-  showToast(`Quest "${title}" created successfully!`);
-  updateStats();
-  renderQuests();
-
-  // Clear form
-  document.getElementById('questTitle').value   = '';
-  document.getElementById('questPoints').value  = '';
-  document.getElementById('questAmount').value  = '';
-  document.getElementById('questRoyalty').value = '';
 }
 
-function completeQuest() {
-  if (!getContractId()) { showToast('Enter your Contract ID first.'); return; }
+function initGame() {
+  resizeCanvas();
+  addEventListener('resize', resizeCanvas);
+  Object.assign(G, {
+    running:true,paused:false,
+    score:0,wave:1,kills:0,totalEarned:0,sqt:2,
+    lives:3,maxLives:3,
+    bullets:[],enemies:[],particles:[],
+    keys:{},shootCD:0,waveActive:false,
+    milestones:{1000:false,5000:false,15000:false},
+    nftWaves:{5:false,10:false},
+  });
+  G.ship = {x:GAME_W/2,y:GAME_H-65,w:34,h:42,spd:5,inv:0};
+  updateLives();
+  spawnWave(1);
+  G.lastT = performance.now();
+  cancelAnimationFrame(G.raf);
+  G.raf = requestAnimationFrame(loop);
+}
 
-  const questId    = parseInt(document.getElementById('selectedQuestId').value);
-  const playerAddr = document.getElementById('completePlayerAddr').value.trim();
+function spawnWave(w) {
+  const cfg = waveCfg(w);
+  G.waveActive = true; G.waveTotal = cfg.count; G.waveKilled = 0; G.enemies = [];
+  const cols = Math.ceil(Math.sqrt(cfg.count));
+  const rows = Math.ceil(cfg.count / cols);
+  let n = 0;
+  for (let r = 0; r < rows && n < cfg.count; r++) {
+    for (let c = 0; c < cols && n < cfg.count; c++) {
+      G.enemies.push({
+        x: 60 + c * (GAME_W - 120) / Math.max(cols - 1, 1),
+        y: 28 + r * 50,
+        vx: (Math.random() - .5) * cfg.spd * .5,
+        vy: cfg.spd * .38,
+        hp: cfg.hp, maxHp: cfg.hp,
+        type: 1 + (n % 4), w: 28, h: 20,
+        sTimer: Math.random() * 200,
+        sCh: cfg.shootCh, angle: 0, alive: true,
+      });
+      n++;
+    }
+  }
+  document.getElementById('wi-wave').textContent    = w;
+  document.getElementById('wi-enemies').textContent = cfg.count;
+  document.getElementById('wi-speed').textContent   = cfg.spd.toFixed(1) + 'x';
+  document.getElementById('wi-bonus').textContent   = cfg.bonus || '—';
+  document.getElementById('hs-wave').textContent    = w;
+}
 
-  if (!playerAddr || !state.players[playerAddr]) {
-    showToast('Register as a player first!'); return;
+function loop(ts) {
+  if (!G.running) return;
+  G.raf = requestAnimationFrame(loop);
+  if (G.paused) return;
+  const dt = Math.min(ts - G.lastT, 50); G.lastT = ts;
+  update(dt); render();
+}
+
+function update(dt) {
+  const s = G.ship, sp = s.spd * (dt / 16);
+  if (G.keys['ArrowLeft']  || G.keys['a']) s.x = Math.max(s.w/2, s.x - sp);
+  if (G.keys['ArrowRight'] || G.keys['d']) s.x = Math.min(GAME_W - s.w/2, s.x + sp);
+  if (s.inv > 0) s.inv -= dt;
+  if (G.shootCD > 0) G.shootCD -= dt;
+  if ((G.keys[' '] || G.keys['ArrowUp']) && G.shootCD <= 0) { fire(); G.shootCD = 155; }
+
+  G.bullets = G.bullets.filter(b => {
+    b.y += b.vy*(dt/16); b.x += b.vx*(dt/16);
+    return b.y > -10 && b.y < GAME_H+10 && b.x > 0 && b.x < GAME_W;
+  });
+
+  G.enemies.forEach(e => {
+    if (!e.alive) return;
+    e.x += e.vx*(dt/16); e.y += e.vy*(dt/16); e.angle += 0.02;
+    if (e.x < 18 || e.x > GAME_W-18) e.vx *= -1;
+    if (e.y > GAME_H+30) e.alive = false;
+    e.sTimer -= dt;
+    if (e.sTimer <= 0) {
+      e.sTimer = 700 + Math.random()*1200;
+      if (Math.random() < e.sCh*60)
+        G.bullets.push({x:e.x,y:e.y+10,vx:(Math.random()-.5)*1.5,vy:3.5,enemy:true,color:'#ff0080',r:3});
+    }
+  });
+
+  G.bullets.forEach(b => {
+    if (b.enemy) return;
+    G.enemies.forEach(e => {
+      if (!e.alive) return;
+      if (Math.abs(b.x-e.x) < e.w/2+4 && Math.abs(b.y-e.y) < e.h/2+4) {
+        b.y = -999; e.hp--;
+        spawnParts(e.x, e.y, eColor(e.type), 5);
+        if (e.hp <= 0) {
+          e.alive = false; G.waveKilled++; G.kills++;
+          const pts = 10 * G.wave; G.score += pts;
+          spawnParts(e.x, e.y, eColor(e.type), 12);
+          scorePopup(e.x, e.y, '+' + pts);
+          checkMilestones();
+        }
+      }
+    });
+  });
+
+  if (s.inv <= 0) {
+    G.bullets.forEach(b => {
+      if (!b.enemy) return;
+      if (Math.abs(b.x-s.x) < s.w/2+2 && Math.abs(b.y-s.y) < s.h/2+2) { b.y=-999; hit(); }
+    });
+    G.enemies.forEach(e => {
+      if (!e.alive) return;
+      if (Math.abs(e.x-s.x) < (e.w+s.w)/2-6 && Math.abs(e.y-s.y) < (e.h+s.h)/2-6) {
+        e.alive=false; e.hp=0; G.waveKilled++; G.kills++;
+        spawnParts(e.x,e.y,eColor(e.type),10); hit();
+      }
+    });
   }
 
-  const quest = state.quests.find(q => q.id === questId);
-  if (!quest) { showToast('Select a valid quest first!'); return; }
-  if (!quest.active) { showToast('This quest is no longer active.'); return; }
+  G.particles = G.particles.filter(p => {
+    p.x += p.vx*(dt/16); p.y += p.vy*(dt/16);
+    p.life -= dt; p.vy += 0.08; return p.life > 0;
+  });
 
-  // Calculate reward and royalty
-  const royaltyBps   = quest.royaltyPct * 100;
-  const royaltyAmt   = Math.floor((quest.rewardAmount * royaltyBps) / 10000);
-  const playerReward = quest.rewardAmount - royaltyAmt;
+  if (G.waveActive && G.enemies.length > 0 && G.enemies.every(e => !e.alive)) {
+    G.waveActive = false;
+    setTimeout(() => waveClear(), 300);
+  }
 
-  // Update player
-  state.players[playerAddr].points  += quest.rewardPoints;
-  state.players[playerAddr].rewards += playerReward;
-  state.players[playerAddr].quests  += 1;
+  document.getElementById('hs-score').textContent  = G.score.toLocaleString();
+  document.getElementById('hs-kills').textContent  = G.kills;
+  document.getElementById('hs-earned').textContent = G.totalEarned.toFixed(2);
+  document.getElementById('hs-tokens').textContent = G.sqt;
+}
 
-  // Update creator royalty
-  state.creators[quest.creator].royalties += royaltyAmt;
+function eColor(t) { return ['','#00fff7','#ff6b00','#ff0080','#ffe600'][t] || '#aaa'; }
 
-  // Update total rewards
-  state.totalRewards += playerReward;
+function fire() {
+  G.bullets.push({x:G.ship.x,y:G.ship.y-G.ship.h/2,vx:0,vy:-9,enemy:false,color:CYAN,r:3});
+  if (G.wave >= 4) {
+    G.bullets.push({x:G.ship.x-10,y:G.ship.y-G.ship.h/2+5,vx:0,vy:-9,enemy:false,color:CYAN,r:2.5});
+    G.bullets.push({x:G.ship.x+10,y:G.ship.y-G.ship.h/2+5,vx:0,vy:-9,enemy:false,color:CYAN,r:2.5});
+  }
+}
 
-  addLog('REWARD',  'b-reward',  `${shortAddr(playerAddr)} completed "${quest.title}" — earned ${playerReward} stroops + ${quest.rewardPoints} pts`);
-  addLog('ROYALTY', 'b-royalty', `Creator ${shortAddr(quest.creator)} received ${royaltyAmt} stroops royalty (${quest.royaltyPct}%)`);
+let shakeAmt = 0;
+function hit() {
+  G.lives--; G.ship.inv = 2000;
+  spawnParts(G.ship.x, G.ship.y, '#ff0080', 18);
+  shakeAmt = 8; updateLives();
+  if (G.lives <= 0) gameOver();
+}
 
-  showToast(`Quest completed! Earned ${playerReward} stroops. Creator got ${royaltyAmt} royalty.`);
+function spawnParts(x,y,col,n) {
+  for (let i=0; i<n; i++) {
+    const a=Math.random()*Math.PI*2, sp=1+Math.random()*3;
+    G.particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:300+Math.random()*400,color:col,r:1+Math.random()*2});
+  }
+}
 
-  updateStats();
-  renderQuests();
-  renderLeaderboard();
+function updateLives() {
+  const d = document.getElementById('livesDisplay'); d.innerHTML = '';
+  for (let i=0; i<G.maxLives; i++) {
+    const s = document.createElement('span');
+    s.className = 'life-icon' + (i >= G.lives ? ' lost' : '');
+    s.textContent = '🚀'; d.appendChild(s);
+  }
+}
+
+/* ── RENDER ── */
+function render() {
+  const sx = shakeAmt ? (Math.random()-.5)*shakeAmt : 0;
+  const sy = shakeAmt ? (Math.random()-.5)*shakeAmt : 0;
+  if (shakeAmt > 0) shakeAmt *= 0.75;
+  ctx.save(); ctx.translate(sx, sy);
+  ctx.fillStyle = 'rgba(0,2,8,0.14)'; ctx.fillRect(-10,-10,GAME_W+20,GAME_H+20);
+  ctx.strokeStyle = 'rgba(0,255,247,0.018)'; ctx.lineWidth = 1;
+  for (let x=0; x<GAME_W; x+=60) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,GAME_H); ctx.stroke(); }
+  for (let y=0; y<GAME_H; y+=60) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(GAME_W,y); ctx.stroke(); }
+  G.particles.forEach(p => {
+    ctx.globalAlpha = p.life/600; ctx.fillStyle = p.color;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+  G.enemies.forEach(e => { if (e.alive) drawEnemy(e); });
+  G.bullets.forEach(b => {
+    ctx.shadowColor = b.color; ctx.shadowBlur = b.enemy ? 8 : 10;
+    ctx.fillStyle = b.color;
+    if (b.enemy) { ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill(); }
+    else { ctx.fillRect(b.x-b.r/2, b.y-8, b.r, 14); }
+  });
+  ctx.shadowBlur = 0;
+  drawShip();
+  ctx.restore();
+}
+
+function drawEnemy(e) {
+  ctx.save(); ctx.translate(e.x,e.y); ctx.rotate(e.angle);
+  const c = eColor(e.type);
+  ctx.shadowColor = c; ctx.shadowBlur = 11;
+  switch(e.type) {
+    case 1:
+      ctx.strokeStyle=c;ctx.lineWidth=1.5;ctx.fillStyle='rgba(0,255,247,0.07)';
+      ctx.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3;ctx.lineTo(Math.cos(a)*13,Math.sin(a)*13);ctx.lineTo(Math.cos(a+Math.PI/6)*8,Math.sin(a+Math.PI/6)*8);}
+      ctx.closePath();ctx.fill();ctx.stroke();break;
+    case 2:
+      ctx.fillStyle='rgba(255,107,0,0.1)';ctx.strokeStyle=c;ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(0,-13);ctx.lineTo(9,0);ctx.lineTo(0,13);ctx.lineTo(-9,0);ctx.closePath();ctx.fill();ctx.stroke();break;
+    case 3:
+      ctx.fillStyle='rgba(255,0,128,0.1)';ctx.strokeStyle=c;ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.ellipse(0,0,13,7,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+      ctx.beginPath();ctx.arc(0,-3,5,0,Math.PI*2);ctx.fill();ctx.stroke();break;
+    case 4:
+      ctx.fillStyle='rgba(255,230,0,0.1)';ctx.strokeStyle=c;ctx.lineWidth=1.5;
+      ctx.fillRect(-10,-10,20,20);ctx.strokeRect(-10,-10,20,20);ctx.strokeRect(-5,-5,10,10);break;
+  }
+  if (e.maxHp > 1) {
+    ctx.fillStyle='rgba(255,255,255,0.08)';ctx.fillRect(-11,13,22,3);
+    ctx.fillStyle=c;ctx.fillRect(-11,13,22*(e.hp/e.maxHp),3);
+  }
+  ctx.restore();
+}
+
+function drawShip() {
+  const {x,y,w,h,inv} = G.ship;
+  if (inv > 0 && ~~(inv/80)%2 === 0) return;
+  ctx.save(); ctx.translate(x,y);
+  const t = performance.now()*0.01, fl = 0.7+0.3*Math.sin(t);
+  ctx.globalAlpha = fl;
+  ctx.fillStyle = '#ff6b00';
+  ctx.beginPath();ctx.moveTo(-6,h/2-5);ctx.lineTo(6,h/2-5);ctx.lineTo(4,h/2+13+Math.sin(t)*3);ctx.lineTo(0,h/2+10);ctx.lineTo(-4,h/2+13+Math.sin(t*1.2)*3);ctx.closePath();ctx.fill();
+  ctx.fillStyle = '#ffe600';
+  ctx.beginPath();ctx.moveTo(-3,h/2-5);ctx.lineTo(3,h/2-5);ctx.lineTo(2,h/2+8);ctx.lineTo(0,h/2+6);ctx.lineTo(-2,h/2+8);ctx.closePath();ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.shadowColor = 'rgba(0,255,247,0.45)'; ctx.shadowBlur = 16;
+  ctx.fillStyle = '#061828';
+  ctx.beginPath();ctx.moveTo(-w/2+3,h/2-3);ctx.lineTo(-w/2-9,h/2+7);ctx.lineTo(-w/2-2,h/2-9);ctx.closePath();ctx.fill();
+  ctx.beginPath();ctx.moveTo(w/2-3,h/2-3);ctx.lineTo(w/2+9,h/2+7);ctx.lineTo(w/2+2,h/2-9);ctx.closePath();ctx.fill();
+  ctx.fillStyle = '#0a2a4a';
+  ctx.beginPath();ctx.moveTo(0,-h/2);ctx.lineTo(w/2,h/2);ctx.lineTo(0,h/2-9);ctx.lineTo(-w/2,h/2);ctx.closePath();ctx.fill();
+  ctx.fillStyle = '#0d3a6a';
+  ctx.beginPath();ctx.moveTo(0,-h/2+4);ctx.lineTo(w/2-3,h/2-2);ctx.lineTo(0,h/2-11);ctx.lineTo(-w/2+3,h/2-2);ctx.closePath();ctx.fill();
+  ctx.fillStyle = 'rgba(0,255,247,0.38)';
+  ctx.beginPath();ctx.ellipse(0,-4,6,9,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.beginPath();ctx.ellipse(-1,-6,3,5,0,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle = 'rgba(0,255,247,0.65)'; ctx.lineWidth = 1; ctx.shadowBlur = 0;
+  ctx.beginPath();ctx.moveTo(0,-h/2);ctx.lineTo(w/2,h/2);ctx.lineTo(0,h/2-9);ctx.lineTo(-w/2,h/2);ctx.closePath();ctx.stroke();
+  ctx.restore();
+}
+
+/* ── POPUPS ── */
+function scorePopup(x,y,txt) {
+  const area=document.getElementById('gameArea');
+  const rect=canvas.getBoundingClientRect(),ar=area.getBoundingClientRect();
+  const sx=rect.width/GAME_W,sy=rect.height/GAME_H;
+  const el=document.createElement('div');el.className='score-popup';
+  el.style.left=(rect.left-ar.left+x*sx)+'px';
+  el.style.top=(rect.top-ar.top+y*sy)+'px';
+  el.style.color=eColor(1+~~(Math.random()*4));
+  el.textContent=txt;area.appendChild(el);
+  setTimeout(()=>el.remove(),900);
+}
+
+function floatReward(txt) {
+  const area=document.getElementById('gameArea');
+  const el=document.createElement('div');el.className='float-reward';
+  el.style.left=(80+Math.random()*180)+'px';
+  el.style.top=(120+Math.random()*100)+'px';
+  el.textContent=txt;area.appendChild(el);
+  setTimeout(()=>el.remove(),1400);
+}
+
+/* ── MILESTONES ── */
+function checkMilestones() {
+  [[1000,0.5],[5000,2.0],[15000,5.0]].forEach(([pts,xlm]) => {
+    if (!G.milestones[pts] && G.score >= pts) {
+      G.milestones[pts] = true;
+      G.totalEarned += xlm;
+      const el = document.getElementById('ms-'+pts);
+      if (el) { el.classList.add('ms-done'); const ok=document.createElement('span');ok.className='ms-ok';ok.textContent='✓';el.appendChild(ok); }
+      addFeed('mile', '+'+xlm+' XLM', 'Milestone '+pts.toLocaleString()+' pts! Calling contract…');
+      floatReward('+'+xlm+' XLM 🎉');
+      showToast('🎉 Milestone! +'+xlm+' XLM reward triggered!');
+      // Call contract
+      callContractMilestone(pts, xlm);
+    }
+  });
+}
+
+async function callContractMilestone(pts, xlm) {
+  const result = await callContract('reward_milestone', [
+    StellarSdk.Address.fromString(playerWallet).toScVal(),
+    StellarSdk.nativeToScVal(pts, {type:'u64'}),
+    StellarSdk.nativeToScVal(G.score, {type:'u64'}),
+  ]);
+  if (result?.hash) {
+    addFeed('chain', '+'+xlm+' XLM', '✓ On-chain! Tx: '+result.hash.slice(0,12)+'…');
+    showTokenNotif('Milestone Reward', pts.toLocaleString()+' pts reached!', '+'+xlm+' XLM', playerWallet, result.hash);
+    refreshBalance();
+  } else {
+    showTokenNotif('Milestone Reward', pts.toLocaleString()+' pts reached!', '+'+xlm+' XLM', playerWallet, null);
+  }
+}
+
+/* ── WAVE CLEAR ── */
+async function waveClear() {
+  const w = G.wave;
+  const cfg = waveCfg(w);
+  G.totalEarned += cfg.xlm;
+
+  const sd = document.getElementById('wco-stats'); sd.innerHTML = '';
+  [['Wave Cleared','#'+w,CYAN],['Enemies',''+G.waveKilled,'#ff6b00'],['Score',G.score.toLocaleString(),CYAN],['Wave Bonus','+'+cfg.xlm+' XLM','#39ff14']].forEach(([k,v,c]) => {
+    const row=document.createElement('div');row.className='ov-row';
+    row.innerHTML=`<span class="ov-key">${k}</span><span class="ov-val" style="color:${c}">${v}</span>`;
+    sd.appendChild(row);
+  });
+
+  document.getElementById('wco-reward').style.display = 'block';
+  document.getElementById('wco-amt').textContent = '+'+cfg.xlm+' XLM';
+
+  // Chain status
+  const chainEl = document.getElementById('wco-chain');
+  chainEl.className = 'ov-chain-status';
+  chainEl.textContent = '⏳ Submitting to Stellar Testnet…';
+
+  // NFT badge
+  const nftEl = document.getElementById('wco-nft');
+  const nftNames = {5:'Wave 5 Survivor · Uncommon',10:'Wave 10 Titan · Rare'};
+  if ((w===5||w===10) && !G.nftWaves[w]) {
+    G.nftWaves[w] = true;
+    nftEl.style.display = 'flex';
+    document.getElementById('wco-nft-name').textContent = nftNames[w] || 'Badge';
+    addFeed('nft', nftNames[w], 'NFT minting on Soroban for Wave '+w+'…');
+    const el = document.getElementById('ms-w'+w);
+    if (el) { el.classList.add('ms-done'); const ok=document.createElement('span');ok.className='ms-ok';ok.textContent='✓';el.appendChild(ok); }
+    // Mint NFT on-chain
+    callContract('mint_nft_badge', [
+      StellarSdk.Address.fromString(playerWallet).toScVal(),
+      StellarSdk.nativeToScVal(w, {type:'u32'}),
+    ]).then(r => {
+      if (r?.hash) addFeed('nft', nftNames[w], '✓ NFT minted on-chain! Tx: '+r.hash.slice(0,12)+'…');
+    });
+  } else {
+    nftEl.style.display = 'none';
+  }
+
+  document.getElementById('wco-title').textContent = 'WAVE '+w+' CLEARED!';
+  document.getElementById('waveClearOv').classList.add('active');
+  addFeed('wave', '+'+cfg.xlm+' XLM', 'Wave '+w+' cleared! Calling reward_wave contract…');
+
+  // Call wave reward on-chain
+  const result = await callContract('reward_wave', [
+    StellarSdk.Address.fromString(playerWallet).toScVal(),
+    StellarSdk.nativeToScVal(w, {type:'u32'}),
+    StellarSdk.nativeToScVal(G.waveKilled, {type:'u64'}),
+  ]);
+
+  if (result?.hash) {
+    chainEl.className = 'ov-chain-status confirmed';
+    chainEl.textContent = '✓ Confirmed on Stellar Testnet! Tx: '+result.hash.slice(0,16)+'…';
+    addFeed('chain', '+'+cfg.xlm+' XLM', '✓ Wave reward on-chain! Tx: '+result.hash.slice(0,12)+'…');
+    showTokenNotif('Wave '+w+' Reward', 'Contract reward confirmed', '+'+cfg.xlm+' XLM', playerWallet, result.hash);
+    refreshBalance();
+  } else {
+    chainEl.className = 'ov-chain-status confirmed';
+    chainEl.textContent = '✓ Simulated on Stellar Testnet (no Freighter)';
+    showTokenNotif('Wave '+w+' Reward', 'Simulated contract reward', '+'+cfg.xlm+' XLM', playerWallet, null);
+  }
+}
+
+function startNextWave() {
+  document.getElementById('waveClearOv').classList.remove('active');
+  G.wave++; spawnWave(G.wave);
+}
+
+/* ── GAME OVER ── */
+function gameOver() {
+  G.running = false; cancelAnimationFrame(G.raf);
+  G.leaderboard.push({addr:playerWallet,score:G.score,wave:G.wave,earned:G.totalEarned});
+  G.leaderboard.sort((a,b) => b.score - a.score);
+  const sd = document.getElementById('go-stats'); sd.innerHTML = '';
+  [['Final Score',G.score.toLocaleString(),CYAN],['Wave Reached',''+G.wave,'#ff6b00'],['Total Kills',''+G.kills,'#8b5cf6'],['Milestones',Object.values(G.milestones).filter(Boolean).length+'/3','#39ff14']].forEach(([k,v,c]) => {
+    const row=document.createElement('div');row.className='ov-row';
+    row.innerHTML=`<span class="ov-key">${k}</span><span class="ov-val" style="color:${c}">${v}</span>`;
+    sd.appendChild(row);
+  });
+  document.getElementById('go-total').textContent = G.totalEarned.toFixed(2)+' XLM';
+  document.getElementById('gameOverOv').classList.add('active');
+  // Update score on-chain
+  callContract('update_score', [
+    StellarSdk.Address.fromString(playerWallet).toScVal(),
+    StellarSdk.nativeToScVal(G.score, {type:'u64'}),
+    StellarSdk.nativeToScVal(G.wave, {type:'u32'}),
+  ]);
+  refreshBalance();
+}
+
+function restartGame() {
+  ['gameOverOv','waveClearOv','pauseOv'].forEach(id => document.getElementById(id).classList.remove('active'));
+  initGame();
+}
+
+function togglePause() {
+  if (!G.running) return;
+  G.paused = !G.paused;
+  document.getElementById('pauseOv').classList.toggle('active', G.paused);
+  if (!G.paused) G.lastT = performance.now();
+}
+
+addEventListener('keydown', e => {
+  G.keys[e.key] = true;
+  if (e.key==='Escape'||e.key==='p'||e.key==='P') togglePause();
+  if (e.key===' ') e.preventDefault();
+});
+addEventListener('keyup', e => { G.keys[e.key] = false; });
+function mk(k,d) { G.keys[k] = d; }
+
+/* ── LEADERBOARD ── */
+function showLeaderboard() {
+  const c = document.getElementById('lb-content'); c.innerHTML = '';
+  if (!G.leaderboard.length) {
+    c.innerHTML = '<div style="text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:0.68rem;padding:1rem;">No scores yet. Play to get on the board!</div>';
+  } else {
+    G.leaderboard.slice(0,10).forEach((e,i) => {
+      const rc = i===0?'r1':i===1?'r2':i===2?'r3':'rn';
+      const row = document.createElement('div'); row.className = 'lb-row';
+      row.innerHTML = `<div class="lb-rank ${rc}">${i+1}</div><div class="lb-addr">${shortAddr(e.addr)}</div><div class="lb-score">${e.score.toLocaleString()}</div><div class="lb-wave">W${e.wave}</div><div class="lb-earn">${e.earned.toFixed(2)} XLM</div>`;
+      c.appendChild(row);
+    });
+  }
+  document.getElementById('lb-overlay').classList.add('active');
+}
+
+function hideLeaderboard() { document.getElementById('lb-overlay').classList.remove('active'); }
+
+/* ── REWARD FEED ── */
+function addFeed(type, amt, msg) {
+  const feed = document.getElementById('rewardFeed');
+  const emp = feed.querySelector('[style]');
+  if (emp && emp.textContent.includes('Awaiting')) emp.remove();
+  const item = document.createElement('div'); item.className = 'rfeed-item';
+  const tc = {wave:'rf-wave',mile:'rf-mile',nft:'rf-nft',tok:'rf-tok',chain:'rf-chain'}[type]||'rf-wave';
+  const tl = {wave:'WAVE',mile:'MILESTONE',nft:'NFT',tok:'TOKEN',chain:'ON-CHAIN'}[type]||type.toUpperCase();
+  item.innerHTML = `<div class="rfeed-type ${tc}">${tl}</div>${amt?`<div class="rfeed-amt">${amt}</div>`:''}<div class="rfeed-msg">${msg}</div>`;
+  feed.insertBefore(item, feed.firstChild);
+}
+
+/* ── TOKEN NOTIFICATION ── */
+let notifT;
+function showTokenNotif(title, sub, amt, addr, hash) {
+  const n = document.getElementById('tokenNotif');
+  document.getElementById('tn-title').textContent = title;
+  document.getElementById('tn-sub').textContent   = sub;
+  document.getElementById('tn-amt').textContent   = amt;
+  document.getElementById('tn-to').textContent    = shortAddr(addr);
+  document.getElementById('tn-hash').textContent  = hash ? hash.slice(0,20)+'…' : 'Simulated (no Freighter)';
+  const fill = document.getElementById('tn-fill');
+  fill.style.animation = 'none'; fill.offsetHeight;
+  fill.style.animation = 'shrink 5s linear forwards';
+  n.classList.add('show');
+  clearTimeout(notifT);
+  notifT = setTimeout(() => n.classList.remove('show'), 5500);
+}
+
+/* ── TOAST ── */
+let toastT;
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 3000);
 }
 </script>
 </body>

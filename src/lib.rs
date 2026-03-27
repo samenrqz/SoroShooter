@@ -1,22 +1,21 @@
 #![no_std]
 
 use soroban_sdk::{
-    contract, contractimpl, contracttype, contracterror, symbol_short,
-    Address, Env, String,
+    contract, contractimpl, contracttype, contracterror,
+    symbol_short, Address, Env, String,
 };
 
-// ─── Error Codes ──────────────────────────────────────────────────────────────
+// ─── Errors ───────────────────────────────────────────────────────────────────
 
 #[contracterror]
 #[derive(Clone, Copy, PartialEq)]
 pub enum Error {
-    AlreadyRegistered = 1,
-    NotRegistered     = 2,
-    QuestNotFound     = 3,
-    QuestNotActive    = 4,
-    InsufficientFunds = 5,
-    InvalidRoyalty    = 6,
-    InvalidAmount     = 7,
+    AlreadyRegistered  = 1,
+    NotRegistered      = 2,
+    InvalidScore       = 3,
+    InvalidWave        = 4,
+    BadgeAlreadyMinted = 5,
+    InvalidAmount      = 6,
 }
 
 // ─── Storage Keys ─────────────────────────────────────────────────────────────
@@ -25,251 +24,294 @@ pub enum Error {
 #[contracttype]
 pub enum DataKey {
     Player(Address),
-    Creator(Address),
-    Quest(u64),
-    NextQuestId,
+    Badge(Address, u32),
+    TotalPlayers,
+    TotalRewards,
 }
 
-// ─── Data Structures ──────────────────────────────────────────────────────────
+// ─── Data Types ───────────────────────────────────────────────────────────────
 
-/// Holds all data for a registered player
+/// Full player record stored on-chain
 #[derive(Clone)]
 #[contracttype]
 pub struct PlayerData {
-    pub address: Address,
-    pub total_points: u64,
-    pub total_rewards: i128,
-    pub quests_completed: u64,
-    pub registered: bool,
+    pub address:       Address,
+    pub high_score:    u64,
+    pub waves_cleared: u32,
+    pub total_kills:   u64,
+    pub xlm_earned:    i128,
+    pub tokens:        i128,
+    pub registered:    bool,
 }
 
-/// Holds all data for a registered creator
+/// NFT badge record minted per player per wave milestone
 #[derive(Clone)]
 #[contracttype]
-pub struct CreatorData {
-    pub address: Address,
-    pub total_royalties: i128,
-    pub quests_created: u64,
-    pub registered: bool,
-}
-
-/// Holds all data for a quest
-#[derive(Clone)]
-#[contracttype]
-pub struct QuestData {
-    pub id: u64,
-    pub creator: Address,
-    pub title: String,
-    pub reward_points: u64,
-    pub reward_amount: i128,
-    pub royalty_bps: u32,
-    pub active: bool,
+pub struct BadgeData {
+    pub owner:    Address,
+    pub wave:     u32,
+    pub name:     String,
+    pub rarity:   String,
+    pub minted:   bool,
 }
 
 // ─── Contract ─────────────────────────────────────────────────────────────────
 
 #[contract]
-pub struct SoroQuestContract;
+pub struct SoroShooterContract;
 
 #[contractimpl]
-impl SoroQuestContract {
+impl SoroShooterContract {
 
-    // ─── Player Functions ──────────────────────────────────────────────────
+    // ─── Player Registration ───────────────────────────────────────────────
 
-    /// Register a new player into the game.
-    /// Each player can only register once.
-    pub fn register_player(env: Env, player: Address) -> Result<(), Error> {
+    /// Register a new player.
+    /// Awards 2 free SQT welcome tokens on first registration.
+    pub fn register_player(env: Env, player: Address) -> Result<PlayerData, Error> {
         player.require_auth();
 
+        // Reject duplicate registrations
         if env.storage().persistent().has(&DataKey::Player(player.clone())) {
             return Err(Error::AlreadyRegistered);
         }
 
+        // Initialize player with 2 free welcome tokens
         let data = PlayerData {
-            address: player.clone(),
-            total_points: 0,
-            total_rewards: 0,
-            quests_completed: 0,
-            registered: true,
+            address:       player.clone(),
+            high_score:    0,
+            waves_cleared: 0,
+            total_kills:   0,
+            xlm_earned:    0,
+            tokens:        2,  // 2 free SQT tokens on registration
+            registered:    true,
         };
 
         env.storage().persistent().set(&DataKey::Player(player.clone()), &data);
         env.storage().persistent().extend_ttl(&DataKey::Player(player.clone()), 100, 200);
-        env.events().publish((symbol_short!("reg_play"),), player);
 
-        Ok(())
-    }
-
-    /// Register a new quest creator.
-    /// Each creator can only register once.
-    pub fn register_creator(env: Env, creator: Address) -> Result<(), Error> {
-        creator.require_auth();
-
-        if env.storage().persistent().has(&DataKey::Creator(creator.clone())) {
-            return Err(Error::AlreadyRegistered);
-        }
-
-        let data = CreatorData {
-            address: creator.clone(),
-            total_royalties: 0,
-            quests_created: 0,
-            registered: true,
-        };
-
-        env.storage().persistent().set(&DataKey::Creator(creator.clone()), &data);
-        env.storage().persistent().extend_ttl(&DataKey::Creator(creator.clone()), 100, 200);
-        env.events().publish((symbol_short!("reg_crea"),), creator);
-
-        Ok(())
-    }
-
-    // ─── Quest Functions ───────────────────────────────────────────────────
-
-    /// Creator registers a new quest with a reward amount and royalty percentage.
-    /// royalty_bps: basis points — 1000 = 10%, 500 = 5%, max 5000 = 50%
-    pub fn create_quest(
-        env: Env,
-        creator: Address,
-        title: String,
-        reward_points: u64,
-        reward_amount: i128,
-        royalty_bps: u32,
-    ) -> Result<u64, Error> {
-        creator.require_auth();
-
-        if !env.storage().persistent().has(&DataKey::Creator(creator.clone())) {
-            return Err(Error::NotRegistered);
-        }
-
-        if royalty_bps > 5000 {
-            return Err(Error::InvalidRoyalty);
-        }
-
-        if reward_amount <= 0 {
-            return Err(Error::InvalidAmount);
-        }
-
-        let quest_id: u64 = env.storage().instance()
-            .get(&DataKey::NextQuestId)
-            .unwrap_or(0);
-
-        let next_id = quest_id + 1;
-        env.storage().instance().set(&DataKey::NextQuestId, &next_id);
+        // Increment total players counter
+        let total: u32 = env.storage().instance()
+            .get(&DataKey::TotalPlayers).unwrap_or(0);
+        env.storage().instance().set(&DataKey::TotalPlayers, &(total + 1));
         env.storage().instance().extend_ttl(100, 200);
 
-        let quest = QuestData {
-            id: next_id,
-            creator: creator.clone(),
-            title,
-            reward_points,
-            reward_amount,
-            royalty_bps,
-            active: true,
-        };
+        // Emit registration event
+        env.events().publish((symbol_short!("reg"),), player.clone());
+        // Emit token reward event
+        env.events().publish((symbol_short!("tokens"),), (player, 2i128));
 
-        env.storage().persistent().set(&DataKey::Quest(next_id), &quest);
-        env.storage().persistent().extend_ttl(&DataKey::Quest(next_id), 100, 200);
-
-        let mut creator_data: CreatorData = env.storage().persistent()
-            .get(&DataKey::Creator(creator.clone()))
-            .unwrap();
-        creator_data.quests_created += 1;
-        env.storage().persistent().set(&DataKey::Creator(creator.clone()), &creator_data);
-
-        env.events().publish((symbol_short!("new_quest"),), next_id);
-
-        Ok(next_id)
+        Ok(data)
     }
 
-    /// Player completes a quest and earns reward points and tokens.
-    /// A royalty percentage is automatically credited to the quest creator.
-    pub fn complete_quest(
+    // ─── Wave Reward ───────────────────────────────────────────────────────
+
+    /// Called after a player clears a wave.
+    /// Reward scales with wave number: wave * 0.05 XLM equivalent in stroops.
+    pub fn reward_wave(
         env: Env,
         player: Address,
-        quest_id: u64,
+        wave: u32,
+        kills: u64,
     ) -> Result<i128, Error> {
         player.require_auth();
 
-        let mut player_data: PlayerData = env.storage().persistent()
+        if wave == 0 { return Err(Error::InvalidWave); }
+
+        let mut data: PlayerData = env.storage().persistent()
             .get(&DataKey::Player(player.clone()))
             .ok_or(Error::NotRegistered)?;
 
-        let quest: QuestData = env.storage().persistent()
-            .get(&DataKey::Quest(quest_id))
-            .ok_or(Error::QuestNotFound)?;
+        // Calculate wave reward: wave * 500_000 stroops (0.05 XLM per wave)
+        let reward: i128 = (wave as i128) * 500_000;
 
-        if !quest.active {
-            return Err(Error::QuestNotActive);
+        // Update player record
+        data.waves_cleared += 1;
+        data.total_kills   += kills;
+        data.xlm_earned    += reward;
+
+        env.storage().persistent().set(&DataKey::Player(player.clone()), &data);
+        env.storage().persistent().extend_ttl(&DataKey::Player(player.clone()), 100, 200);
+
+        // Update global total rewards
+        let total: i128 = env.storage().instance()
+            .get(&DataKey::TotalRewards).unwrap_or(0);
+        env.storage().instance().set(&DataKey::TotalRewards, &(total + reward));
+
+        // Emit wave reward event
+        env.events().publish((symbol_short!("wave_rew"),), (player, wave, reward));
+
+        Ok(reward)
+    }
+
+    // ─── Score Milestone Reward ────────────────────────────────────────────
+
+    /// Called when a player hits a score milestone.
+    /// milestone_pts: 1000, 5000, or 15000
+    /// Returns the XLM reward amount in stroops.
+    pub fn reward_milestone(
+        env: Env,
+        player: Address,
+        milestone_pts: u64,
+        current_score: u64,
+    ) -> Result<i128, Error> {
+        player.require_auth();
+
+        if current_score < milestone_pts {
+            return Err(Error::InvalidScore);
         }
 
-        // Calculate royalty for creator
-        let royalty_amount = (quest.reward_amount * quest.royalty_bps as i128) / 10_000;
+        let mut data: PlayerData = env.storage().persistent()
+            .get(&DataKey::Player(player.clone()))
+            .ok_or(Error::NotRegistered)?;
 
-        // Player earns reward minus royalty
-        let player_reward = quest.reward_amount - royalty_amount;
+        // Milestone reward table in stroops
+        // 1000 pts  → 0.5 XLM  = 5_000_000 stroops
+        // 5000 pts  → 2.0 XLM  = 20_000_000 stroops
+        // 15000 pts → 5.0 XLM  = 50_000_000 stroops
+        let reward: i128 = match milestone_pts {
+            1000  => 5_000_000,
+            5000  => 20_000_000,
+            15000 => 50_000_000,
+            _     => return Err(Error::InvalidScore),
+        };
 
-        // Update player stats
-        player_data.total_points += quest.reward_points;
-        player_data.total_rewards += player_reward;
-        player_data.quests_completed += 1;
-        env.storage().persistent().set(&DataKey::Player(player.clone()), &player_data);
+        // Update high score if better
+        if current_score > data.high_score {
+            data.high_score = current_score;
+        }
 
-        // Credit royalty to creator
-        let mut creator_data: CreatorData = env.storage().persistent()
-            .get(&DataKey::Creator(quest.creator.clone()))
-            .unwrap();
-        creator_data.total_royalties += royalty_amount;
-        env.storage().persistent().set(&DataKey::Creator(quest.creator.clone()), &creator_data);
+        data.xlm_earned += reward;
 
-        env.events().publish((symbol_short!("complete"),), (player.clone(), quest_id, player_reward));
-        env.events().publish((symbol_short!("royalty"),), (quest.creator.clone(), royalty_amount));
+        env.storage().persistent().set(&DataKey::Player(player.clone()), &data);
+        env.storage().persistent().extend_ttl(&DataKey::Player(player.clone()), 100, 200);
 
-        Ok(player_reward)
+        // Emit milestone event
+        env.events().publish(
+            (symbol_short!("milestone"),),
+            (player, milestone_pts, reward),
+        );
+
+        Ok(reward)
+    }
+
+    // ─── NFT Badge Minting ─────────────────────────────────────────────────
+
+    /// Mint an NFT badge for reaching wave 5 or wave 10.
+    /// Each badge can only be minted once per player per wave.
+    pub fn mint_nft_badge(
+        env: Env,
+        player: Address,
+        wave: u32,
+    ) -> Result<BadgeData, Error> {
+        player.require_auth();
+
+        // Only wave 5 and wave 10 have badges
+        if wave != 5 && wave != 10 {
+            return Err(Error::InvalidWave);
+        }
+
+        // Check player is registered
+        if !env.storage().persistent().has(&DataKey::Player(player.clone())) {
+            return Err(Error::NotRegistered);
+        }
+
+        // Prevent duplicate minting
+        let badge_key = DataKey::Badge(player.clone(), wave);
+        if env.storage().persistent().has(&badge_key) {
+            return Err(Error::BadgeAlreadyMinted);
+        }
+
+        // Create badge based on wave
+        let (name, rarity) = if wave == 5 {
+            (
+                String::from_str(&env, "Wave 5 Survivor"),
+                String::from_str(&env, "Uncommon"),
+            )
+        } else {
+            (
+                String::from_str(&env, "Wave 10 Titan"),
+                String::from_str(&env, "Rare"),
+            )
+        };
+
+        let badge = BadgeData {
+            owner:  player.clone(),
+            wave,
+            name:   name.clone(),
+            rarity: rarity.clone(),
+            minted: true,
+        };
+
+        env.storage().persistent().set(&badge_key, &badge);
+        env.storage().persistent().extend_ttl(&badge_key, 100, 200);
+
+        // Emit NFT mint event
+        env.events().publish(
+            (symbol_short!("nft_mint"),),
+            (player, wave, name),
+        );
+
+        Ok(badge)
+    }
+
+    // ─── Update High Score ─────────────────────────────────────────────────
+
+    /// Update a player's high score after a game over.
+    pub fn update_score(
+        env: Env,
+        player: Address,
+        score: u64,
+        wave: u32,
+    ) -> Result<(), Error> {
+        player.require_auth();
+
+        let mut data: PlayerData = env.storage().persistent()
+            .get(&DataKey::Player(player.clone()))
+            .ok_or(Error::NotRegistered)?;
+
+        if score > data.high_score {
+            data.high_score = score;
+        }
+
+        if wave > data.waves_cleared {
+            data.waves_cleared = wave;
+        }
+
+        env.storage().persistent().set(&DataKey::Player(player.clone()), &data);
+        env.storage().persistent().extend_ttl(&DataKey::Player(player.clone()), 100, 200);
+
+        env.events().publish((symbol_short!("score_up"),), (player, score));
+
+        Ok(())
     }
 
     // ─── Query Functions ───────────────────────────────────────────────────
 
-    /// Get a player's current stats
+    /// Get a player's full stats
     pub fn get_player(env: Env, player: Address) -> Result<PlayerData, Error> {
         env.storage().persistent()
             .get(&DataKey::Player(player))
             .ok_or(Error::NotRegistered)
     }
 
-    /// Get a creator's current stats
-    pub fn get_creator(env: Env, creator: Address) -> Result<CreatorData, Error> {
+    /// Check if a player has a specific NFT badge
+    pub fn get_badge(env: Env, player: Address, wave: u32) -> Result<BadgeData, Error> {
         env.storage().persistent()
-            .get(&DataKey::Creator(creator))
-            .ok_or(Error::NotRegistered)
+            .get(&DataKey::Badge(player, wave))
+            .ok_or(Error::BadgeAlreadyMinted)
     }
 
-    /// Get a quest's details
-    pub fn get_quest(env: Env, quest_id: u64) -> Result<QuestData, Error> {
-        env.storage().persistent()
-            .get(&DataKey::Quest(quest_id))
-            .ok_or(Error::QuestNotFound)
-    }
-
-    /// Get total number of quests created
-    pub fn get_total_quests(env: Env) -> u64 {
+    /// Get total number of registered players
+    pub fn get_total_players(env: Env) -> u32 {
         env.storage().instance()
-            .get(&DataKey::NextQuestId)
+            .get(&DataKey::TotalPlayers)
             .unwrap_or(0)
     }
 
-    /// Get a player's total points
-    pub fn get_points(env: Env, player: Address) -> u64 {
-        env.storage().persistent()
-            .get(&DataKey::Player(player))
-            .map(|p: PlayerData| p.total_points)
-            .unwrap_or(0)
-    }
-
-    /// Get a creator's total accumulated royalties
-    pub fn get_royalties(env: Env, creator: Address) -> i128 {
-        env.storage().persistent()
-            .get(&DataKey::Creator(creator))
-            .map(|c: CreatorData| c.total_royalties)
+    /// Get total XLM rewards distributed
+    pub fn get_total_rewards(env: Env) -> i128 {
+        env.storage().instance()
+            .get(&DataKey::TotalRewards)
             .unwrap_or(0)
     }
 }
