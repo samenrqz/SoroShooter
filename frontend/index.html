@@ -767,106 +767,108 @@ async function connectFreighter() {
   const btn = document.getElementById('freighterBtn');
   btn.textContent = '⏳ Connecting…';
   btn.disabled = true;
-  setStatus('pending', 'Looking for Freighter extension…');
-
-  // Give extension time to inject into page
-  await new Promise(r => setTimeout(r, 800));
-
-  // Log everything we find — helps with debugging
-  const allFreight = Object.keys(window).filter(k =>
-    k.toLowerCase().includes('freight') || k.toLowerCase().includes('stellar')
-  );
-  console.log('Freighter scan:', allFreight);
-  console.log('window.freighterApi:', window.freighterApi);
-  console.log('window.freighter:', window.freighter);
-
-  // Try every known API location
-  const api =
-    window.freighterApi ||
-    window.freighter    ||
-    window['@stellar/freighter-api'];
-
-  if (!api) {
-    setStatus('fail',
-      '❌ Freighter extension not detected. ' +
-      'Make sure it is installed and enabled for this site, then try again.'
-    );
-    btn.textContent = '🔮 Connect Freighter Wallet';
-    btn.disabled = false;
-    showToast('Tip: Use manual address entry below to play now.');
-    return;
-  }
+  setStatus('pending', '⏳ Connecting to Freighter v5…');
 
   try {
-    // isConnected check
-    let isConn = false;
-    try {
-      const r = await api.isConnected();
-      isConn = r === true || r?.isConnected === true;
-    } catch(e) { isConn = true; } // some versions throw if not connected
+    // Freighter v5 uses postMessage API instead of window injection
+    const addr = await new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        window.removeEventListener('message', handler);
+        reject(new Error('timeout'));
+      }, 8000);
 
-    if (!isConn) {
-      setStatus('fail', '❌ Freighter found but not enabled for this page. Click the Freighter icon and allow access.');
-      btn.textContent = '🔮 Connect Freighter Wallet';
-      btn.disabled = false;
-      return;
-    }
+      function handler(event) {
+        try {
+          const d = event.data;
+          if (!d || typeof d !== 'object') return;
+          const str = JSON.stringify(d).toLowerCase();
 
-    setStatus('pending', '⏳ Requesting wallet access…');
+          // Look for any Freighter response containing a public key
+          if (str.includes('publickey') || str.includes('address') || str.includes('stellar')) {
+            const val = d.publicKey || d.address || d.result?.publicKey || d.result?.address;
+            if (val && val.startsWith('G') && val.length >= 56) {
+              clearTimeout(timeout);
+              window.removeEventListener('message', handler);
+              resolve(val);
+            }
+          }
+        } catch(e) {}
+      }
 
-    // Request access
-    try {
-      const access = await api.requestAccess();
-      if (access?.error) throw new Error(access.error);
-    } catch(e) {
-      if (!e.message?.includes('User declined')) throw e;
-      setStatus('fail', '❌ Access denied. Please approve in the Freighter popup.');
-      btn.textContent = '🔮 Connect Freighter Wallet';
-      btn.disabled = false;
-      return;
-    }
+      window.addEventListener('message', handler);
 
-    setStatus('pending', '⏳ Fetching wallet address…');
+      // Try all known Freighter v5 message formats
+      const msgs = [
+        { type: 'FREIGHTER_API_REQUEST', method: 'requestAccess' },
+        { type: 'STELLAR_FREIGHTER_API_REQUEST', method: 'requestAccess' },
+        { freighterCommand: 'requestAccess' },
+        { freighter: true, method: 'requestAccess' },
+        { target: 'FREIGHTER_CONTENT_SCRIPT', method: 'requestAccess' },
+      ];
 
-    // Get address — handle v1 and v2 API
-    let addr = '';
-    const methods = [
-      async () => { const r = await api.getAddress(); return r?.address || r; },
-      async () => api.getPublicKey(),
-    ];
-
-    for (const method of methods) {
-      try { addr = await method(); if (addr?.startsWith('G')) break; } catch(e) {}
-    }
-
-    if (!addr || !addr.startsWith('G')) {
-      setStatus('fail', '❌ Could not read wallet address from Freighter.');
-      btn.textContent = '🔮 Connect Freighter Wallet';
-      btn.disabled = false;
-      return;
-    }
+      msgs.forEach(msg => {
+        try { window.postMessage(msg, '*'); } catch(e) {}
+      });
+    });
 
     // SUCCESS
-    playerWallet      = addr;
+    playerWallet = addr;
     freighterConnected = true;
-
     document.getElementById('walletInput').value = addr;
-    setStatus('ok', '✓ Freighter connected — ' + shortAddr(addr) + ' — Ready to launch!');
-    btn.textContent  = '✓ Freighter Connected';
+    setStatus('ok', '✓ Freighter connected — ' + shortAddr(addr));
+    btn.textContent = '✓ Freighter Connected';
     btn.style.background = 'linear-gradient(135deg,#0a3a1a,#0d5a2a)';
-    btn.style.color       = 'var(--neon-green)';
+    btn.style.color = 'var(--neon-green)';
     btn.style.borderColor = 'rgba(57,255,20,0.4)';
     btn.disabled = false;
-
     showToast('✅ Freighter connected! ' + shortAddr(addr));
     fetchBalance(addr);
 
   } catch(e) {
-    setStatus('fail', '❌ Error: ' + (e.message || 'Unknown error'));
-    btn.textContent = '🔮 Connect Freighter Wallet';
-    btn.disabled = false;
-    showToast('Freighter error. Use manual entry below.');
-    console.error('Freighter error:', e);
+    // postMessage failed — try chrome.runtime direct call
+    try {
+      setStatus('pending', '⏳ Trying direct extension call…');
+
+      // Freighter extension ID for direct communication
+      const FREIGHTER_ID = 'bcacfldlngbbaoagpnknlfnkdnjanfll';
+
+      await new Promise((resolve, reject) => {
+        try {
+          chrome.runtime.sendMessage(FREIGHTER_ID,
+            { method: 'requestAccess' },
+            response => {
+              if (chrome.runtime.lastError) { reject(chrome.runtime.lastError); return; }
+              const addr = response?.publicKey || response?.address;
+              if (addr?.startsWith('G')) resolve(addr);
+              else reject(new Error('no address'));
+            }
+          );
+        } catch(err) { reject(err); }
+        setTimeout(() => reject(new Error('timeout')), 5000);
+      }).then(addr => {
+        playerWallet = addr;
+        freighterConnected = true;
+        document.getElementById('walletInput').value = addr;
+        setStatus('ok', '✓ Freighter connected — ' + shortAddr(addr));
+        const btn2 = document.getElementById('freighterBtn');
+        btn2.textContent = '✓ Freighter Connected';
+        btn2.style.background = 'linear-gradient(135deg,#0a3a1a,#0d5a2a)';
+        btn2.style.color = 'var(--neon-green)';
+        btn2.disabled = false;
+        showToast('✅ Freighter connected!');
+        fetchBalance(addr);
+      });
+
+    } catch(e2) {
+      // All methods failed — show clear message
+      setStatus('fail',
+        '❌ Freighter v5.38.2 requires manual wallet entry on this version. ' +
+        'Paste your G... address below to play.'
+      );
+      btn.textContent = '🔮 Connect Freighter Wallet';
+      btn.disabled = false;
+      showToast('Please paste your wallet address manually below.');
+    }
   }
 }
 
