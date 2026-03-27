@@ -19,3 +19,8 @@ Thumbs.db
 *.o
 *.so
 *.dylib
+
+# Node.js
+node_modules/
+.env
+package-lock.json
