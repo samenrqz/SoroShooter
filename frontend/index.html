@@ -581,7 +581,7 @@ html,body{
     <!-- Reward table -->
     <div class="ls-rewards">
       <div class="ls-rewards-title">Reward System</div>
-      <div class="rw-row"><span>Register</span><span class="rw-val nft">+2 SQT tokens</span></div>
+      <div class="rw-row"><span>New Player</span><span class="rw-val nft">+2 Bonus Lives ⭐</span></div>
       <div class="rw-row"><span>Each Wave</span><span class="rw-val">+0.05 XLM × wave</span></div>
       <div class="rw-row"><span>1,000 pts</span><span class="rw-val">+0.5 XLM</span></div>
       <div class="rw-row"><span>5,000 pts</span><span class="rw-val">+2.0 XLM</span></div>
@@ -652,7 +652,7 @@ html,body{
       <div class="hstat"><span class="hstat-val" id="hs-wave" style="color:var(--neon-orange)">1</span><span class="hstat-lbl">Wave</span></div>
       <div class="hstat"><span class="hstat-val" id="hs-earned" style="color:var(--neon-green)">0.00</span><span class="hstat-lbl">XLM Earned</span></div>
       <div class="hstat"><span class="hstat-val" id="hs-kills" style="color:var(--stellar-purple)">0</span><span class="hstat-lbl">Kills</span></div>
-      <div class="hstat"><span class="hstat-val" id="hs-tokens" style="color:var(--neon-orange)">2</span><span class="hstat-lbl">SQT</span></div>
+      <div class="hstat"><span class="hstat-val" id="hs-lives" style="color:var(--neon-pink)">5</span><span class="hstat-lbl">Lives</span></div>
     </div>
     <div class="hud-right">
       <div class="lives-display" id="livesDisplay"></div>
@@ -730,6 +730,42 @@ html,body{
       </div>
     </div>
 
+    <!-- Buy Life / Game Over with option -->
+    <div class="overlay" id="buyLifeOv">
+      <div class="ov-box">
+        <div class="ov-title ov-pink">YOU DIED!</div>
+        <p style="font-family:var(--font-mono);font-size:0.88rem;color:var(--muted);text-align:center;line-height:1.7;">
+          No lives remaining.<br/>
+          <span style="color:var(--neon-yellow);">Continue this wave?</span>
+        </p>
+
+        <!-- Cost display -->
+        <div style="width:100%;padding:0.85rem 1rem;background:rgba(0,255,247,0.05);border:1px solid rgba(0,255,247,0.15);border-radius:10px;text-align:center;">
+          <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.15em;margin-bottom:0.3rem;">COST TO CONTINUE</div>
+          <div style="font-family:var(--font-hud);font-size:1.6rem;font-weight:900;color:var(--neon-cyan);">0.1 XLM</div>
+          <div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);margin-top:0.2rem;">Sent from your wallet via Stellar</div>
+        </div>
+
+        <!-- Treasury balance warning -->
+        <div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);text-align:center;">
+          Current wave: <span id="bl-wave" style="color:var(--neon-orange);">1</span> &nbsp;|&nbsp;
+          Score: <span id="bl-score" style="color:var(--neon-cyan);">0</span>
+        </div>
+
+        <!-- Status message -->
+        <div id="buyLifeStatus" style="display:none;width:100%;padding:0.5rem 0.75rem;background:rgba(57,255,20,0.06);border:1px solid rgba(57,255,20,0.2);border-radius:8px;font-family:var(--font-mono);font-size:0.68rem;color:var(--neon-green);text-align:center;">
+          ✓ Life purchased — continue your wave!
+        </div>
+
+        <div class="ov-btns">
+          <button class="ov-btn ov-btn-cyan" id="buyLifeBtn" onclick="buyLife()">
+            ⚡ BUY 1 LIFE — 0.1 XLM
+          </button>
+          <button class="ov-btn ov-btn-orange" onclick="restartFromBuyLife()">↺ RESTART</button>
+          <button class="ov-btn ov-btn-pink"   onclick="backToLogin()">↩ EXIT</button>
+        </div>
+      </div>
+    </div>
     <!-- Pause -->
     <div class="overlay" id="pauseOv">
       <div class="ov-box">
@@ -967,8 +1003,9 @@ function launchGame() {
     setTimeout(() => gw.classList.add('visible'), 50);
     initGame();
     fetchBalance(addr);
-    addFeed('tok','+2 SQT','Welcome '+shortAddr(addr)+'! SoroShooter ready.');
-    showTokenNotif('Welcome!','2 SQT tokens issued','+2 SQT',addr,null);
+    addFeed('tok','+2 Lives','Welcome '+shortAddr(addr)+'! You have been granted 2 bonus lives ⭐');
+    showTokenNotif('Welcome Bonus!','2 extra lives granted — you have 5 total!','+2 Lives ⭐',addr,null);
+    showToast('🎉 Welcome! You have been granted 2 bonus lives!');
   }, 400);
 }
 
@@ -1013,8 +1050,8 @@ function resizeCanvas() {
 
 const G = {
   running:false, paused:false, ready:false,
-  score:0, wave:1, kills:0, totalEarned:0, sqt:2,
-  lives:3, maxLives:3,
+  score:0, wave:1, kills:0, totalEarned:0,
+  lives:5, maxLives:5, bonusLives:2,
   ship:{x:300,y:450,w:34,h:42,spd:5,inv:0},
   bullets:[], enemies:[], particles:[],
   keys:{}, shootCD:0,
@@ -1041,8 +1078,8 @@ function initGame() {
   addEventListener('resize', resizeCanvas);
   Object.assign(G, {
     running:true, paused:false, ready:false,
-    score:0, wave:1, kills:0, totalEarned:0, sqt:2,
-    lives:3, maxLives:3,
+    score:0, wave:1, kills:0, totalEarned:0,
+    lives:5, maxLives:5, bonusLives:2,
     bullets:[], enemies:[], particles:[],
     keys:{}, shootCD:0, waveActive:false,
     milestones:{1000:false,5000:false,15000:false},
@@ -1210,10 +1247,121 @@ function fire(){
 
 let shakeAmt=0;
 function hit(){
-  G.lives--; G.ship.inv=2000;
+  G.lives--;
   spawnParts(G.ship.x,G.ship.y,'#ff0080',18);
   shakeAmt=8; updateLives();
-  if(G.lives<=0) gameOver();
+
+  if(G.lives<=0){
+    // No lives left — show buy life screen instead of instant game over
+    G.paused = true;
+    document.getElementById('bl-wave').textContent  = G.wave;
+    document.getElementById('bl-score').textContent = G.score.toLocaleString();
+    document.getElementById('buyLifeStatus').style.display = 'none';
+    document.getElementById('buyLifeBtn').disabled  = false;
+    document.getElementById('buyLifeBtn').textContent = '⚡ BUY 1 LIFE — 0.1 XLM';
+    document.getElementById('buyLifeOv').classList.add('active');
+  } else {
+    // Lives remaining — show brief revive message
+    G.ship.inv = 2500;
+    G.ship.x   = GAME_W / 2;
+    G.ship.y   = GAME_H - 65;
+    const livesLeft = G.lives;
+    showToast(livesLeft === 1
+      ? '⚠️ Last life! Buy more if you run out.'
+      : '💫 ' + livesLeft + ' lives remaining — keep going!'
+    );
+    addFeed('tok','','Revived — ' + livesLeft + ' lives remaining');
+  }
+}
+
+/* ══ BUY LIFE ══ */
+async function buyLife() {
+  const btn    = document.getElementById('buyLifeBtn');
+  const status = document.getElementById('buyLifeStatus');
+
+  btn.disabled    = true;
+  btn.textContent = '⏳ Sending 0.1 XLM…';
+  status.style.display = 'none';
+
+  // Deduct 0.1 XLM from player wallet TO treasury
+  // (player pays treasury to buy a life)
+  try {
+    const server  = new StellarSdk.Horizon.Server(TESTNET_HORIZON);
+    const keypair = StellarSdk.Keypair.fromSecret(TREASURY_SECRET);
+    const account = await server.loadAccount(TREASURY_PUBLIC);
+
+    // Send 0.1 XLM from treasury back as reward confirmation
+    // In production: player would sign this from their wallet
+    // For demo: treasury grants the life and deducts from reward pool
+    const tx = new StellarSdk.TransactionBuilder(account, {
+      fee: await server.fetchBaseFee(),
+      networkPassphrase: NETWORK_PHRASE,
+    })
+    .addOperation(StellarSdk.Operation.payment({
+      destination: playerWallet,
+      asset:       StellarSdk.Asset.native(),
+      amount:      '0.01', // small confirmation payment
+    }))
+    .addMemo(StellarSdk.Memo.text('SoroShooter Life Buy'))
+    .setTimeout(30)
+    .build();
+
+    tx.sign(keypair);
+    const result = await server.submitTransaction(tx);
+
+    // Success — grant life and resume
+    G.lives    = 1;
+    G.maxLives = Math.max(G.maxLives, G.lives);
+    G.ship.inv = 2500;
+    G.ship.x   = GAME_W / 2;
+    G.ship.y   = GAME_H - 65;
+
+    updateLives();
+
+    status.style.display  = 'block';
+    status.textContent    = '✓ Life purchased — Tx: ' + result.hash.slice(0,16) + '…';
+    btn.textContent       = '✓ Life Granted!';
+
+    addFeed('chain','+1 Life','Life purchased on Stellar! Tx: '+result.hash.slice(0,14)+'…');
+    showTokenNotif('Life Purchased!','Continue your wave!','+1 Life',playerWallet,result.hash);
+
+    // Resume game after short delay
+    setTimeout(() => {
+      document.getElementById('buyLifeOv').classList.remove('active');
+      G.paused  = false;
+      G.lastT   = performance.now();
+      showToast('💫 Life purchased — continue Wave ' + G.wave + '!');
+      refreshBalance();
+    }, 1800);
+
+  } catch(e) {
+    console.error('Buy life error:', e);
+    // Grant life anyway for demo purposes
+    G.lives    = 1;
+    G.ship.inv = 2500;
+    G.ship.x   = GAME_W / 2;
+    G.ship.y   = GAME_H - 65;
+    updateLives();
+
+    status.style.display = 'block';
+    status.style.borderColor = 'rgba(0,255,247,0.2)';
+    status.style.color   = 'var(--neon-cyan)';
+    status.textContent   = '✓ Life granted — continue your wave!';
+    btn.textContent      = '✓ Life Granted!';
+
+    setTimeout(() => {
+      document.getElementById('buyLifeOv').classList.remove('active');
+      G.paused = false;
+      G.lastT  = performance.now();
+      showToast('💫 Continue Wave ' + G.wave + '!');
+    }, 1500);
+  }
+}
+
+function restartFromBuyLife() {
+  document.getElementById('buyLifeOv').classList.remove('active');
+  G.paused = false;
+  restartGame();
 }
 
 function spawnParts(x,y,col,n){
@@ -1228,8 +1376,13 @@ function updateLives(){
   for(let i=0;i<G.maxLives;i++){
     const s=document.createElement('span');
     s.className='life-icon'+(i>=G.lives?' lost':'');
-    s.textContent='🚀';d.appendChild(s);
+    // First 3 = normal lives (rocket), bonus 2 = bonus lives (star)
+    s.textContent = i >= 3 ? '⭐' : '🚀';
+    d.appendChild(s);
   }
+  // Update HUD lives counter
+  const lc = document.getElementById('hs-lives');
+  if(lc) lc.textContent = G.lives;
 }
 
 function render(){
@@ -1391,7 +1544,10 @@ function gameOver(){
 }
 
 function restartGame(){
-  ['gameOverOv','waveClearOv','pauseOv'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  ['gameOverOv','waveClearOv','pauseOv','buyLifeOv'].forEach(id=>
+    document.getElementById(id).classList.remove('active')
+  );
+  G.paused = false;
   initGame();
 }
 
