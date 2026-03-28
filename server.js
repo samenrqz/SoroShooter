@@ -9,8 +9,8 @@ const PORT = process.env.PORT || 3001;
 /* ═══════════════════════════════════
    CONFIG
 ═══════════════════════════════════ */
-const TREASURY_PUBLIC = process.env.TREASURY_PUBLIC || 'GCYDZO56GUVVMAT6PR3GHKA4XNWCXMCIEJFEZWURDUC5DNWQI5FPNC6F';
-const TREASURY_SECRET = process.env.TREASURY_SECRET || 'SAB4ZVSZZET26WNRKBX4C7CRXNYEHYNJ4YDOFXHMF42L2EY3F5PPQGQY';
+const TREASURY_PUBLIC = process.env.TREASURY_PUBLIC || 'GDPASSTOULP5AEO7QJYUQUDPKABHXSSJCJGDVMOBMZ3DYFYUDBJAXAIC';
+const TREASURY_SECRET = process.env.TREASURY_SECRET || '';
 const HORIZON_URL     = 'https://horizon-testnet.stellar.org';
 const NETWORK_PHRASE  = 'Test SDF Network ; September 2015';
 const LIFE_BASE_COST  = 500;
