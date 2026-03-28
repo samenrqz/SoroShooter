@@ -638,6 +638,27 @@ async function refreshBalance(){
   showToast('Balance: '+b.toFixed(2)+' XLM');
 }
 
+/* Poll Stellar every 2s until the confirmed balance drops from prevBal by ~cost.
+   Updates HUD in real-time as each poll comes in. */
+async function pollBalanceAfterDeduction(prevBal, cost, maxAttempts=10){
+  for(let i=0; i<maxAttempts; i++){
+    await new Promise(r=>setTimeout(r,2000));
+    try{
+      const d = await api('/api/balance/'+playerWallet);
+      if(d.success){
+        const newBal = d.balance;
+        /* Always update HUD with the latest real value */
+        document.getElementById('hudBal').textContent = newBal.toFixed(2)+' XLM';
+        /* Once Stellar confirms the deduction (allows for fees ~0.1 XLM tolerance) */
+        if(prevBal - newBal >= cost - 0.1){
+          showToast('✅ Confirmed: '+newBal.toFixed(2)+' XLM');
+          return;
+        }
+      }
+    }catch{}
+  }
+}
+
 /* ═══ TX BOX ═══ */
 function setTxBox(type,msg){const b=document.getElementById('txBox');b.className='txbox '+type;b.textContent=msg;b.style.display='block';}
 function hideTxBox(){document.getElementById('txBox').style.display='none';}
@@ -960,6 +981,13 @@ async function buyLife(){
   document.getElementById('btnRestart').disabled=true;
   setTxBox('pending','⏳ Contacting server to build transaction…');
 
+  /* Capture the real balance RIGHT NOW before anything is deducted */
+  let prevBal = 0;
+  try{
+    const bd = await api('/api/balance/'+playerWallet);
+    if(bd.success) prevBal = bd.balance;
+  }catch{}
+
   try{
     /* STEP 1 — Server builds unsigned transaction XDR */
     const buildRes=await api('/api/life/build-tx',{playerAddress:playerWallet,lifeBuyCount});
@@ -1004,19 +1032,18 @@ async function buyLife(){
     /* SUCCESS — real XLM deducted */
     lifeBuyCount++;lifeBuyCost=500+(lifeBuyCount*1000);
 
-    setTxBox('success','✅ '+cost.toLocaleString()+' XLM deducted via Freighter! Tx: '+submitRes.hash.slice(0,28)+'…');
+    /* Show predicted balance immediately (prevBal - cost) */
+    const predictedBal = prevBal - cost;
+    document.getElementById('hudBal').textContent = predictedBal.toFixed(2)+' XLM';
+    document.getElementById('balAfter').textContent = predictedBal.toFixed(2)+' XLM';
+    document.getElementById('balAfter').style.color = 'var(--green)';
 
-    /* Update AFTER balance with real fetched value */
-    fetchBal(playerWallet).then(nb=>{
-      document.getElementById('balAfter').textContent=nb.toFixed(2)+' XLM';
-      document.getElementById('balAfter').style.color='var(--green)';
-    });
-
-    addFeed('chain','+1 Life','✅ '+cost.toLocaleString()+' XLM deducted via Freighter. Tx:'+submitRes.hash.slice(0,14)+'…');
-    showNotif(cost.toLocaleString()+' XLM Deducted 💸','✅ Signed via Freighter — no key exposed!','+1 Life ⭐',playerWallet,submitRes.hash,'💸');
+    setTxBox('success','✅ '+cost.toLocaleString()+' XLM deducted! Tx: '+submitRes.hash.slice(0,28)+'…');
+    addFeed('chain','+1 Life','✅ '+cost.toLocaleString()+' XLM deducted. Tx:'+submitRes.hash.slice(0,14)+'…');
+    showNotif(cost.toLocaleString()+' XLM Deducted 💸','✅ Signed via Freighter!','+1 Life ⭐',playerWallet,submitRes.hash,'💸');
     showToast('💸 '+cost.toLocaleString()+' XLM deducted — life purchased!');
 
-    /* Wait 2s so user sees the success state, then grant life */
+    /* Wait 2s so user sees the success state */
     await new Promise(r=>setTimeout(r,2000));
 
     G.lives=1;G.ship={x:GW/2,y:GH-50,w:34,h:42,spd:5,inv:1800};updLives();
@@ -1026,7 +1053,9 @@ async function buyLife(){
     G.ship={x:GW/2,y:GH-50,w:34,h:42,spd:5,inv:1800};
     spawnWave(G.wave);G.ready=false;G.readyBlink=0;
     showToast('💫 Wave '+G.wave+' restarted — good luck!');
-    refreshBalance();
+
+    /* Poll Stellar for the confirmed balance — update HUD when it lands */
+    pollBalanceAfterDeduction(prevBal, cost);
 
   }catch(e){
     console.error('buyLife error:',e);
