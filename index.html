@@ -21,6 +21,7 @@
   7. Balance decreases. Life granted. Wave restarts.
 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-sdk/11.3.0/stellar-sdk.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-freighter-api/5.0.0/index.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;800&display=swap');
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
@@ -545,51 +546,66 @@ async function api(path,body){
 }
 
 /* ═══ FREIGHTER CONNECT ═══
-   Uses @stellar/freighter-api loaded from window.freighterApi.
+   @stellar/freighter-api is loaded via CDN script tag above.
+   It exposes functions on window.freighterApi (the UMD build).
    The secret key NEVER leaves the Freighter extension.
    This function only fetches the PUBLIC key (wallet address).
 ═══════════════════════════ */
+/* ═══ FREIGHTER API ═══
+   @stellar/freighter-api v5 UMD build (loaded via cdnjs script tag above)
+   exposes itself as window.freighterApi with these functions:
+     isConnected()   → { isConnected: bool }
+     requestAccess() → { address: string, error? }
+     getAddress()    → { address: string, error? }
+     signTransaction(xdr, opts) → { signedTxXdr: string, error? }
+   Communication happens via postMessage to the extension content script.
+   The secret key NEVER leaves the Freighter extension.
+═══════════════════════════════════════════════════════ */
+function getFreighterAPI(){
+  const api = window.freighterApi;
+  if(api && typeof api.isConnected === 'function') return api;
+  throw new Error('Freighter extension not detected. Make sure: 1) Freighter is installed from freighter.app  2) You are on HTTPS or GitHub Pages (not http://localhost)  3) Refresh the page after installing.');
+}
+
 async function connectFreighter(){
-  const btn=document.getElementById('btnFreighter');
-  btn.disabled=true; btn.textContent='⏳ Connecting…';
-  setWsBar('idle','Connecting to Freighter…');
+  const btn = document.getElementById('btnFreighter');
+  btn.disabled = true;
+  btn.textContent = '⏳ Connecting…';
+  setWsBar('idle', 'Connecting to Freighter…');
 
   try{
-    const freighter=window.freighterApi || window.freighter;
-    if(!freighter) throw new Error('Freighter not found. Install it from freighter.app');
+    const fApi = getFreighterAPI();
 
-    /* Check if already connected */
-    let connected=false;
-    try{
-      const r=await freighter.isConnected();
-      connected=typeof r==='boolean'?r:Boolean(r?.isConnected);
-    }catch{}
-
-    if(!connected){
-      /* Request access — opens Freighter popup for user to approve */
-      const access=await freighter.requestAccess();
-      if(access?.error) throw new Error(access.error);
+    /* Check if extension is installed and running */
+    const connResult = await fApi.isConnected();
+    if(!connResult.isConnected){
+      throw new Error('Freighter is installed but not connected. Open the Freighter extension and unlock it, then try again.');
     }
 
-    /* Get the PUBLIC key only — secret key stays in Freighter */
-    const result=await freighter.getAddress?.() || await freighter.getPublicKey?.();
-    if(!result) throw new Error('Freighter did not return an address');
+    /* Request access — opens Freighter popup for user to approve this site */
+    const accessResult = await fApi.requestAccess();
+    if(accessResult.error){
+      throw new Error('Freighter access denied: ' + (accessResult.error.message || accessResult.error));
+    }
 
-    const addr=typeof result==='string'?result:result?.address||result?.publicKey;
-    if(!addr||!addr.startsWith('G')) throw new Error('Invalid address returned from Freighter');
+    const addr = accessResult.address;
+    if(!addr || !addr.startsWith('G')){
+      throw new Error('Could not retrieve wallet address. Make sure Freighter is set to Testnet.');
+    }
 
-    playerWallet=addr;
-    btn.textContent='✅ Freighter Connected';
-    btn.className='btn-freighter connected';
-    btn.disabled=false;
-    setWsBar('ok','🔐 '+sa(addr)+' — Connected via Freighter ✅');
+    playerWallet = addr;
+    btn.textContent = '✅ Freighter Connected';
+    btn.className = 'btn-freighter connected';
+    btn.disabled = false;
+    setWsBar('ok', '🔐 ' + sa(addr) + ' — Connected via Freighter ✅');
     fetchBalPreview(addr);
-    showToast('✅ Freighter connected: '+sa(addr));
+    showToast('✅ Freighter connected: ' + sa(addr));
+
   }catch(e){
-    btn.disabled=false;
-    btn.textContent='🔐 Connect Freighter Wallet';
-    setWsBar('err','❌ '+e.message);
-    showToast('❌ '+e.message);
+    btn.disabled = false;
+    btn.textContent = '🔐 Connect Freighter Wallet';
+    setWsBar('err', '❌ ' + e.message);
+    showToast('❌ ' + e.message);
   }
 }
 
@@ -853,10 +869,11 @@ function showBuyLife(){
   document.getElementById('balAfter').style.color='var(--muted)';
 
   /* Check Freighter availability */
-  const freighter=window.freighterApi||window.freighter;
+  let frtAvailable = false;
+  try{ getFreighterAPI(); frtAvailable=true; }catch{}
   const frtEl=document.getElementById('frtStatus');
   const btn=document.getElementById('btnBuyLife');
-  if(freighter&&playerWallet){
+  if(frtAvailable&&playerWallet){
     frtEl.className='frt-status connected';
     frtEl.textContent='🔐 Freighter connected — click BUY LIFE to open approval popup';
     btn.disabled=false;btn.textContent='⚡ BUY LIFE — '+lifeBuyCost.toLocaleString()+' XLM';
@@ -930,11 +947,13 @@ function clearCd(){if(cdHandle){clearTimeout(cdHandle);cdHandle=null;}}
 async function buyLife(){
   const btn=document.getElementById('btnBuyLife');
   const cost=lifeBuyCost;
-  const freighter=window.freighterApi||window.freighter;
 
-  if(!freighter||!playerWallet){
+  if(!playerWallet){
     setTxBox('error','❌ Freighter not connected. Go back to login and connect first.');return;
   }
+
+  let fApi;
+  try{ fApi=getFreighterAPI(); }catch(e){ setTxBox('error','❌ '+e.message);return; }
 
   clearCd();
   btn.disabled=true;btn.textContent='⏳ Building transaction…';
@@ -952,21 +971,28 @@ async function buyLife(){
 
     let signResult;
     try{
-      signResult=await freighter.signTransaction(buildRes.unsignedXDR,{
-        networkPassphrase:NETWORK_PHRASE,
-        address:playerWallet,
+      signResult = await fApi.signTransaction(buildRes.unsignedXDR, {
+        networkPassphrase: NETWORK_PHRASE,
+        address: playerWallet,
       });
     }catch(signErr){
-      const m=signErr.message||'';
-      if(m.toLowerCase().includes('cancel')||m.toLowerCase().includes('reject')||m.toLowerCase().includes('declin')){
+      const m = signErr.message || '';
+      if(m.toLowerCase().includes('cancel') || m.toLowerCase().includes('reject') || m.toLowerCase().includes('declin')){
         throw new Error('Transaction cancelled. Click BUY LIFE again to retry.');
       }
-      throw new Error('Freighter signing failed: '+m);
+      throw new Error('Freighter signing failed: ' + m);
     }
 
-    /* Extract signed XDR — Freighter may return string or object */
-    const signedXDR=typeof signResult==='string'?signResult:signResult?.signedTxXdr||signResult?.signedTxXDR;
-    if(!signedXDR||typeof signedXDR!=='string') throw new Error('Freighter returned invalid signed transaction');
+    /* v5 returns { signedTxXdr, signerAddress, error? } */
+    if(signResult.error){
+      const errMsg = signResult.error.message || JSON.stringify(signResult.error);
+      if(errMsg.toLowerCase().includes('cancel') || errMsg.toLowerCase().includes('reject')){
+        throw new Error('Transaction cancelled in Freighter. Click BUY LIFE again to retry.');
+      }
+      throw new Error('Freighter error: ' + errMsg);
+    }
+    const signedXDR = signResult.signedTxXdr;
+    if(!signedXDR || typeof signedXDR !== 'string') throw new Error('Freighter returned invalid signed transaction');
 
     /* STEP 3 — Submit signed XDR to server */
     btn.textContent='⏳ Submitting to Stellar…';
