@@ -587,13 +587,27 @@ async function checkServer(){
 checkServer();setInterval(checkServer,15000);
 
 /* ── REST helper ─────────────────────────────────────────── */
-async function apiFetch(path,body){
-  const r=await fetch(API_URL+path,{
-    method:body?'POST':'GET',
-    headers:body?{'Content-Type':'application/json'}:{},
-    body:body?JSON.stringify(body):undefined,
-  });
-  return r.json();
+async function apiFetch(path, body){
+  let res;
+  try{
+    res = await fetch(API_URL + path, {
+      method:  body ? 'POST' : 'GET',
+      headers: body ? {'Content-Type':'application/json'} : {},
+      body:    body ? JSON.stringify(body) : undefined,
+    });
+  }catch(e){
+    /* Network-level error — server probably not running */
+    return { success:false, error:'Cannot reach server — is node server.js running? ('+e.message+')' };
+  }
+  let data;
+  try{ data = await res.json(); }
+  catch{ data = { success:false, error:'Server returned status '+res.status+' (non-JSON response)' }; }
+  /* If HTTP error but server gave us JSON with an error field, keep it.
+     Otherwise attach the HTTP status for clarity. */
+  if(!res.ok && data.success !== false){
+    data = { success:false, error: data.error || ('HTTP '+res.status) };
+  }
+  return data;
 }
 
 /* ── Freighter API ───────────────────────────────────────────
@@ -1405,8 +1419,22 @@ async function waveClear(){
     showNotif('Wave '+w+' Cleared! 💰','Rewards Received 💰','+'+c.xlm.toLocaleString()+' XLM',playerWallet,r.hash,'💰');
     setTimeout(()=>refreshBalance(),3000);
   }else{
+    const errMsg = r.error || 'Unknown server error';
     ch.className='ov-chain err';
-    ch.textContent='⚠ '+(r.error||'Check node server.js is running');
+    /* Show the actual error + diagnose hint */
+    if(errMsg.includes('ADMIN_SECRET')){
+      ch.textContent='❌ ADMIN_SECRET not set in .env — add it and restart node server.js';
+    } else if(errMsg.includes('mismatch')||errMsg.includes('Mismatch')){
+      ch.textContent='❌ ADMIN_SECRET does not match admin wallet — check .env';
+    } else if(errMsg.includes('low on XLM')||errMsg.includes('fund')||errMsg.includes('underfund')){
+      ch.textContent='❌ Admin wallet needs more XLM — fund at friendbot.stellar.org';
+    } else {
+      ch.textContent='❌ Reward failed: '+errMsg.slice(0,80);
+    }
+    ch.title = errMsg; /* Full error on hover */
+    addFeed('err','','Wave '+w+' reward failed: '+errMsg.slice(0,50));
+    console.error('[waveClear] reward error:', errMsg);
+    console.info('[waveClear] debug: open http://localhost:3001/api/diagnose');
   }
 }
 
