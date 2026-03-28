@@ -801,8 +801,7 @@ async function buyLife(){
 
     /* SUCCESS */
     lifeBuyCount++;lifeBuyCost=500+(lifeBuyCount*1000);
-    setTxBox('success','✅ '+cost.toLocaleString()+' XLM deducted from your wallet!
-Tx: '+submitRes.hash.slice(0,28)+'…');
+    setTxBox('success','✅ '+cost.toLocaleString()+' XLM deducted! Tx: '+submitRes.hash.slice(0,28)+'…');
     fetchBal(playerWallet).then(nb=>{document.getElementById('balAfter').textContent=nb.toFixed(2)+' XLM';document.getElementById('balAfter').style.color='var(--green)';});
     addFeed('chain','+1 Life','✅ '+cost.toLocaleString()+' XLM deducted. Tx:'+submitRes.hash.slice(0,14)+'…');
     showNotif(cost.toLocaleString()+' XLM Deducted 💸','✅ Real deduction confirmed!','+1 Life ⭐',playerWallet,submitRes.hash,'💸');
