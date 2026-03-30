@@ -1,5 +1,9 @@
 /*  SoroShooter — Node.js Backend
-    SECURITY: ADMIN_SECRET in .env only, never in source code. */
+    SECURITY:
+    - ADMIN_SECRET lives in .env only — never in source code
+    - ADMIN_PUBLIC is hardcoded and IMMUTABLE — cannot be changed via .env
+      or any external input. All life-purchase payments MUST go to this address.
+      The server rejects any signed XDR that sends to a different destination. */
 require('dotenv').config();
 const express    = require('express');
 const cors       = require('cors');
@@ -8,8 +12,14 @@ const StellarSdk = require('stellar-sdk');
 const app  = express();
 const PORT = process.env.PORT || 3001;
 
-const ADMIN_PUBLIC = process.env.ADMIN_PUBLIC || 'GCYDZO56GUVVMAT6PR3GHKA4XNWCXMCIEJFEZWURDUC5DNWQI5FPNC6F';
-const ADMIN_SECRET   = process.env.ADMIN_SECRET;
+/* ── ADMIN WALLET — LOCKED, DO NOT CHANGE ──────────────────
+   This is the only address that receives life-purchase payments.
+   It is hardcoded and cannot be overridden by environment variables.
+   Any signed transaction that sends to a different address is rejected. */
+const ADMIN_PUBLIC   = 'GCYDZO56GUVVMAT6PR3GHKA4XNWCXMCIEJFEZWURDUC5DNWQI5FPNC6F';
+Object.freeze({ ADMIN_PUBLIC }); // symbolic freeze — value is a primitive, mutation is impossible
+
+const ADMIN_SECRET   = process.env.ADMIN_SECRET;   // secret key in .env only
 const HORIZON_URL    = 'https://horizon-testnet.stellar.org';
 const NETWORK_PHRASE = 'Test SDF Network ; September 2015';
 const WAVE_REWARD    = 1000;
@@ -206,13 +216,24 @@ app.post('/api/life/submit-tx', async (req, res) => {
 });
 
 /* ── START ──────────────────────────────────────────────── */
+
+/* Startup integrity check — refuse to run if admin wallet is tampered */
+const EXPECTED_ADMIN = 'GCYDZO56GUVVMAT6PR3GHKA4XNWCXMCIEJFEZWURDUC5DNWQI5FPNC6F';
+if (ADMIN_PUBLIC !== EXPECTED_ADMIN) {
+  console.error('\n🚨 INTEGRITY ERROR: ADMIN_PUBLIC has been modified.');
+  console.error(`   Expected : ${EXPECTED_ADMIN}`);
+  console.error(`   Found    : ${ADMIN_PUBLIC}`);
+  console.error('   Server will not start with a tampered admin wallet address.\n');
+  process.exit(1);
+}
+
 app.listen(PORT, () => {
   console.log('\n╔══════════════════════════════════════════╗');
   console.log(`║   SoroShooter API  —  Port ${PORT}          ║`);
   console.log('╚══════════════════════════════════════════╝');
   console.log(`📡  Network  : Stellar Testnet`);
-  console.log(`💰  Admin    : ${ADMIN_PUBLIC}`);
-  console.log(`🔑  Secret   : ${ADMIN_SECRET ? '✅ loaded' : '❌ NOT SET — add ADMIN_SECRET to .env'}`);
+  console.log(`💰  Admin    : ${ADMIN_PUBLIC}  🔒 LOCKED`);
+  console.log(`🔑  Secret   : ${ADMIN_SECRET ? '✅ loaded from .env' : '❌ NOT SET — add ADMIN_SECRET to .env'}`);
   console.log('\nEndpoints:');
   ['GET  /health',
    'GET  /api/diagnose    ← open this in browser to debug reward errors',
