@@ -15,6 +15,7 @@
 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-sdk/11.3.0/stellar-sdk.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-freighter-api/5.0.0/index.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;800&display=swap');
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
@@ -286,6 +287,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
 .mb-f{background:rgba(255,107,0,.1);border-color:rgba(255,107,0,.3);color:var(--orange);}
 .mb-f:active{background:rgba(255,107,0,.3);}
 .mb-d{display:flex;gap:.42rem;}
+/* FontAwesome icon utilities */
+.fa-icon{display:inline-flex;align-items:center;justify-content:center;width:1.1em;margin-right:.22em;font-size:.95em;vertical-align:middle;}
+.fa-icon.lg{font-size:1.1em;}
+.fa-icon.sm{font-size:.8em;}
 @media(max-width:768px){#login-screen{grid-template-columns:1fr;}.ls-left{display:none;}}
 </style>
 </head>
@@ -307,13 +312,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
     </div>
     <div class="ls-rewards">
       <div class="ls-rtitle">Reward &amp; Life System</div>
-      <div class="rw"><span>New Player</span>    <span class="rv life">+2 Bonus Lives ⭐</span></div>
-      <div class="rw"><span>Each Wave</span>     <span class="rv">+1,000 XLM 💰</span></div>
+      <div class="rw"><span>New Player</span>    <span class="rv life">+2 Bonus Lives <i class="fa-solid fa-star fa-icon sm"></i></span></div>
+      <div class="rw"><span>Each Wave</span>     <span class="rv">+1,000 XLM <i class="fa-solid fa-coins fa-icon sm"></i></span></div>
       <div class="rw"><span>1,000 pts</span>     <span class="rv">+500 XLM</span></div>
       <div class="rw"><span>5,000 pts</span>     <span class="rv">+2,000 XLM</span></div>
       <div class="rw"><span>15,000 pts</span>    <span class="rv">+5,000 XLM</span></div>
-      <div class="rw"><span>Wave 5</span>        <span class="rv nft">NFT Badge 🏆</span></div>
-      <div class="rw"><span>Wave 10</span>       <span class="rv nft">Rare NFT ✨</span></div>
+      <div class="rw"><span>Wave 5</span>        <span class="rv nft">NFT Badge <i class="fa-solid fa-trophy fa-icon sm"></i></span></div>
+      <div class="rw"><span>Wave 10</span>       <span class="rv nft">Rare NFT <i class="fa-solid fa-gem fa-icon sm"></i></span></div>
       <div class="rw"><span>Buy Life</span>      <span class="rv life">500→1500→2500 XLM</span></div>
     </div>
     <div class="srv">
@@ -324,14 +329,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
 
   <div class="ls-right">
     <div class="ls-card">
-      <div class="lc-title">🚀 Connect Your Wallet</div>
+      <div class="lc-title"><i class="fa-solid fa-rocket fa-icon"></i> Connect Your Wallet</div>
 
       <!-- MODE 1: Freighter auto-connect -->
       <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:-.2rem;">
         Option 1 — Auto (Recommended)
       </div>
       <button class="btn-frt" id="btnFrt" onclick="connectFreighter()">
-        🔐 Connect via Freighter Extension
+        <i class="fa-solid fa-lock fa-icon"></i> Connect via Freighter Extension
       </button>
       <div class="ws-bar idle" id="wsBar">
         <span class="dot"></span>
@@ -369,8 +374,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
         <!-- Live validation feedback -->
         <div id="addrFeedback" style="font-family:var(--mono);font-size:.6rem;color:var(--muted);line-height:1.5;min-height:1rem;"></div>
         <!-- Explanation box — shown after address is set -->
-        <div id="manualNote" style="display:none;background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.22);border-radius:8px;padding:.6rem .78rem;font-family:var(--mono);font-size:.62rem;color:var(--purple);line-height:1.6;">
-          🔐 <strong>Your Freighter extension will still open</strong> on this device when you buy a life — it signs the deduction from the address you entered. No key is ever typed or stored.
+        <div id="manualNote" style="display:none;background:rgba(255,107,0,.07);border:1px solid rgba(255,107,0,.25);border-radius:8px;padding:.6rem .78rem;font-family:var(--mono);font-size:.62rem;color:var(--orange);line-height:1.6;">
+          <i class="fa-solid fa-triangle-exclamation fa-icon"></i> <strong>Manual mode:</strong> XLM wave rewards will still be sent to this address. Buying an extra life is not available — it requires Freighter to sign the payment. To enable life purchases, restart and use Option 1.
         </div>
       </div>
 
@@ -383,13 +388,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
 
       <div class="ls-howto">
         <div class="ls-howto-title">How Wallet Connection Works</div>
-        <div class="ls-howto-row"><div class="ls-step">1</div><span>Option 1: Freighter popup auto-fills your address ✅</span></div>
+        <div class="ls-howto-row"><div class="ls-step">1</div><span>Option 1: Freighter popup auto-fills your address <i class="fa-solid fa-circle-check" style="color:var(--green)"></i></span></div>
         <div class="ls-howto-row"><div class="ls-step">2</div><span>Option 2: Paste your address → Freighter still signs when needed</span></div>
-        <div class="ls-howto-row"><div class="ls-step">3</div><span>Either way: buying a life opens Freighter on <em style="color:var(--text);font-style:italic">your</em> device</span></div>
-        <div class="ls-howto-row"><div class="ls-step">4</div><span>Your secret key is <strong style="color:var(--green)">never</strong> typed or exposed anywhere</span></div>
+        <div class="ls-howto-row"><div class="ls-step">3</div><span>Either way: wave XLM rewards go to your address automatically</span></div>
+        <div class="ls-howto-row"><div class="ls-step">4</div><span>Buying a life requires Freighter (Option 1) — manual mode receives rewards only</span></div>
       </div>
 
-      <button class="btn-launch" id="btnLaunch" onclick="launchGame()">⚡ Launch SoroShooter</button>
+      <button class="btn-launch" id="btnLaunch" onclick="launchGame()"><i class="fa-solid fa-bolt fa-icon"></i> Launch SoroShooter</button>
     </div>
   </div>
 </div>
@@ -409,9 +414,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
       <div class="lives-row" id="livesRow"></div>
       <div class="hinfo hw" id="hudWallet">—</div>
       <div class="hinfo hb" id="hudBal" onclick="refreshBalance()" title="Click to refresh">— XLM</div>
-      <button class="hbtn hbtn-p" id="pauseBtn" onclick="togglePause()">⏸ PAUSE</button>
-      <button class="hbtn hbtn-e" onclick="backToLogin()">↩ EXIT</button>
-      <button class="hbtn" onclick="showLB()">★ BOARD</button>
+      <button class="hbtn hbtn-p" id="pauseBtn" onclick="togglePause()"><i class="fa-solid fa-pause fa-icon sm"></i> PAUSE</button>
+      <button class="hbtn hbtn-e" onclick="backToLogin()"><i class="fa-solid fa-arrow-left fa-icon sm"></i> EXIT</button>
+      <button class="hbtn" onclick="showLB()"><i class="fa-solid fa-ranking-star fa-icon sm"></i> BOARD</button>
     </div>
   </div>
 
@@ -429,8 +434,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
         <div class="msrow" id="ms-1000"> <span class="mspt">1,000</span><span class="msrw">+500 XLM</span></div>
         <div class="msrow" id="ms-5000"> <span class="mspt">5,000</span><span class="msrw">+2K XLM</span></div>
         <div class="msrow" id="ms-15000"><span class="mspt">15K</span>  <span class="msrw">+5K XLM</span></div>
-        <div class="msrow" id="ms-w5">   <span class="mspt">Wave 5</span><span class="msrw" style="color:var(--purple)">NFT 🏆</span></div>
-        <div class="msrow" id="ms-w10">  <span class="mspt">Wave 10</span><span class="msrw" style="color:var(--purple)">RARE ✨</span></div>
+        <div class="msrow" id="ms-w5">   <span class="mspt">Wave 5</span><span class="msrw" style="color:var(--purple)">NFT <i class="fa-solid fa-trophy fa-icon sm"></i></span></div>
+        <div class="msrow" id="ms-w10">  <span class="mspt">Wave 10</span><span class="msrw" style="color:var(--purple)">RARE <i class="fa-solid fa-gem fa-icon sm"></i></span></div>
       </div>
       <div class="psec" style="border-bottom:none;flex:1;overflow:hidden;display:flex;flex-direction:column;">
         <div class="ptitle">Reward Log</div>
@@ -443,34 +448,34 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
     <!-- ── WAVE CLEAR OVERLAY ───────────────────────────────── -->
     <div class="overlay" id="ovWaveClear">
       <div class="ovbox">
-        <div class="ovt ov-c" id="wct">WAVE CLEARED! 💰</div>
+        <div class="ovt ov-c" id="wct">MISSION COMPLETE <i class="fa-solid fa-circle-check" style="color:var(--green)"></i></div>
         <div class="ov-stats" id="wcs"></div>
         <div class="ov-rew" id="wcrew" style="display:none">
           <div class="ovrl">REAL XLM SENT TO YOUR WALLET</div>
           <div class="ovra" id="wcamt">+1,000 XLM</div>
         </div>
-        <div class="ov-chain" id="wcchain">⏳ Sending 1,000 XLM via admin wallet…</div>
+        <div class="ov-chain" id="wcchain"><i class="fa-solid fa-circle-notch fa-spin" style="margin-right:.4em"></i> Sending 1,000 XLM via admin wallet…</div>
         <div class="ov-nft" id="wcnft" style="display:none">
-          <div class="nfti">🏆</div>
+          <div class="nfti"><i class="fa-solid fa-trophy" style="color:var(--purple);font-size:1.35rem;"></i></div>
           <div><div class="nftt">NFT BADGE MINTED</div><div class="nfts" id="wcnftn">Wave Survivor</div></div>
         </div>
-        <div class="ovbtns"><button class="obtn ob-c" onclick="nextWave()">▶ NEXT WAVE</button></div>
+        <div class="ovbtns"><button class="obtn ob-c" onclick="nextWave()"><i class="fa-solid fa-forward fa-icon"></i> NEXT WAVE</button></div>
       </div>
     </div>
 
     <!-- ── GAME OVER OVERLAY ───────────────────────────────── -->
     <div class="overlay" id="ovGameOver">
       <div class="ovbox">
-        <div class="ovt ov-p">GAME OVER</div>
+        <div class="ovt ov-p">MISSION FAILED</div>
         <div class="ov-stats" id="gos"></div>
         <div class="ov-rew">
           <div class="ovrl">TOTAL XLM EARNED THIS SESSION</div>
           <div class="ovra" id="gototal">0 XLM</div>
         </div>
         <div class="ovbtns">
-          <button class="obtn ob-o" onclick="restartGame()">↺ PLAY AGAIN</button>
-          <button class="obtn ob-c" onclick="showLB()">★ LEADERBOARD</button>
-          <button class="obtn ob-p" onclick="backToLogin()">↩ EXIT</button>
+          <button class="obtn ob-o" onclick="restartGame()"><i class="fa-solid fa-rotate-right fa-icon"></i> PLAY AGAIN</button>
+          <button class="obtn ob-c" onclick="showLB()"><i class="fa-solid fa-ranking-star fa-icon"></i> LEADERBOARD</button>
+          <button class="obtn ob-p" onclick="backToLogin()"><i class="fa-solid fa-arrow-left fa-icon"></i> EXIT</button>
         </div>
       </div>
     </div>
@@ -479,7 +484,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
          ZERO secret key input. Freighter signs in popup.       -->
     <div class="overlay" id="ovBuyLife">
       <div class="ovbox">
-        <div class="ovt ov-p">YOU DIED!</div>
+        <div class="ovt ov-p">MISSION FAILED</div>
 
         <!-- Countdown ring -->
         <div style="display:flex;align-items:center;gap:1.15rem;width:100%;">
@@ -492,7 +497,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
           </div>
           <div style="flex:1">
             <div style="font-family:var(--mono);font-size:.78rem;color:var(--muted);line-height:1.72;">Buy a life to continue<br/>this exact wave!</div>
-            <div style="font-family:var(--mono);font-size:.62rem;color:var(--pink);margin-top:.28rem;">⏱ <span id="cdSecs">15</span>s remaining</div>
+            <div style="font-family:var(--mono);font-size:.62rem;color:var(--pink);margin-top:.28rem;"><i class="fa-regular fa-clock" style="margin-right:.3em"></i><span id="cdSecs">15</span>s remaining</div>
           </div>
         </div>
 
@@ -500,7 +505,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
         <div style="width:100%;padding:.75rem 1rem;background:rgba(0,255,247,.05);border:1px solid rgba(0,255,247,.16);border-radius:10px;text-align:center;">
           <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.14em;margin-bottom:.24rem;">COST TO CONTINUE</div>
           <div id="blCost" style="font-family:var(--hud);font-size:1.5rem;font-weight:900;color:var(--cyan);">500 XLM</div>
-          <div style="font-family:var(--mono);font-size:.58rem;color:var(--yellow);margin-top:.16rem;">→ Sent to Admin wallet · Approved via Freighter popup</div>
+          <div style="font-family:var(--mono);font-size:.58rem;color:var(--yellow);margin-top:.16rem;"><i class="fa-solid fa-arrow-right" style="margin-right:.3em"></i>Sent to Admin wallet · Approved via Freighter popup</div>
         </div>
 
         <!-- Wave / score -->
@@ -515,7 +520,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
             <div class="bp-lbl">BEFORE</div>
             <div class="bp-val" id="balBefore" style="color:var(--cyan)">… XLM</div>
           </div>
-          <div class="bp-arr">→</div>
+          <div class="bp-arr"><i class="fa-solid fa-arrow-right"></i></div>
           <div>
             <div class="bp-lbl">AFTER</div>
             <div class="bp-val" id="balAfter" style="color:var(--muted)">— XLM</div>
@@ -524,16 +529,48 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
 
         <!-- Freighter status -->
         <div class="frt-strip frt-ok" id="frtStatus">
-          🔐 Freighter connected — click BUY LIFE to approve
+          <i class="fa-solid fa-lock fa-icon"></i> Freighter connected — click BUY LIFE to approve
         </div>
 
         <!-- TX status -->
         <div class="txbox" id="txBox"></div>
 
         <div class="ovbtns">
-          <button class="obtn ob-g" id="btnBuyLife" onclick="buyLife()">⚡ BUY LIFE</button>
-          <button class="obtn ob-o" id="btnRestart" onclick="restartGame()">↺ RESTART</button>
-          <button class="obtn ob-p" onclick="backToLogin()">↩ EXIT</button>
+          <button class="obtn ob-g" id="btnBuyLife" onclick="buyLife()"><i class="fa-solid fa-bolt fa-icon"></i> BUY LIFE</button>
+          <button class="obtn ob-o" id="btnRestart" onclick="restartGame()"><i class="fa-solid fa-rotate-right fa-icon"></i> RESTART</button>
+          <button class="obtn ob-p" onclick="backToLogin()"><i class="fa-solid fa-arrow-left fa-icon"></i> EXIT</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── WAVE LOST (base breached) ─────────────────────── -->
+    <div class="overlay" id="ovWaveLost">
+      <div class="ovbox">
+        <div class="ovt ov-p">MISSION FAILED <i class="fa-solid fa-shield-halved" style="color:var(--pink)"></i></div>
+
+        <!-- Breach summary -->
+        <div class="ov-stats" id="wls"></div>
+
+        <!-- Explanation -->
+        <div style="width:100%;padding:.82rem 1rem;background:rgba(255,0,128,.06);border:1px solid rgba(255,0,128,.22);border-radius:10px;text-align:center;">
+          <div style="font-family:var(--hud);font-size:.78rem;color:var(--pink);letter-spacing:.08em;margin-bottom:.3rem;">WAVE <span id="wl-wnum">1</span> — BASE BREACHED</div>
+          <div style="font-family:var(--mono);font-size:.75rem;color:var(--muted);line-height:1.65;">
+            Enemies reached the base.<br/>
+            You must <strong style="color:var(--cyan)">buy a life</strong> to retry this wave,<br/>
+            or <strong style="color:var(--orange)">restart</strong> from Wave 1.
+          </div>
+        </div>
+
+        <!-- Lives remaining indicator -->
+        <div style="width:100%;padding:.65rem 1rem;background:rgba(0,255,247,.03);border:1px solid rgba(0,255,247,.1);border-radius:9px;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-family:var(--mono);font-size:.72rem;color:var(--muted);"><i class="fa-solid fa-heart fa-icon sm" style="color:var(--pink)"></i> Lives remaining</span>
+          <span id="wl-lives" style="font-family:var(--hud);font-size:.95rem;font-weight:700;color:var(--orange);">2</span>
+        </div>
+
+        <div class="ovbtns">
+          <button class="obtn ob-g" onclick="showBuyLifeFromWaveLost()"><i class="fa-solid fa-bolt fa-icon"></i> BUY LIFE — RETRY</button>
+          <button class="obtn ob-o" onclick="restartGame()"><i class="fa-solid fa-rotate-right fa-icon"></i> RESTART</button>
+          <button class="obtn ob-p" onclick="backToLogin()"><i class="fa-solid fa-arrow-left fa-icon"></i> EXIT</button>
         </div>
       </div>
     </div>
@@ -546,9 +583,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
           Press <strong style="color:var(--text)">ESC</strong> or <strong style="color:var(--text)">P</strong> to resume
         </p>
         <div class="ovbtns">
-          <button class="obtn ob-c" onclick="togglePause()">▶ RESUME</button>
-          <button class="obtn ob-o" onclick="restartGame()">↺ RESTART</button>
-          <button class="obtn ob-p" onclick="backToLogin()">↩ EXIT TO MENU</button>
+          <button class="obtn ob-c" onclick="togglePause()"><i class="fa-solid fa-play fa-icon"></i> RESUME</button>
+          <button class="obtn ob-o" onclick="restartGame()"><i class="fa-solid fa-rotate-right fa-icon"></i> RESTART</button>
+          <button class="obtn ob-p" onclick="backToLogin()"><i class="fa-solid fa-arrow-left fa-icon"></i> EXIT TO MENU</button>
         </div>
       </div>
     </div>
@@ -556,10 +593,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
     <!-- Mobile controls -->
     <div class="mob-ctrl">
       <div class="mb-d">
-        <div class="mb" ontouchstart="mk('ArrowLeft',true)"  ontouchend="mk('ArrowLeft',false)">◀</div>
-        <div class="mb" ontouchstart="mk('ArrowRight',true)" ontouchend="mk('ArrowRight',false)">▶</div>
+        <div class="mb" ontouchstart="mk('ArrowLeft',true)"  ontouchend="mk('ArrowLeft',false)"><i class="fa-solid fa-chevron-left"></i></div>
+        <div class="mb" ontouchstart="mk('ArrowRight',true)" ontouchend="mk('ArrowRight',false)"><i class="fa-solid fa-chevron-right"></i></div>
       </div>
-      <div class="mb mb-f" ontouchstart="startOrFire()" ontouchend="mk(' ',false)">🔥</div>
+      <div class="mb mb-f" ontouchstart="startOrFire()" ontouchend="mk(' ',false)"><i class="fa-solid fa-fire"></i></div>
     </div>
   </div><!-- /game-area -->
 </div><!-- /game-wrapper -->
@@ -567,7 +604,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
 <!-- Leaderboard -->
 <div id="lb-overlay">
   <div class="lb-box">
-    <div class="lb-title">⭐ LEADERBOARD</div>
+    <div class="lb-title"><i class="fa-solid fa-ranking-star fa-icon"></i> LEADERBOARD</div>
     <div id="lb-content"></div>
     <div style="display:flex;justify-content:center;margin-top:.5rem;">
       <button class="obtn ob-c" onclick="hideLB()">CLOSE</button>
@@ -632,9 +669,9 @@ async function checkServer(){
   const dot=document.getElementById('srvDot'),txt=document.getElementById('srvTxt');
   try{
     const r=await fetch(`${API_URL}/health`,{signal:AbortSignal.timeout(4000)});
-    if(r.ok){dot.className='srv-dot online';txt.textContent='🟢 Backend online · Admin wallet ready';txt.style.color='var(--green)';}
+    if(r.ok){dot.className='srv-dot online';txt.innerHTML='<i class="fa-solid fa-circle fa-icon sm" style="color:var(--green)"></i> Backend online · Admin wallet ready';txt.style.color='var(--green)';}
     else throw new Error();
-  }catch{dot.className='srv-dot offline';txt.textContent='🔴 Server offline — run: node server.js';txt.style.color='var(--pink)';}
+  }catch{dot.className='srv-dot offline';txt.innerHTML='<i class="fa-solid fa-circle fa-icon sm" style="color:var(--pink)"></i> Server offline — run: node server.js';txt.style.color='var(--pink)';}
 }
 checkServer();setInterval(checkServer,15000);
 
@@ -682,7 +719,7 @@ function getFrt(){
 async function connectFreighter(){
   const btn = document.getElementById('btnFrt');
   btn.disabled = true;
-  btn.textContent = '⏳ Opening Freighter…';
+  btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin fa-icon"></i> Opening Freighter…';
   setWsBar('idle', 'Waiting for Freighter popup…');
 
   try{
@@ -707,7 +744,7 @@ async function connectFreighter(){
     playerWallet = addr;
     walletMode   = 'freighter';
 
-    btn.textContent = '✅ Connected — ' + sa(addr);
+    btn.innerHTML = '<i class="fa-solid fa-circle-check fa-icon" style="color:var(--green)"></i> Connected — ' + sa(addr);
     btn.className   = 'btn-frt connected';
     btn.disabled    = false;
 
@@ -724,7 +761,7 @@ async function connectFreighter(){
 
   }catch(e){
     btn.disabled    = false;
-    btn.textContent = '🔐 Connect via Freighter Extension';
+    btn.innerHTML = '<i class="fa-solid fa-lock fa-icon"></i> Connect via Freighter Extension';
     const msg = e.message.split('\n')[0];
     setWsBar('err', '❌ ' + msg);
     showToast('❌ ' + msg);
@@ -800,7 +837,7 @@ function useManualAddr(){
 
   /* Update Freighter button to show manual mode clearly */
   const btn = document.getElementById('btnFrt');
-  btn.textContent = '📋 Manual: ' + sa(v);
+  btn.innerHTML   = '<i class="fa-solid fa-clipboard fa-icon"></i> Manual: ' + sa(v);
   btn.className   = 'btn-frt connected';
 
   fb.style.color  = 'var(--green)';
@@ -839,7 +876,7 @@ function launchGame(){
   ls.style.opacity = '0';
   ls.style.pointerEvents = 'none';
 
-  const modeLabel = walletMode === 'freighter' ? 'Freighter connected ✅' : 'Manual address 📋 (Freighter signs)';
+  const modeLabel = walletMode === 'freighter' ? 'Freighter connected' : 'Manual address (rewards only)';
 
   setTimeout(()=>{
     ls.style.display = 'none';
@@ -864,7 +901,7 @@ function launchGame(){
 
 function backToLogin(){
   G.running = false; cancelAnimationFrame(G.raf); clearCd();
-  ['ovWaveClear','ovGameOver','ovPause','ovBuyLife'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  ['ovWaveClear','ovGameOver','ovPause','ovBuyLife','ovWaveLost'].forEach(id=>document.getElementById(id).classList.remove('active'));
   document.getElementById('game-wrapper').classList.remove('visible');
   setTimeout(()=>{
     document.getElementById('game-wrapper').style.display = 'none';
@@ -993,7 +1030,7 @@ const G={running:false,paused:false,ready:false,buyingLife:false,
   score:0,wave:1,kills:0,totalEarned:0,lives:5,maxLives:5,
   ship:{x:300,y:GH-50,w:34,h:42,spd:5,inv:0},
   bullets:[],enemies:[],particles:[],keys:{},
-  shootCD:0,waveActive:false,waveKilled:0,
+  shootCD:0,waveActive:false,waveKilled:0,baseBreach:0,
   milestones:{1000:false,5000:false,15000:false},
   nftWaves:{5:false,10:false},
   leaderboard:[],raf:null,lastT:0,readyBlink:0};
@@ -1017,17 +1054,17 @@ function initGame(){
   Object.assign(G,{running:true,paused:false,ready:false,buyingLife:false,
     score:0,wave:1,kills:0,totalEarned:0,lives:startLives,maxLives:5,
     bullets:[],enemies:[],particles:[],keys:{},
-    shootCD:0,waveActive:false,waveKilled:0,
+    shootCD:0,waveActive:false,waveKilled:0,baseBreach:0,
     milestones:{1000:false,5000:false,15000:false},
     nftWaves:{5:false,10:false},readyBlink:0});
   G.ship={x:GW/2,y:GH-50,w:34,h:42,spd:5,inv:0};
   updLives();spawnWave(1);G.lastT=performance.now();
   cancelAnimationFrame(G.raf);G.raf=requestAnimationFrame(loop);
-  document.getElementById('pauseBtn').textContent='⏸ PAUSE';
+  document.getElementById('pauseBtn').innerHTML='<i class="fa-solid fa-pause fa-icon sm"></i> PAUSE';
 }
 
 function spawnWave(w){
-  const c=wcfg(w);G.waveActive=true;G.waveKilled=0;G.enemies=[];
+  const c=wcfg(w);G.waveActive=true;G.waveKilled=0;G.baseBreach=0;G.enemies=[];
   const cols=Math.ceil(Math.sqrt(c.count)),rows=Math.ceil(c.count/cols);let n=0;
   for(let r=0;r<rows&&n<c.count;r++)
     for(let cc=0;cc<cols&&n<c.count;cc++){
@@ -1087,7 +1124,7 @@ function update(dt){
   G.enemies.forEach(e=>{
     if(!e.alive)return;e.x+=e.vx*(dt/16);e.y+=e.vy*(dt/16);e.angle+=.02;
     if(e.x<18||e.x>GW-18)e.vx*=-1;
-    if(e.y>=BASE.y){e.alive=false;G.waveKilled++;spawnP(e.x,BASE.y,'#ff0080',16);baseHit();return;}
+    if(e.y>=BASE.y){e.alive=false;G.waveKilled++;G.baseBreach++;spawnP(e.x,BASE.y,'#ff0080',16);baseHit();return;}
     e.sTimer-=dt;if(e.sTimer<=0){e.sTimer=600+Math.random()*1000;
       if(Math.random()<e.sCh*60)G.bullets.push({x:e.x,y:e.y+10,vx:(Math.random()-.5)*1.5,vy:3.5,enemy:true,color:'#ff0080',r:3});}
   });
@@ -1110,12 +1147,17 @@ function update(dt){
         e.alive=false;e.hp=0;G.waveKilled++;G.kills++;spawnP(e.x,e.y,ec(e.type),10);hitShip();}});
   }
   G.particles=G.particles.filter(p=>{p.x+=p.vx*(dt/16);p.y+=p.vy*(dt/16);p.life-=dt;p.vy+=.08;return p.life>0;});
-  /* Only trigger wave clear if game is actively running — never during buy-life or game-over */
+  /* Wave clear: all enemies gone AND none reached the base */
   if(G.waveActive&&!G.buyingLife&&G.enemies.length>0&&G.enemies.every(e=>!e.alive)){
     G.waveActive=false;
     setTimeout(()=>{
-      /* Double-check the game is still running before showing wave clear — prevents false trigger */
-      if(G.running&&!G.buyingLife) waveClear();
+      if(!G.running||G.buyingLife) return;
+      if(G.baseBreach===0){
+        waveClear();
+      } else {
+        /* Enemies reached the base — wave is lost even if player still has lives */
+        waveLost();
+      }
     },300);
   }
   document.getElementById('hs-score').textContent=G.score.toLocaleString();
@@ -1153,21 +1195,35 @@ function showBuyLife(){
   document.getElementById('balAfter').textContent='— XLM';
   document.getElementById('balAfter').style.color='var(--muted)';
 
-  /* Freighter availability check */
-  const btn=document.getElementById('btnBuyLife');
-  const strip=document.getElementById('frtStatus');
-  let frtOk=false;
-  try{getFrt();frtOk=true;}catch{}
-  if(frtOk&&playerWallet){
-    strip.className='frt-strip frt-ok';
-    strip.textContent='🔐 Freighter connected ✅ — click BUY LIFE to approve deduction';
-    btn.disabled=false;btn.textContent='⚡ BUY LIFE — '+lifeBuyCost.toLocaleString()+' XLM';
-  }else{
-    strip.className='frt-strip frt-err';
-    strip.textContent='❌ Freighter not connected — exit and connect wallet first';
-    btn.disabled=true;btn.textContent='❌ Connect Freighter First';
+  const btn   = document.getElementById('btnBuyLife');
+  const strip = document.getElementById('frtStatus');
+
+  if(walletMode === 'manual'){
+    /* Manual mode — Freighter is not involved.
+       Signing requires the Freighter extension so buy life is unavailable.
+       Player can only restart or exit. */
+    strip.className = 'frt-strip frt-err';
+    strip.innerHTML = '<i class="fa-solid fa-triangle-exclamation fa-icon"></i> Manual address mode — buying a life requires Freighter. Restart and connect via Freighter to enable.';
+    btn.disabled    = true;
+    btn.innerHTML   = '<i class="fa-solid fa-lock fa-icon"></i> Requires Freighter Connection';
+  } else {
+    /* Freighter mode — check extension is available */
+    let frtOk = false;
+    try{getFrt(); frtOk = true;}catch{}
+    if(frtOk && playerWallet){
+      strip.className = 'frt-strip frt-ok';
+      strip.innerHTML = '<i class="fa-solid fa-lock fa-icon"></i> Freighter connected — click BUY LIFE to approve deduction';
+      btn.disabled    = false;
+      btn.innerHTML   = '<i class="fa-solid fa-bolt fa-icon"></i> BUY LIFE — '+lifeBuyCost.toLocaleString()+' XLM';
+    } else {
+      strip.className = 'frt-strip frt-err';
+      strip.innerHTML = '<i class="fa-solid fa-circle-xmark fa-icon"></i> Freighter not connected — exit and connect wallet first';
+      btn.disabled    = true;
+      btn.innerHTML   = '<i class="fa-solid fa-circle-xmark fa-icon"></i> Connect Freighter First';
+    }
   }
-  document.getElementById('btnRestart').disabled=false;
+
+  document.getElementById('btnRestart').disabled = false;
   document.getElementById('ovBuyLife').classList.add('active');
 
   /* Fetch live balance for before/after proof */
@@ -1246,22 +1302,29 @@ async function buyLife(){
   const btn=document.getElementById('btnBuyLife');
   const cost=lifeBuyCost;
 
-  /* ── INTEGRITY CHECK — runs before every life purchase ──────
-     Verifies ADMIN_WALLET has not been tampered with at runtime.
-     If it has been changed in any way, the transaction is blocked. */
+  /* ── INTEGRITY CHECK ──────────────────────────────────────── */
   const EXPECTED_ADMIN = 'GDYK2LATZCLZN7RQYYVZ2H2YO6BZI5ZEMHR4QNVQHGEL2UIKDWJH4SYN';
   if(ADMIN_WALLET !== EXPECTED_ADMIN){
-    setTxBox('error','🚨 INTEGRITY ERROR: Admin wallet address has been tampered. Transaction blocked.');
-    console.error('INTEGRITY ERROR: ADMIN_WALLET does not match expected value.');
+    setTxBox('error','Integrity error: Admin wallet tampered. Transaction blocked.');
     return;
   }
 
-  if(!playerWallet){setTxBox('error','❌ Freighter not connected.');return;}
+  /* ── MANUAL MODE BLOCK ────────────────────────────────────── 
+     Manual address mode does not use Freighter — signing is
+     impossible without it. Block immediately with a clear message. */
+  if(walletMode === 'manual'){
+    setTxBox('error','Manual address mode cannot sign transactions. Exit and connect via Freighter to buy a life.');
+    return;
+  }
+
+  /* ── FREIGHTER MODE ONLY BELOW ───────────────────────────── */
+  if(!playerWallet){ setTxBox('error','No wallet connected.'); return; }
   let frt;
-  try{frt=getFrt();}catch(e){setTxBox('error','❌ '+e.message.split('\n')[0]);return;}
+  try{ frt = getFrt(); }
+  catch(e){ setTxBox('error', e.message.split('\n')[0]); return; }
 
   clearCd();
-  btn.disabled=true;btn.textContent='⏳ Building transaction…';
+  btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin fa-icon"></i> Building transaction…';
   document.getElementById('btnRestart').disabled=true;
   setTxBox('pending','⏳ Contacting server to build transaction…');
 
@@ -1275,7 +1338,7 @@ async function buyLife(){
     if(!build.success) throw new Error(build.error||'Server could not build transaction');
 
     /* Step 3 — Freighter signs (popup) */
-    btn.textContent='⏳ Approve in Freighter popup…';
+    btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin fa-icon"></i> Approve in Freighter popup…';
     setTxBox('pending','⏳ Freighter popup opening — please approve the transaction…');
 
     let signed;
@@ -1300,7 +1363,7 @@ async function buyLife(){
     if(!xdr||typeof xdr!=='string') throw new Error('Freighter returned an invalid signed transaction.');
 
     /* Step 4 — server verifies + submits */
-    btn.textContent='⏳ Submitting to Stellar Testnet…';
+    btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin fa-icon"></i> Submitting to Stellar Testnet…';
     setTxBox('pending','⏳ Submitting signed transaction to Stellar Testnet…');
 
     const submit=await apiFetch('/api/life/submit-tx',{signedXDR:xdr,playerAddress:playerWallet,lifeBuyCount});
@@ -1316,13 +1379,13 @@ async function buyLife(){
     document.getElementById('balAfter').style.color='var(--green)';
 
     setTxBox('success',
-      '✅ '+cost.toLocaleString()+' XLM deducted — Extra Life Purchased! 🟢\n'+
+      '✅ '+cost.toLocaleString()+' XLM deducted — Extra Life Granted! 🟢\n'+
       'Tx: '+submit.hash.slice(0,36)+'…');
-    addFeed('life','-'+cost.toLocaleString()+' XLM','✅ Life Purchased 🟢 · Tx:'+submit.hash.slice(0,14)+'…');
+    addFeed('life','-'+cost.toLocaleString()+' XLM','✅ Extra Life Granted 🟢 · Tx:'+submit.hash.slice(0,14)+'…');
     showNotif(cost.toLocaleString()+' XLM Deducted 💸',
-      'Life Purchased 🟢 — wave restarts!',
+      'Extra Life Granted — Mission Retry!',
       '+1 Extra Life ⭐',playerWallet,submit.hash,'💸');
-    showToast('✅ '+cost.toLocaleString()+' XLM deducted — Extra Life Purchased! 🟢');
+    showToast('✅ '+cost.toLocaleString()+' XLM deducted — Extra Life Granted! Retrying wave…');
 
     /* Wait 2s so user can read the success message */
     await new Promise(r=>setTimeout(r,2000));
@@ -1334,7 +1397,7 @@ async function buyLife(){
     G.buyingLife=false;G.paused=false;G.lastT=performance.now();
     G.bullets=[];G.particles=[];BASE.hitTimer=0;
     spawnWave(G.wave);G.ready=false;G.readyBlink=0;
-    showToast('💫 Wave '+G.wave+' restarted — good luck!');
+    showToast('🚀 Extra life granted — Mission retry! Wave '+G.wave+' restarting…');
 
     /* Step 6 — poll Stellar until confirmed balance lands */
     pollBalance(prevBal,cost);
@@ -1346,7 +1409,7 @@ async function buyLife(){
     else if(/fetch|Failed to fetch/i.test(msg)) disp='❌ Cannot reach server. Make sure node server.js is running.';
     setTxBox('error',disp);
     showToast('❌ Transaction failed — please try again.');
-    btn.disabled=false;btn.textContent='⚡ BUY LIFE — '+lifeBuyCost.toLocaleString()+' XLM';
+    btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-bolt fa-icon"></i> BUY LIFE — '+lifeBuyCost.toLocaleString()+' XLM';
     document.getElementById('btnRestart').disabled=false;
     startCd(15);
   }
@@ -1462,11 +1525,60 @@ function checkMS(){
 }
 
 /* ━━━ WAVE CLEAR ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ WAVE LOST — enemies reached the base ━━━━━━━━━━━━━━━━━━
+   Fires when all enemies are gone but ≥1 breached the base.
+   Regardless of how many lives remain — if the base was hit,
+   the wave is LOST. Player must buy a life to retry or quit.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function waveLost(){
+  G.paused=true;G.buyingLife=true;
+  addFeed('err','','Mission Failed — Wave '+G.wave+': '+G.baseBreach+' enem'+(G.baseBreach===1?'y':'ies')+' reached the base!');
+  showToast('💥 Mission Failed — base breached! Buy a life to retry Wave '+G.wave+'.');
+
+  /* Build stats rows */
+  const sd=document.getElementById('wls');sd.innerHTML='';
+  const c=wcfg(G.wave);
+  [['Wave',           '#'+G.wave+' ['+c.diff.label+']', '#00fff7'],
+   ['Enemies Killed', ''+G.kills,                        '#ff6b00'],
+   ['Base Breaches',  G.baseBreach+' ❌',                '#ff0080'],
+   ['Lives Left',     ''+G.lives,                        G.lives>0?'#ffe600':'#ff0080'],
+   ['Score',          G.score.toLocaleString(),           '#00fff7'],
+  ].forEach(([k,v,col])=>{
+    const row=document.createElement('div');row.className='orow';
+    row.innerHTML=`<span class="ok_">${k}</span><span class="ov_" style="color:${col}">${v}</span>`;
+    sd.appendChild(row);
+  });
+
+  document.getElementById('wl-wnum').textContent=G.wave;
+  document.getElementById('wl-lives').textContent=G.lives;
+  document.getElementById('wl-lives').style.color=G.lives>0?'var(--orange)':'var(--pink)';
+
+  if(G.lives<=0){
+    /* No lives — skip the wave lost screen and go straight to game over */
+    G.buyingLife=false;
+    G.running=false;cancelAnimationFrame(G.raf);
+    G.leaderboard.push({addr:playerWallet,score:G.score,wave:G.wave,earned:G.totalEarned});
+    G.leaderboard.sort((a,b)=>b.score-a.score);
+    buildGO();document.getElementById('ovGameOver').classList.add('active');
+    setTimeout(()=>refreshBalance(),2000);
+    return;
+  }
+
+  document.getElementById('ovWaveLost').classList.add('active');
+}
+
+/* Called when player clicks BUY LIFE from the Wave Lost screen */
+function showBuyLifeFromWaveLost(){
+  document.getElementById('ovWaveLost').classList.remove('active');
+  showBuyLife();
+}
+
 async function waveClear(){
   const w=G.wave,c=wcfg(w);G.totalEarned+=c.xlm;
   const sd=document.getElementById('wcs');sd.innerHTML='';
   [['Wave','#'+w+' ['+c.diff.label+']','#00fff7'],
-   ['Enemies',''+G.waveKilled,'#ff6b00'],
+   ['Enemies Killed',''+G.kills,'#ff6b00'],
+   ['Base Breaches','0 ✅','#39ff14'],
    ['Score',G.score.toLocaleString(),'#00fff7'],
    ['Reward','+'+c.xlm.toLocaleString()+' XLM','#39ff14']
   ].forEach(([k,v,col])=>{
@@ -1477,7 +1589,7 @@ async function waveClear(){
   document.getElementById('wcrew').style.display='block';
   document.getElementById('wcamt').textContent='+'+c.xlm.toLocaleString()+' XLM';
   const ch=document.getElementById('wcchain');
-  ch.className='ov-chain';ch.textContent='⏳ Sending '+c.xlm.toLocaleString()+' XLM from Admin wallet…';
+  ch.className='ov-chain';ch.innerHTML='<i class="fa-solid fa-circle-notch fa-spin" style="margin-right:.4em"></i> Sending '+c.xlm.toLocaleString()+' XLM from Admin wallet…';
   const nftNames={5:'Wave 5 Survivor · Uncommon',10:'Wave 10 Titan · Rare'};
   const nftEl=document.getElementById('wcnft');
   if((w===5||w===10)&&!G.nftWaves[w]){
@@ -1485,32 +1597,31 @@ async function waveClear(){
     document.getElementById('wcnftn').textContent=nftNames[w];
     addFeed('nft',nftNames[w],'NFT minted for Wave '+w+'!');
     const el=document.getElementById('ms-w'+w);
-    if(el){el.classList.add('ms-done');const ok=document.createElement('span');ok.className='ms-ok';ok.textContent='✓';el.appendChild(ok);}
+    if(el){el.classList.add('ms-done');const ok=document.createElement('span');ok.className='ms-ok';ok.innerHTML='<i class="fa-solid fa-check"></i>';el.appendChild(ok);}
   }else nftEl.style.display='none';
-  document.getElementById('wct').textContent='WAVE '+w+' CLEARED! 💰';
+  document.getElementById('wct').innerHTML='MISSION COMPLETE — WAVE '+w+' <i class="fa-solid fa-circle-check" style="color:var(--green)"></i>';
   document.getElementById('ovWaveClear').classList.add('active');
-  addFeed('wave','+'+c.xlm.toLocaleString()+' XLM','Wave '+w+' ['+c.diff.label+'] cleared!');
+  addFeed('wave','+'+c.xlm.toLocaleString()+' XLM','Mission Complete — Wave '+w+' ['+c.diff.label+']!');
   const r=await apiFetch('/api/reward/wave',{playerAddress:playerWallet,wave:w});
   if(r.success){
     ch.className='ov-chain ok';
-    ch.textContent='✅ Rewards Received 💰 — +'+c.xlm.toLocaleString()+' XLM! Tx:'+r.hash.slice(0,22)+'…';
-    addFeed('chain','+'+c.xlm.toLocaleString()+' XLM','✓ On-chain! Tx:'+r.hash.slice(0,14)+'…');
-    showNotif('Wave '+w+' Cleared! 💰','Rewards Received 💰','+'+c.xlm.toLocaleString()+' XLM',playerWallet,r.hash,'💰');
+    ch.innerHTML='<i class="fa-solid fa-circle-check fa-icon"></i> Reward Received — +'+c.xlm.toLocaleString()+' XLM! Tx:'+r.hash.slice(0,22)+'…';
+    addFeed('chain','+'+c.xlm.toLocaleString()+' XLM','On-chain confirmed. Tx:'+r.hash.slice(0,14)+'…');
+    showNotif('Mission Complete!','Reward Received','+'+c.xlm.toLocaleString()+' XLM',playerWallet,r.hash,'check');
     setTimeout(()=>refreshBalance(),3000);
   }else{
     const errMsg = r.error || 'Unknown server error';
     ch.className='ov-chain err';
-    /* Show the actual error + diagnose hint */
     if(errMsg.includes('ADMIN_SECRET')){
-      ch.textContent='❌ ADMIN_SECRET not set in .env — add it and restart node server.js';
+      ch.innerHTML='<i class="fa-solid fa-circle-xmark fa-icon"></i> ADMIN_SECRET not set in .env — add it and restart node server.js';
     } else if(errMsg.includes('mismatch')||errMsg.includes('Mismatch')){
-      ch.textContent='❌ ADMIN_SECRET does not match admin wallet — check .env';
+      ch.innerHTML='<i class="fa-solid fa-circle-xmark fa-icon"></i> ADMIN_SECRET does not match admin wallet — check .env';
     } else if(errMsg.includes('low on XLM')||errMsg.includes('fund')||errMsg.includes('underfund')){
-      ch.textContent='❌ Admin wallet needs more XLM — fund at friendbot.stellar.org';
+      ch.innerHTML='<i class="fa-solid fa-circle-xmark fa-icon"></i> Admin wallet needs more XLM — fund at friendbot.stellar.org';
     } else {
-      ch.textContent='❌ Reward failed: '+errMsg.slice(0,80);
+      ch.innerHTML='<i class="fa-solid fa-circle-xmark fa-icon"></i> Reward failed: '+errMsg.slice(0,80);
     }
-    ch.title = errMsg; /* Full error on hover */
+    ch.title = errMsg;
     addFeed('err','','Wave '+w+' reward failed: '+errMsg.slice(0,50));
     console.error('[waveClear] reward error:', errMsg);
     console.info('[waveClear] debug: open http://localhost:3001/api/diagnose');
@@ -1536,7 +1647,7 @@ function buildGO(){
 }
 function restartGame(){
   clearCd();
-  ['ovGameOver','ovWaveClear','ovPause','ovBuyLife'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  ['ovGameOver','ovWaveClear','ovPause','ovBuyLife','ovWaveLost'].forEach(id=>document.getElementById(id).classList.remove('active'));
   G.paused=false;G.buyingLife=false;lifeBuyCount=0;lifeBuyCost=LIFE_BASE;
   initGame(); // sets isFirstGame=false and lives=3
   showToast('🎮 3 lives ready — bonus stars are first-launch only!');
@@ -1545,7 +1656,7 @@ function restartGame(){
 function togglePause(){
   if(!G.running)return;G.paused=!G.paused;
   document.getElementById('ovPause').classList.toggle('active',G.paused);
-  document.getElementById('pauseBtn').textContent=G.paused?'▶ RESUME':'⏸ PAUSE';
+  document.getElementById('pauseBtn').innerHTML=G.paused?'<i class="fa-solid fa-play fa-icon sm"></i> RESUME':'<i class="fa-solid fa-pause fa-icon sm"></i> PAUSE';
   if(!G.paused)G.lastT=performance.now();
 }
 
