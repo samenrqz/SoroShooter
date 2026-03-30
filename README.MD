@@ -232,7 +232,7 @@ The admin secret key (`ADMIN_SECRET`) lives **only** in the server's `.env` file
 │                                                          │
 │  Horizon API: https://horizon-testnet.stellar.org        │
 │  Soroban Contract: CAXLPNVK4FBCNWMNGNBQUJVGLZKY…        │
-│  Admin Wallet: GCYDZO56GUVVMAT6PR3GHKA4XNWCXMCIE…       │
+│  Admin Wallet: GDYK2LATZCLZN7RQYYVZ2H2YO6BZI5ZE…       │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -365,7 +365,7 @@ You should see this output:
 ║   SoroShooter API  —  Port 3001          ║
 ╚══════════════════════════════════════════╝
 📡  Network  : Stellar Testnet
-💰  Admin    : GCYDZO56...
+💰  Admin    : GDYK2LAT...
 🔑  Secret   : ✅ loaded
 ✅ Ready! Open http://localhost:3001/api/diagnose to verify config
 ```
@@ -386,7 +386,7 @@ You should see a JSON response. All fields must be `true` and `error` must be `n
 
 ```json
 {
-  "admin_public": "GCYDZO56...",
+  "admin_public": "GDYK2LAT...",
   "secret_set": true,
   "secret_valid": true,
   "secret_matches": true,
@@ -577,7 +577,7 @@ SoroShooter/
 |---|---|
 | Network | Stellar Testnet |
 | Soroban Contract | `CAXLPNVK4FBCNWMNGNBQUJVGLZKYNDNKCOXZHTRKIFLDGZKDLSFNID4F` |
-| Admin Wallet | `GCYDZO56GUVVMAT6PR3GHKA4XNWCXMCIEJFEZWURDUC5DNWQI5FPNC6F` |
+| Admin Wallet | `GDYK2LATZCLZN7RQYYVZ2H2YO6BZI5ZEMHR4QNVQHGEL2UIKDWJH4SYN` |
 | Freighter API | `@stellar/freighter-api` v5.0.0 (cdnjs) |
 | Stellar SDK | `stellar-sdk` v11.3.0 |
 | Horizon | `https://horizon-testnet.stellar.org` |
@@ -711,7 +711,7 @@ Returns server status and config summary.
 ```json
 {
   "status": "ok",
-  "admin": "GCYDZO56...",
+  "admin": "GDYK2LAT...",
   "secret_set": true,
   "wave_reward": 1000
 }

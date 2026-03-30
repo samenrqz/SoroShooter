@@ -16,8 +16,8 @@ const PORT = process.env.PORT || 3001;
    This is the only address that receives life-purchase payments.
    It is hardcoded and cannot be overridden by environment variables.
    Any signed transaction that sends to a different address is rejected. */
-const ADMIN_PUBLIC   = 'GCYDZO56GUVVMAT6PR3GHKA4XNWCXMCIEJFEZWURDUC5DNWQI5FPNC6F';
-Object.freeze({ ADMIN_PUBLIC }); // symbolic freeze — value is a primitive, mutation is impossible
+const ADMIN_PUBLIC   = 'GDYK2LATZCLZN7RQYYVZ2H2YO6BZI5ZEMHR4QNVQHGEL2UIKDWJH4SYN';
+Object.freeze({ ADMIN_PUBLIC });
 
 const ADMIN_SECRET   = process.env.ADMIN_SECRET;   // secret key in .env only
 const HORIZON_URL    = 'https://horizon-testnet.stellar.org';
@@ -218,7 +218,7 @@ app.post('/api/life/submit-tx', async (req, res) => {
 /* ── START ──────────────────────────────────────────────── */
 
 /* Startup integrity check — refuse to run if admin wallet is tampered */
-const EXPECTED_ADMIN = 'GCYDZO56GUVVMAT6PR3GHKA4XNWCXMCIEJFEZWURDUC5DNWQI5FPNC6F';
+const EXPECTED_ADMIN = 'GDYK2LATZCLZN7RQYYVZ2H2YO6BZI5ZEMHR4QNVQHGEL2UIKDWJH4SYN';
 if (ADMIN_PUBLIC !== EXPECTED_ADMIN) {
   console.error('\n🚨 INTEGRITY ERROR: ADMIN_PUBLIC has been modified.');
   console.error(`   Expected : ${EXPECTED_ADMIN}`);

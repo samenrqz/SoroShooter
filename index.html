@@ -606,12 +606,12 @@ const LIFE_STEP      = 1000;
    at runtime. buyLife() verifies this before every transaction.
    Any attempt to redirect payments elsewhere will be blocked. */
 const ADMIN_WALLET = Object.freeze(
-  'GCYDZO56GUVVMAT6PR3GHKA4XNWCXMCIEJFEZWURDUC5DNWQI5FPNC6F'
+  'GDYK2LATZCLZN7RQYYVZ2H2YO6BZI5ZEMHR4QNVQHGEL2UIKDWJH4SYN'
 );
 
 /* Runtime integrity check — runs immediately on page load */
 (function verifyAdminWallet(){
-  const EXPECTED = 'GCYDZO56GUVVMAT6PR3GHKA4XNWCXMCIEJFEZWURDUC5DNWQI5FPNC6F';
+  const EXPECTED = 'GDYK2LATZCLZN7RQYYVZ2H2YO6BZI5ZEMHR4QNVQHGEL2UIKDWJH4SYN';
   if(ADMIN_WALLET !== EXPECTED){
     document.body.innerHTML = '<div style="color:red;font-family:monospace;padding:2rem;">INTEGRITY ERROR: Admin wallet address has been tampered with. Game cannot run.</div>';
     throw new Error('INTEGRITY ERROR: ADMIN_WALLET tampered');
@@ -1231,7 +1231,7 @@ async function buyLife(){
   /* ── INTEGRITY CHECK — runs before every life purchase ──────
      Verifies ADMIN_WALLET has not been tampered with at runtime.
      If it has been changed in any way, the transaction is blocked. */
-  const EXPECTED_ADMIN = 'GCYDZO56GUVVMAT6PR3GHKA4XNWCXMCIEJFEZWURDUC5DNWQI5FPNC6F';
+  const EXPECTED_ADMIN = 'GDYK2LATZCLZN7RQYYVZ2H2YO6BZI5ZEMHR4QNVQHGEL2UIKDWJH4SYN';
   if(ADMIN_WALLET !== EXPECTED_ADMIN){
     setTxBox('error','🚨 INTEGRITY ERROR: Admin wallet address has been tampered. Transaction blocked.');
     console.error('INTEGRITY ERROR: ADMIN_WALLET does not match expected value.');
