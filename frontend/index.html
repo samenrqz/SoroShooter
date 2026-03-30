@@ -389,7 +389,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
       <div class="ls-howto">
         <div class="ls-howto-title">How Wallet Connection Works</div>
         <div class="ls-howto-row"><div class="ls-step">1</div><span>Option 1: Freighter popup auto-fills your address <i class="fa-solid fa-circle-check" style="color:var(--green)"></i></span></div>
-        <div class="ls-howto-row"><div class="ls-step">2</div><span>Option 2: Paste your address → Freighter still signs when needed</span></div>
+        <div class="ls-howto-row"><div class="ls-step">2</div><span>Option 2: Paste your address — rewards received, life purchase unavailable</span></div>
         <div class="ls-howto-row"><div class="ls-step">3</div><span>Either way: wave XLM rewards go to your address automatically</span></div>
         <div class="ls-howto-row"><div class="ls-step">4</div><span>Buying a life requires Freighter (Option 1) — manual mode receives rewards only</span></div>
       </div>
@@ -615,12 +615,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--void);color:va
 <!-- Notification -->
 <div class="notif" id="notif">
   <div class="nt-top">
-    <div class="nt-icon" id="nt-icon">🪙</div>
+    <div class="nt-icon" id="nt-icon"><i class="fa-solid fa-coins" style="font-size:1.1rem;"></i></div>
     <div><div class="nt-title" id="nt-title">XLM Sent!</div><div class="nt-sub" id="nt-sub">Stellar Testnet</div></div>
   </div>
   <div class="nt-amt"  id="nt-amt">+1,000 XLM</div>
   <div class="nt-row">Wallet: <span class="nt-addr" id="nt-to">—</span></div>
-  <div class="nt-row">Status: <span class="nt-ok"   id="nt-st">✓ Confirmed</span></div>
+  <div class="nt-row">Status: <span class="nt-ok" id="nt-st">Confirmed</span></div>
   <div class="nt-row">Tx: <span class="nt-hash"     id="nt-hash">—</span></div>
   <div class="nt-bar"><div class="nt-fill" id="nt-fill"></div></div>
 </div>
@@ -755,16 +755,16 @@ async function connectFreighter(){
     document.getElementById('addrFeedback').textContent = '';
     document.getElementById('manualNote').style.display = 'none';
 
-    setWsBar('ok', 'Connected ✅  ' + sa(addr) + '  — Freighter extension');
+    setWsBar('ok', 'Connected — ' + sa(addr) + ' — Freighter extension');
     loadBalPreview(addr);
-    showToast('✅ Freighter connected: ' + sa(addr));
+    showToast('Freighter connected: ' + sa(addr));
 
   }catch(e){
     btn.disabled    = false;
     btn.innerHTML = '<i class="fa-solid fa-lock fa-icon"></i> Connect via Freighter Extension';
     const msg = e.message.split('\n')[0];
-    setWsBar('err', '❌ ' + msg);
-    showToast('❌ ' + msg);
+    setWsBar('err', msg);
+    showToast(msg);
   }
 }
 
@@ -779,7 +779,7 @@ async function loadBalPreview(addr){
     const d = await apiFetch('/api/balance/' + addr);
     if(d.success){
       const balStr = d.balance.toFixed(2) + ' XLM';
-      const modeStr = walletMode === 'freighter' ? 'Freighter ✅' : 'Manual 📋';
+      const modeStr = walletMode === 'freighter' ? 'Freighter' : 'Manual';
       setWsBar('ok', modeStr + '  ' + sa(addr) + '  —  ' + balStr);
     }
   }catch{}
@@ -799,25 +799,25 @@ function onManualAddrInput(){
   if(!v.startsWith('G')){
     inp.style.borderColor = 'rgba(255,0,128,.4)';
     fb.style.color = 'var(--pink)';
-    fb.textContent = '❌ Stellar addresses start with G';
+    fb.textContent = 'Stellar addresses start with G';
     return;
   }
   if(v.length < 56){
     inp.style.borderColor = 'rgba(255,230,0,.4)';
     fb.style.color = 'var(--yellow)';
-    fb.textContent = '⏳ Keep typing… (' + v.length + '/56 chars)';
+    fb.textContent = 'Keep typing… (' + v.length + '/56 chars)';
     return;
   }
   if(v.length > 60){
     inp.style.borderColor = 'rgba(255,0,128,.4)';
     fb.style.color = 'var(--pink)';
-    fb.textContent = '❌ Address too long';
+    fb.textContent = 'Address too long';
     return;
   }
   /* Valid */
   inp.style.borderColor = 'rgba(57,255,20,.5)';
   fb.style.color = 'var(--green)';
-  fb.textContent = '✅ Valid Stellar address';
+  fb.textContent = 'Valid Stellar address';
 }
 
 function useManualAddr(){
@@ -825,10 +825,10 @@ function useManualAddr(){
   const fb = document.getElementById('addrFeedback');
 
   if(!v.startsWith('G') || v.length < 56 || v.length > 60){
-    showToast('⚠️ Enter a valid Stellar address (G…, 56 chars)');
+    showToast('Enter a valid Stellar address (G…, 56 chars)');
     document.getElementById('manualAddr').style.borderColor = 'rgba(255,0,128,.5)';
     fb.style.color = 'var(--pink)';
-    fb.textContent = '❌ Not a valid address';
+    fb.textContent = 'Not a valid address';
     return;
   }
 
@@ -841,14 +841,14 @@ function useManualAddr(){
   btn.className   = 'btn-frt connected';
 
   fb.style.color  = 'var(--green)';
-  fb.textContent  = '✅ Address set — ' + sa(v);
+  fb.textContent  = 'Address set — ' + sa(v);
 
-  /* Show the explanation that Freighter still opens on this device */
+  /* Show the explanation about manual mode limitations */
   document.getElementById('manualNote').style.display = 'block';
 
-  setWsBar('ok', 'Manual 📋  ' + sa(v));
+  setWsBar('ok', 'Manual  ' + sa(v));
   loadBalPreview(v);
-  showToast('✅ Wallet set: ' + sa(v));
+  showToast('Wallet set: ' + sa(v));
 }
 
 function launchGame(){
@@ -858,12 +858,12 @@ function launchGame(){
     useManualAddr();
   }
   if(!playerWallet){
-    showToast('⚠️ Connect Freighter or enter your wallet address');
-    setWsBar('err', '❌ No wallet — use Option 1 or Option 2 above');
+    showToast('Connect Freighter or enter your wallet address');
+    setWsBar('err', 'No wallet — use Option 1 or Option 2 above');
     return;
   }
   const cid = document.getElementById('contractInput').value.trim();
-  if(!cid){ showToast('⚠️ Enter your Contract ID'); return; }
+  if(!cid){ showToast('Enter your Contract ID'); return; }
 
   contractId   = cid;
   lifeBuyCount = 0;
@@ -888,13 +888,13 @@ function launchGame(){
     if(isFirstGame){
       // isFirstGame is still true here — initGame() hasn't run yet at this point,
       // but initGame sets it to false, so we check before calling
-      addFeed('tok', '+2 Bonus Lives', 'Welcome ' + sa(playerWallet) + '! You start with 5 lives (2 bonus ⭐)');
-      showNotif('Welcome! 🎮', modeLabel, '+2 Bonus Lives ⭐', playerWallet, null, '🎮');
-      showToast('🎉 Welcome! 5 lives ready — Press SPACE to start!');
+      addFeed('tok', '+2 Bonus Lives', 'Welcome ' + sa(playerWallet) + '! You start with 5 lives (2 bonus)');
+      showNotif('Welcome!', modeLabel, '+2 Bonus Lives', playerWallet, null, 'gamepad');
+      showToast('Welcome! 5 lives ready — Press SPACE to start!');
     } else {
-      addFeed('tok', '3 Lives', 'Welcome back ' + sa(playerWallet) + '! 3 lives ready. Bonus stars are first-launch only.');
-      showNotif('Welcome Back! 🎮', modeLabel, '3 Lives Ready 🚀', playerWallet, null, '🎮');
-      showToast('🎮 3 lives ready — Press SPACE to start!');
+      addFeed('tok', '3 Lives', 'Welcome back ' + sa(playerWallet) + '! 3 lives ready. Bonus lives are first-launch only.');
+      showNotif('Welcome Back!', modeLabel, '3 Lives Ready', playerWallet, null, 'gamepad');
+      showToast('3 lives ready — Press SPACE to start!');
     }
   }, 400);
 }
@@ -914,7 +914,7 @@ function backToLogin(){
       document.getElementById('manualAddr').value = playerWallet;
       document.getElementById('manualAddr').style.borderColor = 'rgba(57,255,20,.4)';
       document.getElementById('addrFeedback').style.color = 'var(--green)';
-      document.getElementById('addrFeedback').textContent = '✅ ' + sa(playerWallet);
+      document.getElementById('addrFeedback').textContent = sa(playerWallet);
       if(walletMode === 'manual') document.getElementById('manualNote').style.display = 'block';
     }
   }, 400);
@@ -943,7 +943,7 @@ async function pollBalance(prevBal,cost,maxTries=12){
       const d=await apiFetch('/api/balance/'+playerWallet);
       if(d.success){
         document.getElementById('hudBal').textContent=d.balance.toFixed(2)+' XLM';
-        if(prevBal-d.balance>=cost-0.1){showToast('✅ Confirmed: '+d.balance.toFixed(2)+' XLM');return d.balance;}
+        if(prevBal-d.balance>=cost-0.1){showToast('Balance confirmed: '+d.balance.toFixed(2)+' XLM');return d.balance;}
       }
     }catch{}
   }
@@ -1023,7 +1023,7 @@ function drawBase(){
 function baseHit(){
   BASE.hitTimer=850;G.lives--;updLives();spawnP(GW/2,BASE.y,'#ff0080',22);shakeAmt=10;
   if(G.lives<=0)showBuyLife();
-  else{showToast('💥 Base hit! '+G.lives+' lives left');addFeed('tok','','Base hit — '+G.lives+' lives remain');}
+  else{showToast('Base hit! '+G.lives+' lives left');addFeed('tok','','Base hit — '+G.lives+' lives remain');}
 }
 
 const G={running:false,paused:false,ready:false,buyingLife:false,
@@ -1101,7 +1101,7 @@ function drawReady(dt){
   ctx.font='bold 12px Share Tech Mono,monospace';ctx.fillStyle='#39ff14';
   ctx.shadowColor='#39ff14';ctx.shadowBlur=7;ctx.fillText('Clear all enemies → +1,000 XLM',GW/2,GH/2-24);
   ctx.fillStyle='rgba(255,0,128,.8)';ctx.shadowColor='#ff0080';ctx.shadowBlur=5;
-  ctx.fillText('⚠ Protect the BASE below!',GW/2,GH/2-7);
+  ctx.fillText('! Protect the BASE below!',GW/2,GH/2-7);
   if(Math.floor(G.readyBlink/500)%2===0){
     ctx.font='bold 17px Orbitron,monospace';ctx.fillStyle='#ffe600';
     ctx.shadowColor='#ffe600';ctx.shadowBlur=13;ctx.fillText('PRESS SPACE BAR TO START',GW/2,GH/2+22);}
@@ -1109,7 +1109,7 @@ function drawReady(dt){
   ctx.fillText('← → move   SPACE fire   ESC pause',GW/2,GH/2+48);
   ctx.textAlign='left';ctx.restore();
 }
-function startOrFire(){if(!G.ready){G.ready=true;showToast('🚀 Protect the base!');}G.keys[' ']=true;setTimeout(()=>{G.keys[' ']=false;},100);}
+function startOrFire(){if(!G.ready){G.ready=true;showToast('Protect the base!');}G.keys[' ']=true;setTimeout(()=>{G.keys[' ']=false;},100);}
 
 let shakeAmt=0;
 function update(dt){
@@ -1178,7 +1178,7 @@ function hitShip(){
   G.lives--;spawnP(G.ship.x,G.ship.y,'#ff0080',18);shakeAmt=8;updLives();
   if(G.lives<=0)showBuyLife();
   else{G.ship.inv=2500;G.ship.x=GW/2;G.ship.y=GH-50;
-    showToast(G.lives===1?'⚠️ Last life!':'💫 '+G.lives+' lives left');
+    showToast(G.lives===1?'Last life!':''+G.lives+' lives left');
     addFeed('tok','','Revived — '+G.lives+' lives remain');}
 }
 
@@ -1326,7 +1326,7 @@ async function buyLife(){
   clearCd();
   btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin fa-icon"></i> Building transaction…';
   document.getElementById('btnRestart').disabled=true;
-  setTxBox('pending','⏳ Contacting server to build transaction…');
+  setTxBox('pending','Contacting server to build transaction…');
 
   /* Step 1 — capture real prevBal BEFORE any deduction */
   let prevBal=0;
@@ -1339,7 +1339,7 @@ async function buyLife(){
 
     /* Step 3 — Freighter signs (popup) */
     btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin fa-icon"></i> Approve in Freighter popup…';
-    setTxBox('pending','⏳ Freighter popup opening — please approve the transaction…');
+    setTxBox('pending','Freighter popup opening — please approve the transaction…');
 
     let signed;
     try{
@@ -1364,7 +1364,7 @@ async function buyLife(){
 
     /* Step 4 — server verifies + submits */
     btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin fa-icon"></i> Submitting to Stellar Testnet…';
-    setTxBox('pending','⏳ Submitting signed transaction to Stellar Testnet…');
+    setTxBox('pending','Submitting signed transaction to Stellar Testnet…');
 
     const submit=await apiFetch('/api/life/submit-tx',{signedXDR:xdr,playerAddress:playerWallet,lifeBuyCount});
     if(!submit.success) throw new Error(submit.error||'Transaction submission failed');
@@ -1379,13 +1379,13 @@ async function buyLife(){
     document.getElementById('balAfter').style.color='var(--green)';
 
     setTxBox('success',
-      '✅ '+cost.toLocaleString()+' XLM deducted — Extra Life Granted! 🟢\n'+
+      cost.toLocaleString()+' XLM deducted — Extra Life Granted!\n'+
       'Tx: '+submit.hash.slice(0,36)+'…');
-    addFeed('life','-'+cost.toLocaleString()+' XLM','✅ Extra Life Granted 🟢 · Tx:'+submit.hash.slice(0,14)+'…');
-    showNotif(cost.toLocaleString()+' XLM Deducted 💸',
+    addFeed('life','-'+cost.toLocaleString()+' XLM','Extra Life Granted — Tx:'+submit.hash.slice(0,14)+'…');
+    showNotif(cost.toLocaleString()+' XLM Deducted',
       'Extra Life Granted — Mission Retry!',
-      '+1 Extra Life ⭐',playerWallet,submit.hash,'💸');
-    showToast('✅ '+cost.toLocaleString()+' XLM deducted — Extra Life Granted! Retrying wave…');
+      '+1 Extra Life',playerWallet,submit.hash,'heart');
+    showToast(cost.toLocaleString()+' XLM deducted — Extra Life Granted! Retrying wave…');
 
     /* Wait 2s so user can read the success message */
     await new Promise(r=>setTimeout(r,2000));
@@ -1397,18 +1397,18 @@ async function buyLife(){
     G.buyingLife=false;G.paused=false;G.lastT=performance.now();
     G.bullets=[];G.particles=[];BASE.hitTimer=0;
     spawnWave(G.wave);G.ready=false;G.readyBlink=0;
-    showToast('🚀 Extra life granted — Mission retry! Wave '+G.wave+' restarting…');
+    showToast('Extra life granted — Mission retry! Wave '+G.wave+' restarting…');
 
     /* Step 6 — poll Stellar until confirmed balance lands */
     pollBalance(prevBal,cost);
 
   }catch(e){
     const msg=e.message||'Unknown error';
-    let disp='❌ '+msg.slice(0,140);
-    if(/underfund|insufficient/i.test(msg)) disp='❌ Insufficient XLM — need at least '+cost.toLocaleString()+' XLM.';
-    else if(/fetch|Failed to fetch/i.test(msg)) disp='❌ Cannot reach server. Make sure node server.js is running.';
+    let disp=msg.slice(0,140);
+    if(/underfund|insufficient/i.test(msg)) disp='Insufficient XLM — need at least '+cost.toLocaleString()+' XLM.';
+    else if(/fetch|Failed to fetch/i.test(msg)) disp='Cannot reach server. Make sure node server.js is running.';
     setTxBox('error',disp);
-    showToast('❌ Transaction failed — please try again.');
+    showToast('Transaction failed — please try again.');
     btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-bolt fa-icon"></i> BUY LIFE — '+lifeBuyCost.toLocaleString()+' XLM';
     document.getElementById('btnRestart').disabled=false;
     startCd(15);
@@ -1426,7 +1426,8 @@ function updLives(){
   for(let i=0;i<G.maxLives;i++){
     const s=document.createElement('span');
     s.className='li'+(i>=G.lives?' lost':'');
-    s.textContent=i>=3?'⭐':'🚀';d.appendChild(s);}
+    s.innerHTML=i>=3?'<i class="fa-solid fa-star"></i>':'<i class="fa-solid fa-rocket"></i>';
+    d.appendChild(s);}
   const lc=document.getElementById('hs-lives');if(lc)lc.textContent=G.lives;
 }
 
@@ -1510,13 +1511,13 @@ function checkMS(){
     if(!G.milestones[pts]&&G.score>=pts){
       G.milestones[pts]=true;G.totalEarned+=xlm;
       const el=document.getElementById('ms-'+pts);
-      if(el){el.classList.add('ms-done');const ok=document.createElement('span');ok.className='ms-ok';ok.textContent='✓';el.appendChild(ok);}
+      if(el){el.classList.add('ms-done');const ok=document.createElement('span');ok.className='ms-ok';ok.innerHTML='<i class="fa-solid fa-check"></i>';el.appendChild(ok);}
       addFeed('mile','+'+xlm.toLocaleString()+' XLM','Milestone '+pts.toLocaleString()+' pts!');
-      rewFloat('+'+xlm.toLocaleString()+' XLM 🎉');showToast('🎉 Milestone! +'+xlm.toLocaleString()+' XLM!');
+      rewFloat('+'+xlm.toLocaleString()+' XLM');showToast('Milestone! +'+xlm.toLocaleString()+' XLM!');
       apiFetch('/api/reward/milestone',{playerAddress:playerWallet,milestone:pts}).then(r=>{
         if(r.success){
-          addFeed('chain','+'+xlm.toLocaleString()+' XLM','✓ Tx:'+r.hash.slice(0,14)+'…');
-          showNotif('Milestone 💰',pts.toLocaleString()+' pts reached!','+'+xlm.toLocaleString()+' XLM',playerWallet,r.hash,'🎯');
+          addFeed('chain','+'+xlm.toLocaleString()+' XLM','Tx:'+r.hash.slice(0,14)+'…');
+          showNotif('Milestone Reached!',pts.toLocaleString()+' pts','+'+xlm.toLocaleString()+' XLM',playerWallet,r.hash,'bullseye');
           setTimeout(()=>refreshBalance(),3000);
         }
       });
@@ -1533,14 +1534,14 @@ function checkMS(){
 function waveLost(){
   G.paused=true;G.buyingLife=true;
   addFeed('err','','Mission Failed — Wave '+G.wave+': '+G.baseBreach+' enem'+(G.baseBreach===1?'y':'ies')+' reached the base!');
-  showToast('💥 Mission Failed — base breached! Buy a life to retry Wave '+G.wave+'.');
+  showToast('Mission Failed — base breached! Buy a life to retry Wave '+G.wave+'.');
 
   /* Build stats rows */
   const sd=document.getElementById('wls');sd.innerHTML='';
   const c=wcfg(G.wave);
   [['Wave',           '#'+G.wave+' ['+c.diff.label+']', '#00fff7'],
    ['Enemies Killed', ''+G.kills,                        '#ff6b00'],
-   ['Base Breaches',  G.baseBreach+' ❌',                '#ff0080'],
+   ['Base Breaches',  G.baseBreach+' (FAILED)',      '#ff0080'],
    ['Lives Left',     ''+G.lives,                        G.lives>0?'#ffe600':'#ff0080'],
    ['Score',          G.score.toLocaleString(),           '#00fff7'],
   ].forEach(([k,v,col])=>{
@@ -1578,7 +1579,7 @@ async function waveClear(){
   const sd=document.getElementById('wcs');sd.innerHTML='';
   [['Wave','#'+w+' ['+c.diff.label+']','#00fff7'],
    ['Enemies Killed',''+G.kills,'#ff6b00'],
-   ['Base Breaches','0 ✅','#39ff14'],
+   ['Base Breaches','0 (CLEAR)','#39ff14'],
    ['Score',G.score.toLocaleString(),'#00fff7'],
    ['Reward','+'+c.xlm.toLocaleString()+' XLM','#39ff14']
   ].forEach(([k,v,col])=>{
@@ -1607,7 +1608,7 @@ async function waveClear(){
     ch.className='ov-chain ok';
     ch.innerHTML='<i class="fa-solid fa-circle-check fa-icon"></i> Reward Received — +'+c.xlm.toLocaleString()+' XLM! Tx:'+r.hash.slice(0,22)+'…';
     addFeed('chain','+'+c.xlm.toLocaleString()+' XLM','On-chain confirmed. Tx:'+r.hash.slice(0,14)+'…');
-    showNotif('Mission Complete!','Reward Received','+'+c.xlm.toLocaleString()+' XLM',playerWallet,r.hash,'check');
+    showNotif('Mission Complete!','Reward Received','+'+c.xlm.toLocaleString()+' XLM',playerWallet,r.hash,'circle-check');
     setTimeout(()=>refreshBalance(),3000);
   }else{
     const errMsg = r.error || 'Unknown server error';
@@ -1650,8 +1651,8 @@ function restartGame(){
   ['ovGameOver','ovWaveClear','ovPause','ovBuyLife','ovWaveLost'].forEach(id=>document.getElementById(id).classList.remove('active'));
   G.paused=false;G.buyingLife=false;lifeBuyCount=0;lifeBuyCost=LIFE_BASE;
   initGame(); // sets isFirstGame=false and lives=3
-  showToast('🎮 3 lives ready — bonus stars are first-launch only!');
-  addFeed('tok','3 Lives','Restarted — 3 lives this round. Bonus ⭐ were first-launch only.');
+  showToast('3 lives ready — bonus lives are first-launch only!');
+  addFeed('tok','3 Lives','Restarted — 3 lives this round. Bonus lives were first-launch only.');
 }
 function togglePause(){
   if(!G.running)return;G.paused=!G.paused;
@@ -1661,7 +1662,7 @@ function togglePause(){
 }
 
 addEventListener('keydown',e=>{
-  if(e.key===' '&&!G.ready&&G.running&&!G.paused){G.ready=true;showToast('🚀 Protect the base!');e.preventDefault();return;}
+  if(e.key===' '&&!G.ready&&G.running&&!G.paused){G.ready=true;showToast('Protect the base!');e.preventDefault();return;}
   G.keys[e.key]=true;
   if(e.key==='Escape'||e.key==='p'||e.key==='P')togglePause();
   if(e.key===' ')e.preventDefault();
@@ -1699,13 +1700,14 @@ function addFeed(type,amt,msg){
 
 /* ━━━ NOTIFICATIONS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 let notifT;
-function showNotif(title,sub,amt,addr,hash,icon='🪙'){
-  document.getElementById('nt-icon').textContent=icon;
+function showNotif(title,sub,amt,addr,hash,icon='coins'){
+  /* icon = FontAwesome class name e.g. 'coins', 'circle-check', 'heart', 'gamepad', 'bullseye' */
+  document.getElementById('nt-icon').innerHTML='<i class="fa-solid fa-'+icon+'" style="font-size:1.1rem;"></i>';
   document.getElementById('nt-title').textContent=title;
   document.getElementById('nt-sub').textContent=sub;
   document.getElementById('nt-amt').textContent=amt;
   document.getElementById('nt-to').textContent=sa(addr);
-  document.getElementById('nt-st').textContent=hash?'✓ Confirmed on Stellar Testnet':'✓ Processed';
+  document.getElementById('nt-st').textContent=hash?'Confirmed on Stellar Testnet':'Processed';
   document.getElementById('nt-hash').textContent=hash?hash.slice(0,26)+'…':'Processing…';
   const fill=document.getElementById('nt-fill');
   fill.style.animation='none';fill.offsetHeight;fill.style.animation='shrink 5s linear forwards';
