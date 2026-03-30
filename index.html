@@ -624,6 +624,7 @@ let contractId   = '';
 let lifeBuyCount = 0;
 let lifeBuyCost  = LIFE_BASE;
 let cdHandle     = null;
+let isFirstGame  = true; // first launch → 5 lives (3🚀 + 2⭐ bonus); replays → 3 lives only
 const sa = a => a ? a.slice(0,6)+'…'+a.slice(-4) : '—';
 
 /* ── Server health ───────────────────────────────────────── */
@@ -847,9 +848,17 @@ function launchGame(){
     setTimeout(()=>gw.classList.add('visible'), 50);
     initGame();
     fetchBal(playerWallet);
-    addFeed('tok', '+2 Lives', 'Welcome ' + sa(playerWallet) + '! 5 lives ready (2 bonus ⭐)');
-    showNotif('Welcome! 🎮', modeLabel, '+2 Bonus Lives ⭐', playerWallet, null, '🎮');
-    showToast('🎉 Welcome! Press SPACE to start firing!');
+    if(isFirstGame){
+      // isFirstGame is still true here — initGame() hasn't run yet at this point,
+      // but initGame sets it to false, so we check before calling
+      addFeed('tok', '+2 Bonus Lives', 'Welcome ' + sa(playerWallet) + '! You start with 5 lives (2 bonus ⭐)');
+      showNotif('Welcome! 🎮', modeLabel, '+2 Bonus Lives ⭐', playerWallet, null, '🎮');
+      showToast('🎉 Welcome! 5 lives ready — Press SPACE to start!');
+    } else {
+      addFeed('tok', '3 Lives', 'Welcome back ' + sa(playerWallet) + '! 3 lives ready. Bonus stars are first-launch only.');
+      showNotif('Welcome Back! 🎮', modeLabel, '3 Lives Ready 🚀', playerWallet, null, '🎮');
+      showToast('🎮 3 lives ready — Press SPACE to start!');
+    }
   }, 400);
 }
 
@@ -1002,9 +1011,11 @@ function wcfg(w){
 }
 
 function initGame(){
+  const startLives = isFirstGame ? 5 : 3;
+  isFirstGame = false; // all subsequent plays get 3 lives
   resizeCanvas();addEventListener('resize',resizeCanvas);BASE.hitTimer=0;
   Object.assign(G,{running:true,paused:false,ready:false,buyingLife:false,
-    score:0,wave:1,kills:0,totalEarned:0,lives:5,maxLives:5,
+    score:0,wave:1,kills:0,totalEarned:0,lives:startLives,maxLives:5,
     bullets:[],enemies:[],particles:[],keys:{},
     shootCD:0,waveActive:false,waveKilled:0,
     milestones:{1000:false,5000:false,15000:false},
@@ -1526,7 +1537,10 @@ function buildGO(){
 function restartGame(){
   clearCd();
   ['ovGameOver','ovWaveClear','ovPause','ovBuyLife'].forEach(id=>document.getElementById(id).classList.remove('active'));
-  G.paused=false;G.buyingLife=false;lifeBuyCount=0;lifeBuyCost=LIFE_BASE;initGame();
+  G.paused=false;G.buyingLife=false;lifeBuyCount=0;lifeBuyCost=LIFE_BASE;
+  initGame(); // sets isFirstGame=false and lives=3
+  showToast('🎮 3 lives ready — bonus stars are first-launch only!');
+  addFeed('tok','3 Lives','Restarted — 3 lives this round. Bonus ⭐ were first-launch only.');
 }
 function togglePause(){
   if(!G.running)return;G.paused=!G.paused;
