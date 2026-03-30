@@ -980,7 +980,7 @@ function baseHit(){
   else{showToast('💥 Base hit! '+G.lives+' lives left');addFeed('tok','','Base hit — '+G.lives+' lives remain');}
 }
 
-const G={running:false,paused:false,ready:false,
+const G={running:false,paused:false,ready:false,buyingLife:false,
   score:0,wave:1,kills:0,totalEarned:0,lives:5,maxLives:5,
   ship:{x:300,y:GH-50,w:34,h:42,spd:5,inv:0},
   bullets:[],enemies:[],particles:[],keys:{},
@@ -1003,7 +1003,7 @@ function wcfg(w){
 
 function initGame(){
   resizeCanvas();addEventListener('resize',resizeCanvas);BASE.hitTimer=0;
-  Object.assign(G,{running:true,paused:false,ready:false,
+  Object.assign(G,{running:true,paused:false,ready:false,buyingLife:false,
     score:0,wave:1,kills:0,totalEarned:0,lives:5,maxLives:5,
     bullets:[],enemies:[],particles:[],keys:{},
     shootCD:0,waveActive:false,waveKilled:0,
@@ -1099,7 +1099,14 @@ function update(dt){
         e.alive=false;e.hp=0;G.waveKilled++;G.kills++;spawnP(e.x,e.y,ec(e.type),10);hitShip();}});
   }
   G.particles=G.particles.filter(p=>{p.x+=p.vx*(dt/16);p.y+=p.vy*(dt/16);p.life-=dt;p.vy+=.08;return p.life>0;});
-  if(G.waveActive&&G.enemies.length>0&&G.enemies.every(e=>!e.alive)){G.waveActive=false;setTimeout(()=>waveClear(),300);}
+  /* Only trigger wave clear if game is actively running — never during buy-life or game-over */
+  if(G.waveActive&&!G.buyingLife&&G.enemies.length>0&&G.enemies.every(e=>!e.alive)){
+    G.waveActive=false;
+    setTimeout(()=>{
+      /* Double-check the game is still running before showing wave clear — prevents false trigger */
+      if(G.running&&!G.buyingLife) waveClear();
+    },300);
+  }
   document.getElementById('hs-score').textContent=G.score.toLocaleString();
   document.getElementById('hs-kills').textContent=G.kills;
   document.getElementById('hs-earned').textContent=G.totalEarned.toLocaleString();
@@ -1124,7 +1131,7 @@ function hitShip(){
 
 /* ━━━ SHOW BUY LIFE SCREEN ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function showBuyLife(){
-  G.paused=true;hideTxBox();
+  G.paused=true;G.buyingLife=true;hideTxBox();
   document.getElementById('bl-w').textContent=G.wave;
   document.getElementById('bl-s').textContent=G.score.toLocaleString();
   document.getElementById('blCost').textContent=lifeBuyCost.toLocaleString()+' XLM';
@@ -1186,8 +1193,8 @@ function startCd(secs){
     if(rem<=0){
       clearCd();
       document.getElementById('ovBuyLife').classList.remove('active');
-      G.paused=false;
-      /* Ship explosion + game over */
+      /* Keep G.paused=true and G.buyingLife=true during explosion —
+         prevents the game loop from triggering waveClear() on dead enemies */
       for(let i=0;i<45;i++){
         const a=Math.random()*Math.PI*2,sp=2+Math.random()*5;
         G.particles.push({x:G.ship.x,y:G.ship.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,
@@ -1195,7 +1202,7 @@ function startCd(secs){
       }
       shakeAmt=20;
       setTimeout(()=>{
-        G.running=false;cancelAnimationFrame(G.raf);
+        G.running=false;G.buyingLife=false;cancelAnimationFrame(G.raf);
         G.leaderboard.push({addr:playerWallet,score:G.score,wave:G.wave,earned:G.totalEarned});
         G.leaderboard.sort((a,b)=>b.score-a.score);
         buildGO();document.getElementById('ovGameOver').classList.add('active');
@@ -1313,7 +1320,7 @@ async function buyLife(){
     G.lives=1;updLives();
     G.ship={x:GW/2,y:GH-50,w:34,h:42,spd:5,inv:1800};
     document.getElementById('ovBuyLife').classList.remove('active');hideTxBox();
-    G.paused=false;G.lastT=performance.now();
+    G.buyingLife=false;G.paused=false;G.lastT=performance.now();
     G.bullets=[];G.particles=[];BASE.hitTimer=0;
     spawnWave(G.wave);G.ready=false;G.readyBlink=0;
     showToast('💫 Wave '+G.wave+' restarted — good luck!');
@@ -1519,7 +1526,7 @@ function buildGO(){
 function restartGame(){
   clearCd();
   ['ovGameOver','ovWaveClear','ovPause','ovBuyLife'].forEach(id=>document.getElementById(id).classList.remove('active'));
-  G.paused=false;lifeBuyCount=0;lifeBuyCost=LIFE_BASE;initGame();
+  G.paused=false;G.buyingLife=false;lifeBuyCount=0;lifeBuyCost=LIFE_BASE;initGame();
 }
 function togglePause(){
   if(!G.running)return;G.paused=!G.paused;
